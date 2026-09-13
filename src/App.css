@@ -112,9 +112,34 @@ button {
 }
 
 .header-action-link {
+  position: relative;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.cart-count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  background: var(--accent);
+  color: white;
+
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .header-actions button:hover,

@@ -2,11 +2,53 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import nameTag from './assets/name-tag.jpg'
+import { useCart } from './context/useCart'
 import './App.css'
+
+function Header() {
+  const { cartItems } = useCart()
+
+  const cartItemCount = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  )
+
+  return (
+    <header className="header">
+      <Link className="logo" to="/">
+        BEANFORGE <span>3D</span>
+      </Link>
+
+      <nav className="nav">
+        <a href="/#shop">Shop</a>
+        <a href="/#custom">Custom</a>
+        <a href="/#corporate">Corporate</a>
+        <a href="/#about">About</a>
+      </nav>
+
+      <div className="header-actions">
+        <button aria-label="Search">⌕</button>
+        <button aria-label="Wishlist">♡</button>
+        <Link
+          to="/cart"
+          className="header-action-link cart-link"
+          aria-label={`Shopping cart with ${cartItemCount} items`}
+        >
+          🛒
+          {cartItemCount > 0 && (
+            <span className="cart-count">{cartItemCount}</span>
+          )}
+        </Link>
+      </div>
+    </header>
+  )
+}
 
 function App() {
 return (
   <BrowserRouter>
+    <Header />
+
     <Routes>
 
     {/* Bean Keycap product page */}
@@ -26,31 +68,6 @@ return (
       path="*"
       element={
         <div className="site">
-          <header className="header">
-            <a className="logo" href="/">
-              BEANFORGE <span>3D</span>
-            </a>
-
-            <nav className="nav">
-              <a href="#shop">Shop</a>
-              <a href="#custom">Custom</a>
-              <a href="#corporate">Corporate</a>
-              <a href="#about">About</a>
-            </nav>
-
-            <div className="header-actions">
-              <button aria-label="Search">⌕</button>
-              <button aria-label="Wishlist">♡</button>
-              <Link
-                to="/cart"
-                className="header-action-link"
-                aria-label="Shopping cart"
-              >
-                🛒
-              </Link>
-            </div>
-          </header>
-
           <main>
             <section className="hero">
               <div className="hero-content">
@@ -319,9 +336,9 @@ return (
 
           <footer className="footer" id="about">
             <div>
-              <a className="logo" href="/">
+              <Link className="logo" to="/">
                 BEANFORGE <span>3D</span>
-              </a>
+              </Link>
 
               <p>Small things. Made for you.</p>
             </div>
