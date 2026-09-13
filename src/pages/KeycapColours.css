@@ -7,18 +7,48 @@
 }
 .keycap-strip[data-board-colour="Pink"] { --cap-top: #f9dcde; --cap-bottom: #e8b5bc; --cap-edge: #bd8790; }
 .keycap-strip[data-board-colour="Black"] { --cap-top: #4b4946; --cap-bottom: #292724; --cap-edge: #161513; }
-.keycap-strip::before {
+.keycap-module {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  filter: drop-shadow(0 5px 2px #24231f35);
+}
+.keycap-module::before {
   content: '';
   position: absolute;
   z-index: -1;
-  left: 0;
-  right: 0;
-  top: 24%;
-  bottom: 20%;
-  border-radius: 18px;
+  width: 30%;
+  height: 22%;
+  left: -20%;
+  top: 39%;
+  border: 3px solid var(--cap-edge);
+  border-radius: 50%;
+  box-shadow: inset 0 2px 0 var(--cap-top), 0 2px 0 var(--cap-bottom);
+}
+.keycap-housing {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(19% 0, 81% 0, 100% 19%, 100% 81%, 81% 100%, 19% 100%, 0 81%, 0 19%);
   background: linear-gradient(145deg, var(--cap-top), var(--cap-bottom));
-  border: 1px solid var(--cap-edge);
-  box-shadow: 0 8px 0 var(--cap-edge), 0 18px 20px -12px #24231f55;
+  border-bottom: 5px solid var(--cap-edge);
+}
+.keycap-housing::before {
+  content: '';
+  position: absolute;
+  inset: 9%;
+  clip-path: polygon(15% 0, 85% 0, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0 85%, 0 15%);
+  background: var(--cap-bottom);
+  box-shadow: inset 0 3px 4px var(--cap-edge);
+  border: 2px solid var(--cap-edge);
+}
+.keycap-module .keycap-sketch {
+  width: 70%;
+  font-size: clamp(0.65rem, 2.4vw, 1.7rem);
+}
+.keycap-strip {
+  padding-left: 16px;
+  gap: clamp(5px, 1.5vw, 16px);
 }
 .keycap-object small {
   color: var(--ink);

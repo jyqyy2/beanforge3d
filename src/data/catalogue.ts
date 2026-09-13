@@ -13,6 +13,10 @@ export function getCustomKeycapPricing(): KeycapPricing {
   return customKeycapPricing
 }
 
+export function getCharacterColours(): string[] {
+  return ['Cream', 'Pink', 'Blue', 'Black']
+}
+
 export function getProducts(): Product[] {
   return [...products]
 }

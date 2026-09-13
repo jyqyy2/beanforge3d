@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { CartItem } from '../types/cart'
 import { CartContext } from './cartContextValue'
+import { cartItemIdentity, isKeycapConfiguration } from '../utils/cartIdentity'
 
 const cartStorageKey = 'beanforge-cart'
 
@@ -19,7 +20,10 @@ function getSavedCartItems() {
       typeof item.price === 'number' &&
       Number.isFinite(item.price) && item.price >= 0 &&
       Number.isSafeInteger(item.quantity) && item.quantity > 0 &&
-      (item.image === undefined || typeof item.image === 'string')
+      (item.image === undefined || typeof item.image === 'string') &&
+      (item.configuration === undefined
+        ? item.productSlug !== 'custom-keycaps'
+        : item.productSlug === 'custom-keycaps' && isKeycapConfiguration(item.configuration) && item.colour === item.configuration.boardColour)
     )
   } catch {
     return []
@@ -45,11 +49,13 @@ export function CartProvider({
 
   function addToCart(item: CartItem) {
     if (!Number.isSafeInteger(item.quantity) || item.quantity < 1) return
+    if (item.productSlug === 'custom-keycaps' && (!isKeycapConfiguration(item.configuration) || item.colour !== item.configuration.boardColour)) return
+    if (item.configuration && item.productSlug !== 'custom-keycaps') return
+    const identity = cartItemIdentity(item)
     setCartItems((currentItems) => {
       const existingItem = currentItems.find(
         (currentItem) =>
-          currentItem.productSlug === item.productSlug &&
-          currentItem.colour === item.colour
+          cartItemIdentity(currentItem) === identity
       )
 
       if (!existingItem) {
@@ -64,8 +70,7 @@ export function CartProvider({
       }
 
       return currentItems.map((currentItem) =>
-        currentItem.productSlug === item.productSlug &&
-        currentItem.colour === item.colour
+        cartItemIdentity(currentItem) === identity
           ? {
               ...currentItem,
               quantity: currentItem.quantity + item.quantity,

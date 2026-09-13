@@ -1090,6 +1090,15 @@ So instead, put font-size after font: inherit:*/
   border-radius: 16px;
 }
 
+.cart-item-custom {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 650px) {
+  .cart-items .cart-item-custom { grid-template-columns: minmax(0, 1fr); }
+  .cart-item-custom .cart-item-actions { grid-column: 1; }
+}
+
 .cart-item-info h2 {
   margin: 0 0 0.5rem;
 

@@ -6,8 +6,11 @@ export default function KeycapPreview({ configuration, activeIndex }: { configur
       <p className="eyebrow">YOUR CREATION · MADE PERSONAL</p>
       <div className="keycap-strip" data-board-colour={configuration.boardColour} aria-hidden="true">
         {configuration.characters.map((character, index) => (
-          <span className="keycap-object" data-character-colour={character.colour} data-active={activeIndex === index} key={index}>
-            <span className="keycap-sketch">{character.character || '·'}</span>
+          <span className="keycap-object" data-active={activeIndex === index} key={index}>
+            <span className="keycap-module">
+              <span className="keycap-housing" />
+              {character.character && <span className="keycap-sketch" data-character-colour={character.colour}>{character.character}</span>}
+            </span>
             <small>{index + 1}</small>
           </span>
         ))}

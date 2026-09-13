@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getCustomKeycapPricing, getProductBySlug } from '../data/catalogue'
+import { getCharacterColours, getCustomKeycapPricing, getProductBySlug } from '../data/catalogue'
 import KeycapPreview from '../components/KeycapPreview'
 import type { KeycapConfiguration } from '../types/keycap'
 import { calculateKeycapPrice } from '../utils/keycapPricing'
+import { useCart } from '../context/useCart'
 import './KeycapStudioPage.css'
 import './KeycapColours.css'
 
 const money = (minor: number) => `S$${(minor / 100).toFixed(2)}`
 
 export default function KeycapStudioPage() {
+  const { addToCart } = useCart()
   const colours = getProductBySlug('bean-keycap')?.colours ?? []
   const pricing = getCustomKeycapPricing()
   const [count, setCount] = useState(1)
@@ -18,9 +20,21 @@ export default function KeycapStudioPage() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [message, setMessage] = useState('')
   const configuration: KeycapConfiguration = { schemaVersion: 3, boardColour: colour, characters: characters.slice(0, count) }
-  const characterColours = ['Cream', 'Pink', 'Blue', 'Black']
+  const characterColours = getCharacterColours()
   const selectedIndex = activeIndex !== null && activeIndex < count ? activeIndex : null
   const quote = calculateKeycapPrice(configuration, pricing)
+  const addCreation = () => {
+    if (!quote.complete || quote.totalMinor === null) return
+    addToCart({
+      productSlug: 'custom-keycaps',
+      name: `Custom keycaps · ${configuration.characters.map(({ character }) => character).join('')}`,
+      price: quote.totalMinor / 100,
+      colour: configuration.boardColour,
+      quantity: 1,
+      configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })) },
+    })
+    setMessage('Your creation was added to your cart.')
+  }
   const updateCharacter = (index: number, value: string) => {
     const nextCharacter = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 1)
     setCharacters((current) => current.map((item, position) => position === index ? { character: nextCharacter, colour: item.colour || (nextCharacter ? (colour === 'Cream' ? 'Black' : 'Cream') : '') } : item))
@@ -72,7 +86,7 @@ export default function KeycapStudioPage() {
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
         </fieldset>
       </section>
-      <section className="studio-purchase" aria-label="Your creation price"><div><p className="eyebrow">YOUR CREATION</p><h2>{count} {count === 1 ? 'board' : 'boards'} · {colour}</h2><p id="studio-completion" role="status">{quote.completed} / {count} keycaps complete. {quote.complete ? '✓ Ready for the cart step.' : 'Add a character to each remaining tile.'}</p><p className="studio-note">Temporary development prices — not a production quote.</p></div><div className="studio-price-action"><dl><div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div><div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div><div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div></dl><button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={() => setMessage('Your creation is complete. Cart integration is coming in a later milestone; nothing was added.')}>Add my creation to cart</button><p id="studio-cart-note" className="studio-note">Preview action only; configured cart items are not available yet.</p><p role="status" className="studio-action-message">{message}</p></div></section>
+      <section className="studio-purchase" aria-label="Your creation price"><div><p className="eyebrow">YOUR CREATION</p><h2>{count} {count === 1 ? 'board' : 'boards'} · {colour}</h2><p id="studio-completion" role="status">{quote.completed} / {count} keycaps complete. {quote.complete ? '✓ Ready to add to cart.' : 'Add a character to each remaining tile.'}</p><p className="studio-note">Temporary development prices — not a production quote.</p></div><div className="studio-price-action"><dl><div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div><div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div><div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div></dl><button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>Add my creation to cart</button><p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available yet.</p><p role="status" className="studio-action-message">{message}</p>{message && <Link to="/cart" className="back-link">View cart →</Link>}</div></section>
       <p className="studio-session-note">Your design stays here while you explore. Leaving or refreshing resets it.</p>
     </div>
   </main>
