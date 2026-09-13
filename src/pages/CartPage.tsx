@@ -8,6 +8,7 @@ function CartPage() {
   const location = useLocation()
   const {
     cartItems,
+    storageFailed,
     removeFromCart,
     updateCartItemQuantity,
   } = useCart()
@@ -29,6 +30,7 @@ function CartPage() {
         <div className="cart-heading">
           <p className="eyebrow">YOUR CART</p>
           <h1>Shopping cart</h1>
+          {storageFailed && <p role="alert">Your latest cart changes could not be saved on this browser. Keep this page open: refreshing or leaving may lose these changes.</p>}
           {location.state?.designSaved === true && <p role="status">Design saved. Matching designs are combined and quantities preserved.</p>}
         </div>
 

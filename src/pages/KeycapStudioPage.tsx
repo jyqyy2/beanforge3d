@@ -25,7 +25,7 @@ export default function KeycapStudioPage() {
 }
 
 function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity: string | null; savedConfiguration?: KeycapConfiguration }) {
-  const { addToCart, updateCartDesign } = useCart()
+  const { addToCart, updateCartDesign, storageFailed } = useCart()
   const navigate = useNavigate()
   const colours = getProductBySlug('bean-keycap')?.colours ?? []
   const pricing = getCustomKeycapPricing()
@@ -109,6 +109,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     <Link to={editIdentity === null ? '/#custom' : '/cart'} className="back-link">{editIdentity === null ? '← Back to the shop' : '← Cancel and return to cart'}</Link>
     <header className="studio-heading"><p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p><h1>{editIdentity === null ? 'Build your own.' : 'Refine your creation.'}</h1><p>{editIdentity === null ? 'Your name. Your lucky number. Your little daily reminder.' : 'Changes apply to every copy in this cart row when you save. Matching designs combine quantities.'}</p></header>
     <div className="studio-layout">
+      {storageFailed && <p className="studio-note" role="alert">Your latest cart changes could not be saved on this browser. Keep this page open to avoid losing them. Your studio draft is saved separately.</p>}
       {blocker.state === 'blocked' && <section role="alertdialog" aria-modal="false" aria-labelledby="unsaved-title" aria-describedby="unsaved-description">
         <h2 id="unsaved-title">Leave without saving?</h2>
         <p id="unsaved-description">Your cart still contains the original design. These edits will be discarded.</p>

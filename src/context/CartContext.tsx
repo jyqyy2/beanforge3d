@@ -6,7 +6,7 @@ import { cartItemIdentity, isKeycapConfiguration } from '../utils/cartIdentity'
 import { updateKeycapCart } from '../utils/updateKeycapCart'
 import type { KeycapConfiguration } from '../types/keycap'
 
-const cartStorageKey = 'beanforge-cart'
+import { cartStorageKey, saveCart } from '../utils/cartStorage'
 
 function getSavedCartItems() {
   try {
@@ -41,12 +41,11 @@ export function CartProvider({
     getSavedCartItems
   )
 
+  const [storageFailed, setStorageFailed] = useState(false)
   useEffect(() => {
-    try {
-      localStorage.setItem(cartStorageKey, JSON.stringify(cartItems))
-    } catch {
-      return
-    }
+    const failed = !saveCart(cartItems)
+    const timer = window.setTimeout(() => setStorageFailed(failed), 0)
+    return () => window.clearTimeout(timer)
   }, [cartItems])
 
   function addToCart(item: CartItem) {
@@ -118,6 +117,7 @@ export function CartProvider({
     <CartContext.Provider
       value={{
         cartItems,
+        storageFailed,
         addToCart,
         updateCartDesign,
         removeFromCart,

@@ -4,6 +4,7 @@ import type { KeycapConfiguration } from '../types/keycap'
 
 export type CartContextType = {
   cartItems: CartItem[]
+  storageFailed: boolean
   addToCart: (item: CartItem) => void
   updateCartDesign: (identity: string, configuration: KeycapConfiguration) => boolean
   removeFromCart: (itemIndex: number) => void
