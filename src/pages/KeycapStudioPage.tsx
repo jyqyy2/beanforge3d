@@ -34,6 +34,14 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const [colour, setColour] = useState(savedConfiguration?.boardColour ?? draft?.configuration.boardColour ?? colours[0] ?? '')
   const [characters, setCharacters] = useState<KeycapConfiguration['characters']>(() => Array.from({ length: 8 }, (_, index) => ({ ...(savedConfiguration?.characters[index] ?? draft?.configuration.characters[index] ?? { character: '', colour: '' }) })))
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const characterInputs = useRef<Array<HTMLInputElement | null>>([])
+  const restoringFocus = useRef(false)
+  const closePalette = () => {
+    restoringFocus.current = true
+    if (activeIndex !== null) characterInputs.current[activeIndex]?.focus()
+    restoringFocus.current = false
+    setActiveIndex(null)
+  }
   const [message, setMessage] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
   const resetButton = useRef<HTMLButtonElement>(null)
@@ -130,9 +138,14 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
               <label key={index} data-character-colour={item.colour} data-symbol-colour={item.characterColour} data-selected={selectedIndex === index}>
                 <span>Character {index + 1}</span>
                 <input aria-label={`Character ${index + 1}`} type="text" value={item.character}
+                  ref={(element) => { characterInputs.current[index] = element }}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
                   aria-controls={selectedIndex !== null ? 'character-colour-palette' : undefined}
-                  onFocus={(event) => { setActiveIndex(index); event.target.select() }}
+                  onFocus={(event) => { if (!restoringFocus.current) setActiveIndex(index); event.target.select() }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Escape') { event.preventDefault(); closePalette() }
+                    if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex(index) }
+                  }}
                   onClick={() => setActiveIndex(index)}
                   onChange={(event) => updateCharacter(index, event.target.value)} />
                 <span className="character-colour-dot" aria-hidden="true" />
@@ -141,7 +154,9 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
             ))}
           </div>
           {selectedIndex !== null && (
-            <div id="character-colour-palette" className="character-palette">
+            <div id="character-colour-palette" className="character-palette" onKeyDown={(event) => {
+              if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closePalette() }
+            }}>
               <div className="palette-heading"><strong>Character {selectedIndex + 1}</strong><span>{characters[selectedIndex].character || 'Choose a character'}</span></div>
               <p id="character-palette-label">Keycap colour</p>
               <div className="studio-choices" role="group" aria-labelledby="character-palette-label">
@@ -171,7 +186,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                   }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}
               </div>
               {characters[selectedIndex].characterColour === characters[selectedIndex].colour && <p className="studio-note">Matching keycap and character colours may be difficult to see. Try Auto contrast.</p>}
-              <div className="studio-choices palette-footer"><button type="button" onClick={() => setActiveIndex(null)}>Close palette</button></div>
+              <div className="studio-choices palette-footer"><button type="button" onClick={closePalette}>Close palette</button></div>
             </div>
           )}
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
