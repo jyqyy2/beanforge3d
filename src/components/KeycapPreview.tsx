@@ -17,11 +17,14 @@ export default function KeycapPreview({ configuration, activeIndex = null, compa
           </span>
         ))}
       </div>
-      <p role={compact ? undefined : 'status'} aria-live={compact ? undefined : 'polite'} aria-atomic={compact ? undefined : true}>
+      <div className="preview-summary" aria-hidden="true">
+        <span>{configuration.characters.length} {configuration.characters.length === 1 ? 'board' : 'boards'}</span>
+        <span><span className="studio-swatch" data-colour={configuration.boardColour} />{configuration.boardColour}</span>
+      </div>
+      <p className="studio-sr-only" role={compact ? undefined : 'status'} aria-live={compact ? undefined : 'polite'} aria-atomic={compact ? undefined : true}>
         {configuration.characters.length} {configuration.characters.length === 1 ? 'board' : 'boards'} · Board: {configuration.boardColour}
         {' · '}{configuration.characters.map(({ character, colour, characterColour }) => character ? `${character} (keycap: ${colour}, character: ${characterColour ?? (colour === 'Black' ? 'Cream' : 'Black')})` : 'blank').join(' · ')}
       </p>
-      {!compact && <p className="studio-note">Illustrative preview · final shapes and colours may differ.</p>}
     </section>
   )
 }

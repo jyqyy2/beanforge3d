@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { getCharacterColours, getCustomKeycapPricing, getProductBySlug } from '../data/catalogue'
 import KeycapPreview from '../components/KeycapPreview'
@@ -6,7 +6,7 @@ import type { KeycapConfiguration } from '../types/keycap'
 import { calculateKeycapPrice } from '../utils/keycapPricing'
 import { useCart } from '../context/useCart'
 import { cartItemIdentity } from '../utils/cartIdentity'
-import { keycapDraftStorageKey, readKeycapDraft } from '../utils/keycapDraft'
+import { readKeycapDraft, saveKeycapDraft } from '../utils/keycapDraft'
 
 const money = (minor: number) => `S$${(minor / 100).toFixed(2)}`
 
@@ -35,14 +35,25 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const [characters, setCharacters] = useState<KeycapConfiguration['characters']>(() => Array.from({ length: 8 }, (_, index) => ({ ...(savedConfiguration?.characters[index] ?? draft?.configuration.characters[index] ?? { character: '', colour: '' }) })))
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [message, setMessage] = useState('')
+  const [confirmReset, setConfirmReset] = useState(false)
+  const resetButton = useRef<HTMLButtonElement>(null)
+  const [saveResult, setSaveResult] = useState<{ snapshot: string; saved: boolean } | null>(null)
+  const draftSnapshot = JSON.stringify({ version: 1, count, configuration: { schemaVersion: 3, boardColour: colour, characters } })
   useEffect(() => {
     if (editIdentity !== null) return
-    try {
-      localStorage.setItem(keycapDraftStorageKey, JSON.stringify({ version: 1, count, configuration: { schemaVersion: 3, boardColour: colour, characters } }))
-    } catch {
-      return
-    }
-  }, [editIdentity, count, colour, characters])
+    const saved = saveKeycapDraft(JSON.parse(draftSnapshot))
+    const timer = window.setTimeout(() => setSaveResult({ snapshot: draftSnapshot, saved }), 0)
+    return () => window.clearTimeout(timer)
+  }, [editIdentity, draftSnapshot])
+  const resetDraft = () => {
+    setCount(1)
+    setColour(colours[0] ?? '')
+    setCharacters(Array.from({ length: 8 }, () => ({ character: '', colour: '' })))
+    setActiveIndex(null)
+    setMessage('')
+    setConfirmReset(false)
+    resetButton.current?.focus()
+  }
   const configuration: KeycapConfiguration = { schemaVersion: 3, boardColour: colour, characters: characters.slice(0, count) }
   const characterColours = getCharacterColours()
   const selectedIndex = activeIndex !== null && activeIndex < count ? activeIndex : null
@@ -73,6 +84,17 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     <Link to={editIdentity === null ? '/#custom' : '/cart'} className="back-link">{editIdentity === null ? '← Back to the shop' : '← Cancel and return to cart'}</Link>
     <header className="studio-heading"><p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p><h1>{editIdentity === null ? 'Build your own.' : 'Refine your creation.'}</h1><p>{editIdentity === null ? 'Your name. Your lucky number. Your little daily reminder.' : 'Changes apply to every copy in this cart row when you save. Matching designs combine quantities.'}</p></header>
     <div className="studio-layout">
+      {editIdentity === null && <section className="studio-draft-toolbar" aria-label="Studio draft">
+        <p role="status">{saveResult?.snapshot !== draftSnapshot ? 'Saving draft…' : saveResult.saved ? 'Draft saved on this browser' : 'Draft not saved. Keep this page open to avoid losing changes.'}</p>
+        <div className="studio-choices"><button ref={resetButton} type="button" aria-expanded={confirmReset} aria-controls="draft-reset-confirmation" onClick={() => setConfirmReset(true)}>Start new design</button></div>
+        {confirmReset && <div id="draft-reset-confirmation" role="group" aria-label="Confirm new design">
+          <p className="studio-note">Replace this draft? All eight characters and their colours will reset, including hidden slots. Saved cart designs will not change.</p>
+          <div className="studio-choices">
+            <button type="button" onClick={() => { setConfirmReset(false); resetButton.current?.focus() }}>Keep my design</button>
+            <button type="button" onClick={resetDraft}>Confirm new design</button>
+          </div>
+        </div>}
+      </section>}
       <KeycapPreview configuration={configuration} activeIndex={activeIndex} />
       <section className="studio-options" aria-label="Design your keycaps">
         <div className="studio-settings"><fieldset><legend>{count} {count === 1 ? 'board' : 'boards'} <span>· one character each</span></legend><div className="studio-choices">{Array.from({length: 8}, (_, i) => i + 1).map((amount) => <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>{amount}</button>)}</div></fieldset><fieldset><legend>Board colour <span>· {colour}</span></legend><div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => { setColour(option); setMessage('') }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div></fieldset></div>
@@ -96,7 +118,8 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           </div>
           {selectedIndex !== null && (
             <div id="character-colour-palette" className="character-palette">
-              <p id="character-palette-label">Keycap colour · Position {selectedIndex + 1}</p>
+              <div className="palette-heading"><strong>Character {selectedIndex + 1}</strong><span>{characters[selectedIndex].character || 'Choose a character'}</span></div>
+              <p id="character-palette-label">Keycap colour</p>
               <div className="studio-choices" role="group" aria-labelledby="character-palette-label">
                 {characterColours.map((option) => (
                   <button type="button" key={option}
@@ -108,9 +131,8 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                     <span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}
                   </button>
                 ))}
-                <button type="button" onClick={() => setActiveIndex(null)}>Close palette</button>
               </div>
-              <p id="symbol-palette-label">Character colour · {characters[selectedIndex].character || 'blank'}</p>
+              <p id="symbol-palette-label">Character colour</p>
               <div className="studio-choices" role="group" aria-labelledby="symbol-palette-label">
                 <button type="button" aria-pressed={characters[selectedIndex].characterColour === undefined}
                   onClick={() => {
@@ -125,13 +147,14 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                   }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}
               </div>
               {characters[selectedIndex].characterColour === characters[selectedIndex].colour && <p className="studio-note">Matching keycap and character colours may be difficult to see. Try Auto contrast.</p>}
+              <div className="studio-choices palette-footer"><button type="button" onClick={() => setActiveIndex(null)}>Close palette</button></div>
             </div>
           )}
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
         </fieldset>
       </section>
       <section className="studio-purchase" aria-label="Your creation price"><div><p className="eyebrow">YOUR CREATION</p><h2>{count} {count === 1 ? 'board' : 'boards'} · {colour}</h2><p id="studio-completion" role="status">{quote.completed} / {count} keycaps complete. {quote.complete ? '✓ Ready to save to cart.' : 'Add a character to each remaining tile.'}</p><p className="studio-note">Temporary development prices — not a production quote.</p></div><div className="studio-price-action"><dl><div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div><div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div><div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div></dl><button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>{editIdentity === null ? 'Add my creation to cart' : 'Save changes to cart'}</button><p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available yet.</p><p role="status" className="studio-action-message">{message}</p>{message && <Link to="/cart" className="back-link">View cart →</Link>}</div></section>
-      <p className="studio-session-note">{editIdentity === null ? 'Your draft, including hidden characters, is saved on this browser when local storage is available.' : 'Unsaved cart edits reset when you leave or refresh. Your separate studio draft is not changed.'}</p>
+      {editIdentity !== null && <p className="studio-session-note">Unsaved cart edits reset when you leave or refresh. Your separate studio draft is not changed.</p>}
     </div>
   </main>
 }

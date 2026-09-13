@@ -28,3 +28,12 @@ export function readKeycapDraft(): KeycapDraft | null {
     return null
   }
 }
+
+export function saveKeycapDraft(draft: KeycapDraft): boolean {
+  try {
+    localStorage.setItem(keycapDraftStorageKey, JSON.stringify(draft))
+    return true
+  } catch {
+    return false
+  }
+}
