@@ -131,7 +131,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                 <span>Character {index + 1}</span>
                 <input aria-label={`Character ${index + 1}`} type="text" value={item.character}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
-                  aria-controls="character-colour-palette"
+                  aria-controls={selectedIndex !== null ? 'character-colour-palette' : undefined}
                   onFocus={(event) => { setActiveIndex(index); event.target.select() }}
                   onClick={() => setActiveIndex(index)}
                   onChange={(event) => updateCharacter(index, event.target.value)} />
