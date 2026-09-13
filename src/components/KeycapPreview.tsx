@@ -1,9 +1,11 @@
 import type { KeycapConfiguration } from '../types/keycap'
+import '../pages/KeycapStudioPage.css'
+import '../pages/KeycapColours.css'
 
-export default function KeycapPreview({ configuration, activeIndex }: { configuration: KeycapConfiguration; activeIndex: number | null }) {
+export default function KeycapPreview({ configuration, activeIndex = null, compact = false }: { configuration: KeycapConfiguration; activeIndex?: number | null; compact?: boolean }) {
   return (
-    <section className="keycap-preview" aria-label="Keycap layout preview">
-      <p className="eyebrow">YOUR CREATION · MADE PERSONAL</p>
+    <section className={compact ? 'keycap-preview keycap-preview-compact' : 'keycap-preview'} aria-label="Keycap layout preview">
+      {!compact && <p className="eyebrow">YOUR CREATION · MADE PERSONAL</p>}
       <div className="keycap-strip" data-board-colour={configuration.boardColour} aria-hidden="true">
         {configuration.characters.map((character, index) => (
           <span className="keycap-object" data-active={activeIndex === index} key={index}>
@@ -15,11 +17,11 @@ export default function KeycapPreview({ configuration, activeIndex }: { configur
           </span>
         ))}
       </div>
-      <p role="status" aria-live="polite" aria-atomic="true">
+      <p role={compact ? undefined : 'status'} aria-live={compact ? undefined : 'polite'} aria-atomic={compact ? undefined : true}>
         {configuration.characters.length} {configuration.characters.length === 1 ? 'board' : 'boards'} · Board: {configuration.boardColour}
         {' · '}{configuration.characters.map(({ character, colour }) => character ? `${character} (${colour})` : 'blank').join(' · ')}
       </p>
-      <p className="studio-note">Illustrative preview · final shapes and colours may differ.</p>
+      {!compact && <p className="studio-note">Illustrative preview · final shapes and colours may differ.</p>}
     </section>
   )
 }

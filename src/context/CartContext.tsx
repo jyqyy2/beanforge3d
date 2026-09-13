@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 import type { CartItem } from '../types/cart'
 import { CartContext } from './cartContextValue'
 import { cartItemIdentity, isKeycapConfiguration } from '../utils/cartIdentity'
+import { updateKeycapCart } from '../utils/updateKeycapCart'
+import type { KeycapConfiguration } from '../types/keycap'
 
 const cartStorageKey = 'beanforge-cart'
 
@@ -88,6 +90,13 @@ export function CartProvider({
     )
   }
 
+  function updateCartDesign(identity: string, configuration: KeycapConfiguration) {
+    const updated = updateKeycapCart(cartItems, identity, configuration)
+    if (!updated) return false
+    setCartItems(updated)
+    return true
+  }
+
   function updateCartItemQuantity(
     itemIndex: number,
     quantity: number
@@ -110,6 +119,7 @@ export function CartProvider({
       value={{
         cartItems,
         addToCart,
+        updateCartDesign,
         removeFromCart,
         updateCartItemQuantity,
       }}

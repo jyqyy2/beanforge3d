@@ -87,6 +87,12 @@
 .character-palette { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); max-width: 600px; }
 .character-palette p { margin-bottom: 0.75rem; font-size: 0.9rem; }
 .studio-swatch[data-colour="Blue"] { background: #9fc7e7; }
+.keycap-preview-compact { margin-block: 1rem; padding: 0.75rem; border-radius: 16px; }
+.keycap-preview-compact .keycap-strip { min-height: 100px; --board-gap: 5px; padding-inline: 8px; }
+.keycap-preview-compact .keycap-object { flex-basis: 46px; }
+.keycap-preview-compact .keycap-object small { display: none; }
+.keycap-preview-compact .keycap-sketch { font-size: clamp(0.6rem, 1.5vw, 1rem); border-bottom-width: 3px; }
+.keycap-preview-compact > p { font-size: 0.8rem; overflow-wrap: anywhere; line-height: 1.6; }
 @media (max-width: 850px) {
   .studio-characters { grid-template-columns: repeat(4, minmax(0, 76px)); }
 }

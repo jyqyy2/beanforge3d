@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
 import { cartItemIdentity } from '../utils/cartIdentity'
+import KeycapPreview from '../components/KeycapPreview'
 
 function CartPage() {
   const {
@@ -57,11 +58,12 @@ function CartPage() {
                   )}
 
                   <div className="cart-item-info">
-                    <h2><Link to={item.configuration ? '/studio/keycaps' : `/product/${item.productSlug}`}>{item.name}</Link></h2>
+                    <h2><Link to={item.configuration ? `/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}` : `/product/${item.productSlug}`}>{item.name}</Link></h2>
                     <p>{item.configuration ? 'Board colour' : 'Colour'}: {item.colour}</p>
                     {item.configuration && <>
-                      <p>{item.configuration.characters.length} boards · {item.configuration.characters.map(({ character, colour }) => `${character} (${colour})`).join(' · ')}</p>
-                      <p>Temporary development price. Studio link starts a new design.</p>
+                      <KeycapPreview configuration={item.configuration} compact />
+                      <Link className="back-link" to={`/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}`}>Edit design</Link>
+                      <p>Illustrative preview · temporary development price.</p>
                     </>}
                     <p>S${item.price.toFixed(2)} each</p>
 

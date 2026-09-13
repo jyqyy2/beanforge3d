@@ -1,9 +1,11 @@
 import { createContext } from 'react'
 import type { CartItem } from '../types/cart'
+import type { KeycapConfiguration } from '../types/keycap'
 
 export type CartContextType = {
   cartItems: CartItem[]
   addToCart: (item: CartItem) => void
+  updateCartDesign: (identity: string, configuration: KeycapConfiguration) => boolean
   removeFromCart: (itemIndex: number) => void
   updateCartItemQuantity: (
     itemIndex: number,
