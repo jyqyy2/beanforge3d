@@ -13,6 +13,8 @@ function CartPage() {
     0
   )
 
+  const cartTotal = cartSubtotal
+
   return (
     <main className="cart-page">
       <div className="cart-page-inner">
@@ -108,6 +110,23 @@ function CartPage() {
                 <span>Subtotal</span>
                 <strong>S${cartSubtotal.toFixed(2)}</strong>
               </div>
+
+              <div className="cart-summary-row cart-summary-total">
+                <span>Total</span>
+                <strong>S${cartTotal.toFixed(2)}</strong>
+              </div>
+
+              <button
+                type="button"
+                className="checkout-button"
+                disabled
+              >
+                Checkout coming soon
+              </button>
+
+              <p className="cart-summary-note">
+                Shipping and payment will be added in a later step.
+              </p>
             </aside>
           </div>
         )}

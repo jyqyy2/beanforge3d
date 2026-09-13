@@ -1140,6 +1140,8 @@ So instead, put font-size after font: inherit:*/
 
   background: var(--paper);
   border: 1px solid var(--line);
+  position: sticky;
+  top: 100px;
 }
 
 .cart-summary h2 {
@@ -1155,7 +1157,7 @@ So instead, put font-size after font: inherit:*/
   justify-content: space-between;
   gap: 1rem;
 
-  padding-top: 1rem;
+  padding: 1rem 0;
 
   border-top: 1px solid var(--line);
 }
@@ -1168,6 +1170,36 @@ So instead, put font-size after font: inherit:*/
   white-space: nowrap;
 }
 
+.cart-summary-total {
+  color: var(--ink);
+
+  font-size: 1.1rem;
+}
+
+.checkout-button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 1rem;
+
+  border: 1px solid var(--line);
+
+  background: var(--soft);
+  color: var(--muted);
+
+  cursor: not-allowed;
+
+  font: inherit;
+  font-weight: 800;
+}
+
+.cart-summary-note {
+  margin: 1rem 0 0;
+
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 650px) {
   .empty-cart {
     padding: 2rem;
@@ -1175,6 +1207,10 @@ So instead, put font-size after font: inherit:*/
 
   .cart-layout {
     grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    position: static;
   }
 
   .cart-item {
