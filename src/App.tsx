@@ -1,12 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
-import { CartProvider } from './context/CartContext'
+import CartPage from './pages/CartPage'
 import nameTag from './assets/name-tag.jpg'
 import './App.css'
 
 function App() {
 return (
-<CartProvider>
   <BrowserRouter>
     <Routes>
 
@@ -14,6 +13,12 @@ return (
     <Route
       path="/product/:slug"
       element={<ProductPage />}
+    />
+
+    {/* Cart page */}
+    <Route
+      path="/cart"
+      element={<CartPage />}
     />
 
     {/* Homepage */}
@@ -36,7 +41,13 @@ return (
             <div className="header-actions">
               <button aria-label="Search">⌕</button>
               <button aria-label="Wishlist">♡</button>
-              <button aria-label="Shopping cart">🛒</button>
+              <Link
+                to="/cart"
+                className="header-action-link"
+                aria-label="Shopping cart"
+              >
+                🛒
+              </Link>
             </div>
           </header>
 
@@ -332,7 +343,6 @@ return (
 
     </Routes>
   </BrowserRouter>
-</CartProvider>
 
 )
 }

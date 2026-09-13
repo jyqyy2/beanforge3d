@@ -1,15 +1,7 @@
-import { createContext, useContext, useState } from 'react'
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import type { CartItem } from '../types/cart'
-
-type CartContextType = {
-  cartItems: CartItem[]
-  addToCart: (item: CartItem) => void
-}
-
-const CartContext = createContext<CartContextType | undefined>(
-  undefined
-)
+import { CartContext } from './cartContextValue'
 
 export function CartProvider({
   children,
@@ -25,26 +17,23 @@ export function CartProvider({
     ])
   }
 
+  function removeFromCart(itemIndex: number) {
+    setCartItems((currentItems) =>
+      currentItems.filter(
+        (_item, index) => index !== itemIndex
+      )
+    )
+  }
+
   return (
     <CartContext.Provider
       value={{
         cartItems,
         addToCart,
+        removeFromCart,
       }}
     >
       {children}
     </CartContext.Provider>
   )
-}
-
-export function useCart() {
-  const context = useContext(CartContext)
-
-  if (!context) {
-    throw new Error(
-      'useCart must be used inside CartProvider'
-    )
-  }
-
-  return context
 }

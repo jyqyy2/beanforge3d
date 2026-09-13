@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { products } from '../data/products'
 import type { CartItem } from '../types/cart'
-import { useCart } from '../context/CartContext'
+import { useCart } from '../context/useCart'
 
 function ProductPage() {
   const { slug } = useParams()
