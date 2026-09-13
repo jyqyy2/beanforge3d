@@ -1,5 +1,12 @@
 export type KeycapConfiguration = {
-  schemaVersion: 1
+  schemaVersion: 2
   colour: string
-  letters: string[]
+  characters: string[]
+}
+
+export type KeycapPricing = {
+  currency: 'SGD'
+  developmentOnly: boolean
+  boardPricesMinor: Readonly<Record<number, number>>
+  characterPricesMinor: Readonly<Record<string, number>>
 }

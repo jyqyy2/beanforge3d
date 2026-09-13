@@ -1,76 +1,39 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getProductBySlug } from '../data/catalogue'
+import { getCustomKeycapPricing, getProductBySlug } from '../data/catalogue'
 import KeycapPreview from '../components/KeycapPreview'
 import type { KeycapConfiguration } from '../types/keycap'
+import { calculateKeycapPrice } from '../utils/keycapPricing'
 import './KeycapStudioPage.css'
 
+const money = (minor: number) => `S$${(minor / 100).toFixed(2)}`
+
 export default function KeycapStudioPage() {
-  const product = getProductBySlug('bean-keycap')
-  const colours = product?.colours ?? []
+  const colours = getProductBySlug('bean-keycap')?.colours ?? []
+  const pricing = getCustomKeycapPricing()
   const [count, setCount] = useState(1)
   const [colour, setColour] = useState(colours[0] ?? '')
-  const [letters, setLetters] = useState<string[]>(Array(8).fill(''))
-  const configuration: KeycapConfiguration = {
-    schemaVersion: 1,
-    colour,
-    letters: letters.slice(0, count),
+  const [characters, setCharacters] = useState<string[]>(Array(8).fill(''))
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const [message, setMessage] = useState('')
+  const configuration: KeycapConfiguration = { schemaVersion: 2, colour, characters: characters.slice(0, count) }
+  const quote = calculateKeycapPrice(configuration, pricing)
+  const updateCharacter = (index: number, value: string) => {
+    const nextCharacter = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 1)
+    setCharacters((current) => current.map((item, position) => position === index ? nextCharacter : item))
+    setMessage('')
   }
-
-  return (
-    <main className="keycap-studio">
-      <Link to="/#custom" className="back-link">← Back to the shop</Link>
-      <header className="studio-heading">
-        <p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p>
-        <h1>Build your own.</h1>
-        <p>A letter. A name. A little something that feels like you.</p>
-      </header>
-      {colours.length === 0 ? <p>Our keycap palette is unavailable. Please check back soon.</p> : (
-        <div className="studio-layout">
-          <KeycapPreview configuration={configuration} />
-          <section className="studio-options" aria-label="Design your keycaps">
-            <fieldset>
-              <legend>How many keycaps?</legend>
-              <div className="studio-choices">
-                {Array.from({ length: 8 }, (_, index) => index + 1).map((amount) => (
-                  <button type="button" key={amount} aria-pressed={count === amount}
-                    aria-label={`${amount} ${amount === 1 ? 'keycap' : 'keycaps'}`}
-                    onClick={() => setCount(amount)}>{amount}</button>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>Pick a colour</legend>
-              <div className="studio-choices">
-                {colours.map((option) => (
-                  <button type="button" key={option} aria-pressed={colour === option}
-                    onClick={() => setColour(option)}>{option}</button>
-                ))}
-              </div>
-              <p className="studio-note">Try our current Bean Keycap palette.</p>
-            </fieldset>
-            <fieldset aria-describedby="studio-letters-help">
-              <legend>Make it say something</legend>
-              <p id="studio-letters-help" className="studio-note">One letter A–Z per keycap. Change any option, any time.</p>
-              <div className="studio-letters">
-                {configuration.letters.map((letter, index) => (
-                  <label key={index}>
-                    <span>Letter {index + 1}</span>
-                    <input type="text" value={letter} maxLength={1} autoComplete="off"
-                      autoCapitalize="characters" spellCheck={false}
-                      onChange={(event) => {
-                        const nextLetter = event.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 1)
-                        setLetters((current) => current.map((value, position) => position === index ? nextLetter : value))
-                      }} />
-                  </label>
-                ))}
-              </div>
-              <p className="studio-note">Fewer keycaps? Hidden letters are remembered while you stay in the studio.</p>
-            </fieldset>
-            <p className="studio-availability">Explore your layout here. Custom keycap ordering isn’t available yet. Your sketch stays on this page and resets when you leave.</p>
-          </section>
-        </div>
-      )}
-    </main>
-  )
+  return <main className="keycap-studio" data-colour={colour}>
+    <Link to="/#custom" className="back-link">← Back to the shop</Link>
+    <header className="studio-heading"><p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p><h1>Build your own.</h1><p>Your name. Your lucky number. Your little daily reminder.</p></header>
+    <div className="studio-layout">
+      <KeycapPreview configuration={configuration} activeIndex={activeIndex} />
+      <section className="studio-options" aria-label="Design your keycaps">
+        <div className="studio-settings"><fieldset><legend>{count} {count === 1 ? 'board' : 'boards'} <span>· one character each</span></legend><div className="studio-choices">{Array.from({length: 8}, (_, i) => i + 1).map((amount) => <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setMessage('') }}>{amount}</button>)}</div></fieldset><fieldset><legend>Colour <span>· {colour}</span></legend><div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => setColour(option)}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div></fieldset></div>
+        <fieldset aria-describedby="studio-characters-help"><legend>Make it yours.</legend><p id="studio-characters-help" className="studio-note">One character A–Z or 0–9 per keycap. Choose a tile and type.</p><div className="studio-characters">{configuration.characters.map((character, index) => <label key={index}><span>Character {index + 1}</span><input aria-label={`Character ${index + 1}`} type="text" value={character} maxLength={1} onFocus={() => setActiveIndex(index)} onBlur={() => setActiveIndex(null)} onChange={(event) => updateCharacter(index, event.target.value)} /></label>)}</div><p className="studio-note">Hidden characters return when you increase the count.</p></fieldset>
+      </section>
+      <section className="studio-purchase" aria-label="Your creation price"><div><p className="eyebrow">YOUR CREATION</p><h2>{count} {count === 1 ? 'board' : 'boards'} · {colour}</h2><p id="studio-completion" role="status">{quote.completed} / {count} keycaps complete. {quote.complete ? '✓ Ready for the cart step.' : 'Add a character to each remaining tile.'}</p><p className="studio-note">Temporary development prices — not a production quote.</p></div><div className="studio-price-action"><dl><div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div><div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div><div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div></dl><button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={() => setMessage('Your creation is complete. Cart integration is coming in a later milestone; nothing was added.')}>Add my creation to cart</button><p id="studio-cart-note" className="studio-note">Preview action only; configured cart items are not available yet.</p><p role="status" className="studio-action-message">{message}</p></div></section>
+      <p className="studio-session-note">Your design stays here while you explore. Leaving or refreshing resets it.</p>
+    </div>
+  </main>
 }
