@@ -14,17 +14,30 @@
   aspect-ratio: 1;
   filter: drop-shadow(0 5px 2px #24231f35);
 }
-.keycap-module::before {
+.keycap-object:not(:last-child) .keycap-module::after {
   content: '';
   position: absolute;
   z-index: -1;
-  width: 30%;
-  height: 22%;
-  left: -20%;
-  top: 39%;
-  border: 3px solid var(--cap-edge);
-  border-radius: 50%;
-  box-shadow: inset 0 2px 0 var(--cap-top), 0 2px 0 var(--cap-bottom);
+  width: calc(var(--board-gap) + 12%);
+  height: 30%;
+  right: calc(-1 * var(--board-gap));
+  top: 35%;
+  border: clamp(2px, 0.5vw, 5px) solid var(--cap-bottom);
+  border-radius: 30% 55% 55% 30%;
+  box-shadow: inset 0 2px 1px var(--cap-edge), 0 2px 0 var(--cap-edge), 0 -1px 0 var(--cap-top);
+}
+.keycap-object:not(:first-child) .keycap-module::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: calc(var(--board-gap) + 12%);
+  height: 34%;
+  left: calc(-1 * var(--board-gap) - 2%);
+  top: 33%;
+  clip-path: polygon(0 28%, 12% 18%, 100% 0, 100% 100%, 12% 82%, 0 72%);
+  border-radius: 35% 0 0 35%;
+  background: linear-gradient(180deg, var(--cap-top), var(--cap-bottom) 58%, var(--cap-edge));
+  box-shadow: inset 0 2px 1px var(--cap-top);
 }
 .keycap-housing {
   position: absolute;
@@ -47,8 +60,9 @@
   font-size: clamp(0.65rem, 2.4vw, 1.7rem);
 }
 .keycap-strip {
-  padding-left: 16px;
-  gap: clamp(5px, 1.5vw, 16px);
+  --board-gap: clamp(5px, 1.4vw, 14px);
+  padding-inline: 24px;
+  gap: var(--board-gap);
 }
 .keycap-object small {
   color: var(--ink);
