@@ -1024,7 +1024,7 @@ So instead, put font-size after font: inherit:*/
 
 .cart-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 280px;
   gap: 1.5rem;
   align-items: start;
 }
@@ -1198,6 +1198,57 @@ So instead, put font-size after font: inherit:*/
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+}
+
+.cart-confirmation {
+  min-height: 4rem;
+  color: var(--accent-dark);
+  line-height: 1.6;
+}
+
+.cart-confirmation a {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.cart-item, .cart-summary, .empty-cart {
+  border-radius: 20px;
+}
+
+.cart-item-info {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cart-quantity-controls {
+  flex-wrap: wrap;
+}
+
+.cart-quantity-controls button {
+  width: 44px;
+  height: 44px;
+}
+
+.cart-quantity-controls button:disabled,
+.quantity-controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cart-page :focus-visible,
+.product-page :focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 4px;
 }
 
 @media (max-width: 650px) {

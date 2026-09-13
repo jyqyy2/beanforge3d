@@ -9,6 +9,10 @@ import { useCart } from '../context/useCart'
 
 function ProductPage() {
   const { slug } = useParams()
+  return <ProductDetails key={slug} slug={slug} />
+}
+
+function ProductDetails({ slug }: { slug: string | undefined }) {
   const { addToCart } = useCart()
 
   const product = products.find(
@@ -28,6 +32,7 @@ function ProductPage() {
 
   /*14a*/
   const [quantity, setQuantity] = useState(1)
+  const [addedToCartMessage, setAddedToCartMessage] = useState('')
 
   if (!product) {
     return (
@@ -131,7 +136,11 @@ function ProductPage() {
                         ? 'colour-button selected'
                         : 'colour-button'
                     }
-                    onClick={() => setSelectedColour(colour)}
+                    aria-pressed={selectedColour === colour}
+                    onClick={() => {
+                      setSelectedColour(colour)
+                      setAddedToCartMessage('')
+                    }}
                     >
                     {colour}
                     </button>
@@ -161,6 +170,8 @@ function ProductPage() {
               <div className="quantity-controls">
                 <button
                   type="button"
+                  aria-label="Decrease quantity"
+                  disabled={quantity === 1}
                   onClick={() =>
                     setQuantity((currentQuantity) =>
                       /*quantity cannot go below 1*/
@@ -176,6 +187,7 @@ function ProductPage() {
 
                 <button
                   type="button"
+                  aria-label="Increase quantity"
                   onClick={() =>
                     setQuantity((currentQuantity) =>
                       currentQuantity + 1
@@ -201,10 +213,17 @@ function ProductPage() {
                 }
 
                 addToCart(cartItem)
+                setAddedToCartMessage(`${quantity} × ${product.name} in ${selectedColour} added to your cart.`)
               }}
             >
               Add to cart
           </button>
+
+            <div className="cart-confirmation" role="status" aria-live="polite" aria-atomic="true">
+              {addedToCartMessage && (
+                <p>{addedToCartMessage} <Link to="/cart">View cart →</Link></p>
+              )}
+            </div>
 
           </div>
 

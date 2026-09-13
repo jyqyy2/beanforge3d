@@ -43,7 +43,7 @@ function CartPage() {
               {cartItems.map((item, index) => (
                 <article
                   className="cart-item"
-                  key={`${item.productSlug}-${item.colour}-${index}`}
+                  key={JSON.stringify([item.productSlug, item.colour])}
                 >
                   {item.image && (
                     <img
@@ -53,14 +53,17 @@ function CartPage() {
                   )}
 
                   <div className="cart-item-info">
-                    <h2>{item.name}</h2>
+                    <h2><Link to={`/product/${item.productSlug}`}>{item.name}</Link></h2>
                     <p>Colour: {item.colour}</p>
+                    <p>S${item.price.toFixed(2)} each</p>
 
                     <div className="cart-quantity-controls">
                       <span>Quantity</span>
 
                       <button
                         type="button"
+                        aria-label={`Decrease quantity of ${item.name} in ${item.colour}`}
+                        disabled={item.quantity === 1}
                         onClick={() =>
                           updateCartItemQuantity(
                             index,
@@ -75,6 +78,7 @@ function CartPage() {
 
                       <button
                         type="button"
+                        aria-label={`Increase quantity of ${item.name} in ${item.colour}`}
                         onClick={() =>
                           updateCartItemQuantity(
                             index,
@@ -94,6 +98,7 @@ function CartPage() {
 
                     <button
                       type="button"
+                      aria-label={`Remove ${item.name} in ${item.colour}`}
                       onClick={() => removeFromCart(index)}
                     >
                       Remove
@@ -125,8 +130,9 @@ function CartPage() {
               </button>
 
               <p className="cart-summary-note">
-                Shipping and payment will be added in a later step.
+                Shipping is not included. Checkout is not available yet.
               </p>
+              <Link to="/#shop" className="back-link">Continue shopping →</Link>
             </aside>
           </div>
         )}

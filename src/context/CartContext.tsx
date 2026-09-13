@@ -6,14 +6,21 @@ import { CartContext } from './cartContextValue'
 const cartStorageKey = 'beanforge-cart'
 
 function getSavedCartItems() {
-  const savedCartItems = localStorage.getItem(cartStorageKey)
-
-  if (!savedCartItems) {
-    return []
-  }
-
   try {
-    return JSON.parse(savedCartItems) as CartItem[]
+    const savedCartItems = localStorage.getItem(cartStorageKey)
+    const parsedItems: unknown = JSON.parse(savedCartItems ?? '[]')
+    if (!Array.isArray(parsedItems)) return []
+
+    return parsedItems.filter((item): item is CartItem =>
+      item !== null && typeof item === 'object' &&
+      typeof item.productSlug === 'string' &&
+      typeof item.name === 'string' &&
+      typeof item.colour === 'string' &&
+      typeof item.price === 'number' &&
+      Number.isFinite(item.price) && item.price >= 0 &&
+      Number.isSafeInteger(item.quantity) && item.quantity > 0 &&
+      (item.image === undefined || typeof item.image === 'string')
+    )
   } catch {
     return []
   }
@@ -29,13 +36,15 @@ export function CartProvider({
   )
 
   useEffect(() => {
-    localStorage.setItem(
-      cartStorageKey,
-      JSON.stringify(cartItems)
-    )
+    try {
+      localStorage.setItem(cartStorageKey, JSON.stringify(cartItems))
+    } catch {
+      return
+    }
   }, [cartItems])
 
   function addToCart(item: CartItem) {
+    if (!Number.isSafeInteger(item.quantity) || item.quantity < 1) return
     setCartItems((currentItems) => {
       const existingItem = currentItems.find(
         (currentItem) =>
@@ -48,6 +57,10 @@ export function CartProvider({
           ...currentItems,
           item,
         ]
+      }
+
+      if (!Number.isSafeInteger(existingItem.quantity + item.quantity)) {
+        return currentItems
       }
 
       return currentItems.map((currentItem) =>
@@ -74,6 +87,7 @@ export function CartProvider({
     itemIndex: number,
     quantity: number
   ) {
+    if (!Number.isSafeInteger(quantity)) return
     setCartItems((currentItems) =>
       currentItems.map((item, index) =>
         index === itemIndex

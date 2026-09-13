@@ -32,7 +32,7 @@ function Header() {
         <Link
           to="/cart"
           className="header-action-link cart-link"
-          aria-label={`Shopping cart with ${cartItemCount} items`}
+          aria-label={`Shopping cart with ${cartItemCount} ${cartItemCount === 1 ? 'item' : 'items'}`}
         >
           🛒
           {cartItemCount > 0 && (
