@@ -3,7 +3,7 @@ React a tiny memory called state
 Can use that information later for the image, cart, customization, etc*/
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { products } from '../data/products'
+import { getProductBySlug } from '../data/catalogue'
 import type { CartItem } from '../types/cart'
 import { useCart } from '../context/useCart'
 
@@ -15,9 +15,7 @@ function ProductPage() {
 function ProductDetails({ slug }: { slug: string | undefined }) {
   const { addToCart } = useCart()
 
-  const product = products.find(
-    (product) => product.slug === slug
-  )
+  const product = getProductBySlug(slug)
   /*selectedColour = what colour React remembers
     setSelectedColour = the button/function we use to change that memory
     useState(...) = React's little memory system

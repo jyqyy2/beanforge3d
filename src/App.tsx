@@ -3,7 +3,34 @@ import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import nameTag from './assets/name-tag.jpg'
 import { useCart } from './context/useCart'
+import { getProducts } from './data/catalogue'
 import './App.css'
+
+const featuredPresentation: Record<string, {
+  description: string
+  label: string
+  imageClass: string
+  pricePrefix: string
+}> = {
+  'bean-keycap': {
+    description: 'For keyboards that need a little bean.',
+    label: 'BEAN',
+    imageClass: 'product-image-bean',
+    pricePrefix: '',
+  },
+  'custom-name-keychain': {
+    description: 'Your name. Your colour. Your way.',
+    label: 'ABC',
+    imageClass: 'product-image-keychain',
+    pricePrefix: 'From ',
+  },
+  'qr-nfc-stand': {
+    description: 'A little stand for your business.',
+    label: 'SCAN',
+    imageClass: 'product-image-stand',
+    pricePrefix: 'From ',
+  },
+}
 
 function Header() {
   const { cartItems } = useCart()
@@ -177,101 +204,41 @@ return (
 
               <div className="product-grid">
 
-                {/* Featured Product 1 */}
-                <article className="product-card">
-                  <div className="product-image product-image-bean">
-                    <button
-                      className="product-wishlist"
-                      aria-label="Add Bean Keycap to wishlist"
-                    >
-                      ♡
-                    </button>
+                {getProducts().map((product) => {
+                  const presentation = featuredPresentation[product.slug]
+                  if (!presentation) return null
 
-                    <span>BEAN</span>
-                  </div>
+                  return (
+                    <article className="product-card" key={product.slug}>
+                      <div className={`product-image ${presentation.imageClass}`}>
+                        <button
+                          className="product-wishlist"
+                          aria-label={`Add ${product.name} to wishlist`}
+                        >
+                          ♡
+                        </button>
 
-                  <div className="product-info">
-                    <div>
-                      <h3>Bean Keycap</h3>
-                      <p>
-                        For keyboards that need a little bean.
-                      </p>
-                    </div>
+                        <span>{presentation.label}</span>
+                      </div>
 
-                    <strong>S$18.00</strong>
-                  </div>
+                      <div className="product-info">
+                        <div>
+                          <h3>{product.name}</h3>
+                          <p>{presentation.description}</p>
+                        </div>
 
-                  <a
-                    className="product-link"
-                    href="/product/bean-keycap"
-                  >
-                    View product →
-                  </a>
-                </article>
+                        <strong>{presentation.pricePrefix}S${product.price.toFixed(2)}</strong>
+                      </div>
 
-                {/* Featured Product 2 */}
-                <article className="product-card">
-                  <div className="product-image product-image-keychain">
-                    <button
-                      className="product-wishlist"
-                      aria-label="Add Custom Name Keychain to wishlist"
-                    >
-                      ♡
-                    </button>
-
-                    <span>ABC</span>
-                  </div>
-
-                  <div className="product-info">
-                    <div>
-                      <h3>Custom Name Keychain</h3>
-                      <p>
-                        Your name. Your colour. Your way.
-                      </p>
-                    </div>
-
-                    <strong>From S$9.00</strong>
-                  </div>
-
-                  <a
-                  className="product-link"
-                  href="/product/custom-name-keychain"
-                >
-                  View product →
-                </a>
-                </article>
-
-                {/* Featured Product 3 */}
-                <article className="product-card">
-                  <div className="product-image product-image-stand">
-                    <button
-                      className="product-wishlist"
-                      aria-label="Add QR NFC Stand to wishlist"
-                    >
-                      ♡
-                    </button>
-
-                    <span>SCAN</span>
-                  </div>
-
-                  <div className="product-info">
-                    <div>
-                      <h3>QR / NFC Stand</h3>
-                      <p>
-                        A little stand for your business.
-                      </p>
-                    </div>
-
-                    <strong>From S$15.00</strong>
-                  </div>
-
-                  <a
-                    className="product-link"
-                    href="/product/qr-nfc-stand"
-                  >
-                    View product →
-                  </a>
-                </article>
+                      <a
+                        className="product-link"
+                        href={`/product/${product.slug}`}
+                      >
+                        View product →
+                      </a>
+                    </article>
+                  )
+                })}
 
               </div>
 
