@@ -11,7 +11,7 @@ export default function KeycapPreview({ configuration, activeIndex = null, compa
           <span className="keycap-object" data-active={activeIndex === index} key={index}>
             <span className="keycap-module">
               <span className="keycap-housing" />
-              {character.character && <span className="keycap-sketch" data-character-colour={character.colour}>{character.character}</span>}
+              {character.character && <span className="keycap-sketch" data-character-colour={character.colour} data-symbol-colour={character.characterColour}>{character.character}</span>}
             </span>
             <small>{index + 1}</small>
           </span>
@@ -19,7 +19,7 @@ export default function KeycapPreview({ configuration, activeIndex = null, compa
       </div>
       <p role={compact ? undefined : 'status'} aria-live={compact ? undefined : 'polite'} aria-atomic={compact ? undefined : true}>
         {configuration.characters.length} {configuration.characters.length === 1 ? 'board' : 'boards'} · Board: {configuration.boardColour}
-        {' · '}{configuration.characters.map(({ character, colour }) => character ? `${character} (${colour})` : 'blank').join(' · ')}
+        {' · '}{configuration.characters.map(({ character, colour, characterColour }) => character ? `${character} (keycap: ${colour}, character: ${characterColour ?? (colour === 'Black' ? 'Cream' : 'Black')})` : 'blank').join(' · ')}
       </p>
       {!compact && <p className="studio-note">Illustrative preview · final shapes and colours may differ.</p>}
     </section>

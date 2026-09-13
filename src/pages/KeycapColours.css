@@ -87,6 +87,11 @@
 .character-palette { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); max-width: 600px; }
 .character-palette p { margin-bottom: 0.75rem; font-size: 0.9rem; }
 .studio-swatch[data-colour="Blue"] { background: #9fc7e7; }
+[data-symbol-colour="Cream"] { --cap-ink: #fff8e8; }
+[data-symbol-colour="Pink"] { --cap-ink: #e8b5bc; }
+[data-symbol-colour="Blue"] { --cap-ink: #9fc7e7; }
+[data-symbol-colour="Black"] { --cap-ink: #292724; }
+.character-palette .studio-choices { margin-bottom: 1rem; }
 .keycap-preview-compact { margin-block: 1rem; padding: 0.75rem; border-radius: 16px; }
 .keycap-preview-compact .keycap-strip { min-height: 100px; --board-gap: 5px; padding-inline: 8px; }
 .keycap-preview-compact .keycap-object { flex-basis: 46px; }

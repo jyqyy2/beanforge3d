@@ -11,6 +11,7 @@ export function isKeycapConfiguration(value: unknown, allowIncomplete = false): 
     Array.isArray(config.characters) && config.characters.length >= 1 && config.characters.length <= 8 &&
     config.characters.every((item) => item && typeof item === 'object' &&
       typeof item.character === 'string' &&
+      (item.characterColour === undefined || getCharacterColours().includes(item.characterColour)) &&
       (allowIncomplete && item.character === ''
         ? item.colour === '' || getCharacterColours().includes(item.colour)
         : /^[A-Z0-9]$/.test(item.character) && getCharacterColours().includes(item.colour)))
@@ -19,6 +20,8 @@ export function isKeycapConfiguration(value: unknown, allowIncomplete = false): 
 export function cartItemIdentity(item: CartItem): string {
   return JSON.stringify(item.configuration
     ? [item.productSlug, item.configuration.schemaVersion, item.configuration.boardColour,
-      item.configuration.characters.map(({ character, colour }) => [character, colour])]
+      item.configuration.characters.map(({ character, colour, characterColour }) =>
+        characterColour === undefined || characterColour === (colour === 'Black' ? 'Cream' : 'Black')
+          ? [character, colour] : [character, colour, characterColour])]
     : [item.productSlug, item.colour])
 }

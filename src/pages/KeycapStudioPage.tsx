@@ -66,7 +66,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   }
   const updateCharacter = (index: number, value: string) => {
     const nextCharacter = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 1)
-    setCharacters((current) => current.map((item, position) => position === index ? { character: nextCharacter, colour: item.colour || (nextCharacter ? (colour === 'Cream' ? 'Black' : 'Cream') : '') } : item))
+    setCharacters((current) => current.map((item, position) => position === index ? { ...item, character: nextCharacter, colour: item.colour || (nextCharacter ? (colour === 'Cream' ? 'Black' : 'Cream') : '') } : item))
     setMessage('')
   }
   return <main className="keycap-studio" data-colour={colour}>
@@ -78,10 +78,10 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
         <div className="studio-settings"><fieldset><legend>{count} {count === 1 ? 'board' : 'boards'} <span>· one character each</span></legend><div className="studio-choices">{Array.from({length: 8}, (_, i) => i + 1).map((amount) => <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>{amount}</button>)}</div></fieldset><fieldset><legend>Board colour <span>· {colour}</span></legend><div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => { setColour(option); setMessage('') }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div></fieldset></div>
         <fieldset aria-describedby="studio-characters-help">
           <legend>Make it yours.</legend>
-          <p id="studio-characters-help" className="studio-note">Choose a tile to type A–Z or 0–9 and adjust its colour.</p>
+          <p id="studio-characters-help" className="studio-note">Choose a tile to type A–Z or 0–9. Set its keycap colour and the character colour separately.</p>
           <div className="studio-characters">
             {configuration.characters.map((item, index) => (
-              <label key={index} data-character-colour={item.colour} data-selected={selectedIndex === index}>
+              <label key={index} data-character-colour={item.colour} data-symbol-colour={item.characterColour} data-selected={selectedIndex === index}>
                 <span>Character {index + 1}</span>
                 <input aria-label={`Character ${index + 1}`} type="text" value={item.character}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
@@ -96,7 +96,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           </div>
           {selectedIndex !== null && (
             <div id="character-colour-palette" className="character-palette">
-              <p id="character-palette-label">Character {selectedIndex + 1} · {characters[selectedIndex].character || 'blank'} colour</p>
+              <p id="character-palette-label">Keycap colour · Position {selectedIndex + 1}</p>
               <div className="studio-choices" role="group" aria-labelledby="character-palette-label">
                 {characterColours.map((option) => (
                   <button type="button" key={option}
@@ -110,6 +110,21 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                 ))}
                 <button type="button" onClick={() => setActiveIndex(null)}>Close palette</button>
               </div>
+              <p id="symbol-palette-label">Character colour · {characters[selectedIndex].character || 'blank'}</p>
+              <div className="studio-choices" role="group" aria-labelledby="symbol-palette-label">
+                <button type="button" aria-pressed={characters[selectedIndex].characterColour === undefined}
+                  onClick={() => {
+                    setCharacters((current) => current.map((item, index) => index === selectedIndex ? { ...item, characterColour: undefined } : item))
+                    setMessage('')
+                  }}>Auto contrast</button>
+                {characterColours.map((option) => <button type="button" key={option}
+                  aria-pressed={characters[selectedIndex].characterColour === option}
+                  onClick={() => {
+                    setCharacters((current) => current.map((item, index) => index === selectedIndex ? { ...item, characterColour: option } : item))
+                    setMessage('')
+                  }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}
+              </div>
+              {characters[selectedIndex].characterColour === characters[selectedIndex].colour && <p className="studio-note">Matching keycap and character colours may be difficult to see. Try Auto contrast.</p>}
             </div>
           )}
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
