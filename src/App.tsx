@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
-import nameTag from './assets/name-tag.jpg'
+import KeycapStudioPage from './pages/KeycapStudioPage'
+import nameTag from './assets/name-tag-1280.webp'
+import ResponsiveImage from './components/ResponsiveImage'
 import { useCart } from './context/useCart'
 import { getProducts } from './data/catalogue'
 import './App.css'
@@ -77,6 +79,7 @@ return (
     <Header />
 
     <Routes>
+    <Route path="/studio/keycaps" element={<KeycapStudioPage />} />
 
     {/* Bean Keycap product page */}
     <Route
@@ -126,8 +129,12 @@ return (
               </div>
 
               <div className="hero-product">
-                <img
+                <ResponsiveImage
                   src={nameTag}
+                  width={1280}
+                  height={1280}
+                  sizes="(max-width: 520px) 90vw, (max-width: 850px) 70vw, 460px"
+                  fetchPriority="high"
                   alt="BeanForge custom name tag"
                 />
               </div>
@@ -263,9 +270,9 @@ return (
 
                 <a
                   className="button button-light"
-                  href="#custom-request"
+                  href="/studio/keycaps"
                 >
-                  Start a custom request
+                  Explore the keycap studio
                 </a>
               </div>
             </section>

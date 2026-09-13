@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/useCart'
+import ResponsiveImage from '../components/ResponsiveImage'
 
 function CartPage() {
   const {
@@ -46,7 +47,9 @@ function CartPage() {
                   key={JSON.stringify([item.productSlug, item.colour])}
                 >
                   {item.image && (
-                    <img
+                    <ResponsiveImage
+                      sizes="(max-width: 650px) 88px, 120px"
+                      loading="lazy"
                       src={item.image}
                       alt={`${item.name} in ${item.colour}`}
                     />

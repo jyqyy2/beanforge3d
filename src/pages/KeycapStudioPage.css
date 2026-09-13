@@ -1,0 +1,31 @@
+.keycap-studio {
+  padding: 2.5rem clamp(1rem, 5vw, 4rem) 5rem;
+  text-align: left;
+}
+.studio-heading { margin-bottom: 2.5rem; }
+.studio-heading h1 { color: var(--ink); font-size: clamp(2.7rem, 6vw, 4.5rem); line-height: 1.05; margin: 0 0 1rem; letter-spacing: -0.05em; }
+.studio-heading > p:last-child { color: #625d54; line-height: 1.6; }
+.studio-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+.keycap-preview { position: sticky; top: 100px; min-width: 0; border: 1px solid var(--line); border-radius: 28px; padding: 2rem 1.25rem; background: var(--soft); text-align: center; }
+.keycap-strip { display: flex; justify-content: center; align-items: center; gap: clamp(3px, 0.6vw, 8px); min-height: 230px; }
+.keycap-sketch { flex: 0 1 64px; min-width: 0; aspect-ratio: 1; display: grid; place-items: center; border-radius: 20%; border: 1px solid #c9bea9; border-bottom-width: 5px; background: #fff9e9; color: #29251f; font-size: clamp(0.9rem, 2.5vw, 1.6rem); font-weight: 700; box-shadow: 0 8px 12px #24231f12; }
+.keycap-strip[data-colour="Pink"] .keycap-sketch { background: #f2c7c9; border-color: #c79a9c; }
+.keycap-strip[data-colour="Black"] .keycap-sketch { background: #34322f; border-color: #171614; color: #fff9e9; }
+.keycap-preview [role="status"] { line-height: 1.6; overflow-wrap: anywhere; }
+.studio-options { min-width: 0; }
+.studio-options fieldset { border: 0; padding: 0; margin: 0 0 2rem; min-width: 0; }
+.studio-options legend { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.9rem; }
+.studio-choices { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.studio-choices button { min-width: 44px; min-height: 44px; padding: 0.5rem 0.9rem; border: 1px solid var(--line); border-radius: 24px; color: var(--ink); background: var(--paper); cursor: pointer; }
+.studio-choices button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.studio-letters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+.studio-letters label { min-width: 0; font-size: 0.75rem; }
+.studio-letters input { display: block; width: 100%; min-height: 48px; margin-top: 0.4rem; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); text-align: center; font: inherit; font-size: 1.25rem; }
+.studio-note { font-size: 0.85rem; color: #625d54; line-height: 1.6; margin-top: 0.75rem; }
+.studio-availability { border-top: 1px solid var(--line); padding-top: 1rem; color: #625d54; font-size: 0.9rem; line-height: 1.6; }
+.keycap-studio :focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
+@media (max-width: 850px) {
+  .studio-layout { grid-template-columns: 1fr; }
+  .keycap-preview { position: static; }
+  .keycap-strip { min-height: 150px; }
+}

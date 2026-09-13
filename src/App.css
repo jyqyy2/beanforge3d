@@ -678,6 +678,19 @@ button {
   .hero {
     min-height: 600px;
     padding: 5rem 6vw;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero-product {
+    width: 100%;
+    min-height: 0;
+  }
+
+  .hero-product::before {
+    width: min(80%, 360px);
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .categories,
@@ -936,6 +949,11 @@ button {
 
   .product-detail-info {
     max-width: none;
+  }
+
+  .product-detail-image {
+    width: min(100%, 560px);
+    justify-self: center;
   }
 }
 

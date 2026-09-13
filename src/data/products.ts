@@ -1,6 +1,6 @@
-import beanKeycap from '../assets/bean-keycap.jpg'
-import nameTag from '../assets/name-tag.jpg'
-import qrStand from '../assets/qr-stand.jpg'
+import beanKeycap from '../assets/bean-keycap-1280.webp'
+import nameTag from '../assets/name-tag-1280.webp'
+import qrStand from '../assets/qr-stand-1280.webp'
 
 /* mini product database (not real db, is notebook kinda only)*/
 export type Product = {

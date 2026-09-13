@@ -6,6 +6,7 @@ import { useParams, Link } from 'react-router-dom'
 import { getProductBySlug } from '../data/catalogue'
 import type { CartItem } from '../types/cart'
 import { useCart } from '../context/useCart'
+import ResponsiveImage from '../components/ResponsiveImage'
 
 function ProductPage() {
   const { slug } = useParams()
@@ -62,7 +63,9 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
 
           <div className="product-detail-image">
             {product.image && (
-                <img
+                <ResponsiveImage
+                    sizes="(max-width: 600px) 86vw, (max-width: 850px) 560px, 500px"
+                    fetchPriority="high"
                 /* #59 Step 8 
                     Bean Keycap
                         ↓
