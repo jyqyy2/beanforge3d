@@ -2,7 +2,11 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/useCart'
 
 function CartPage() {
-  const { cartItems, removeFromCart } = useCart()
+  const {
+    cartItems,
+    removeFromCart,
+    updateCartItemQuantity,
+  } = useCart()
 
   return (
     <main className="cart-page">
@@ -43,7 +47,36 @@ function CartPage() {
                 <div className="cart-item-info">
                   <h2>{item.name}</h2>
                   <p>Colour: {item.colour}</p>
-                  <p>Quantity: {item.quantity}</p>
+
+                  <div className="cart-quantity-controls">
+                    <span>Quantity</span>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateCartItemQuantity(
+                          index,
+                          item.quantity - 1
+                        )
+                      }
+                    >
+                      −
+                    </button>
+
+                    <strong>{item.quantity}</strong>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateCartItemQuantity(
+                          index,
+                          item.quantity + 1
+                        )
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
 
                 <div className="cart-item-actions">

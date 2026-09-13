@@ -5,6 +5,10 @@ export type CartContextType = {
   cartItems: CartItem[]
   addToCart: (item: CartItem) => void
   removeFromCart: (itemIndex: number) => void
+  updateCartItemQuantity: (
+    itemIndex: number,
+    quantity: number
+  ) => void
 }
 
 export const CartContext = createContext<

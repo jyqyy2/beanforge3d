@@ -25,12 +25,29 @@ export function CartProvider({
     )
   }
 
+  function updateCartItemQuantity(
+    itemIndex: number,
+    quantity: number
+  ) {
+    setCartItems((currentItems) =>
+      currentItems.map((item, index) =>
+        index === itemIndex
+          ? {
+              ...item,
+              quantity: Math.max(1, quantity),
+            }
+          : item
+      )
+    )
+  }
+
   return (
     <CartContext.Provider
       value={{
         cartItems,
         addToCart,
         removeFromCart,
+        updateCartItemQuantity,
       }}
     >
       {children}
