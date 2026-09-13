@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
 import { cartItemIdentity } from '../utils/cartIdentity'
 import KeycapPreview from '../components/KeycapPreview'
 
 function CartPage() {
+  const location = useLocation()
   const {
     cartItems,
     removeFromCart,
@@ -28,6 +29,7 @@ function CartPage() {
         <div className="cart-heading">
           <p className="eyebrow">YOUR CART</p>
           <h1>Shopping cart</h1>
+          {location.state?.designSaved === true && <p role="status">Design saved. Matching designs are combined and quantities preserved.</p>}
         </div>
 
         {cartItems.length === 0 ? (

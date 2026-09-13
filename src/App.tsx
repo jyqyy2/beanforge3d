@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Routes, Route, Link } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import KeycapStudioPage from './pages/KeycapStudioPage'
@@ -73,9 +73,9 @@ function Header() {
   )
 }
 
-function App() {
+function AppLayout() {
 return (
-  <BrowserRouter>
+  <>
     <Header />
 
     <Routes>
@@ -333,9 +333,13 @@ return (
     />
 
     </Routes>
-  </BrowserRouter>
+  </>
 
 )
 }
 
-export default App
+const router = createBrowserRouter([{ path: '*', element: <AppLayout /> }])
+
+export default function App() {
+  return <RouterProvider router={router} />
+}

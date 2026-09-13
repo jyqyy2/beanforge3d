@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useBlocker, useNavigate, useSearchParams } from 'react-router-dom'
 import { getCharacterColours, getCustomKeycapPricing, getProductBySlug } from '../data/catalogue'
 import KeycapPreview from '../components/KeycapPreview'
 import type { KeycapConfiguration } from '../types/keycap'
@@ -55,13 +55,29 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     resetButton.current?.focus()
   }
   const configuration: KeycapConfiguration = { schemaVersion: 3, boardColour: colour, characters: characters.slice(0, count) }
+  const savedSuccessfully = useRef(false)
+  const dirty = editIdentity !== null && JSON.stringify(configuration) !== JSON.stringify(savedConfiguration)
+  const blocker = useBlocker(() => dirty && !savedSuccessfully.current)
+  useEffect(() => {
+    if (!dirty) return
+    const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+      if (savedSuccessfully.current) return
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warnBeforeLeaving)
+    return () => window.removeEventListener('beforeunload', warnBeforeLeaving)
+  }, [dirty])
   const characterColours = getCharacterColours()
   const selectedIndex = activeIndex !== null && activeIndex < count ? activeIndex : null
   const quote = calculateKeycapPrice(configuration, pricing)
   const addCreation = () => {
     if (!quote.complete || quote.totalMinor === null) return
     if (editIdentity !== null) {
-      if (updateCartDesign(editIdentity, configuration)) navigate('/cart')
+      if (updateCartDesign(editIdentity, configuration)) {
+        savedSuccessfully.current = true
+        navigate('/cart', { state: { designSaved: true } })
+      }
       else setMessage('This design could not be updated. Please return to your cart and try again.')
       return
     }
@@ -84,6 +100,14 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     <Link to={editIdentity === null ? '/#custom' : '/cart'} className="back-link">{editIdentity === null ? '← Back to the shop' : '← Cancel and return to cart'}</Link>
     <header className="studio-heading"><p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p><h1>{editIdentity === null ? 'Build your own.' : 'Refine your creation.'}</h1><p>{editIdentity === null ? 'Your name. Your lucky number. Your little daily reminder.' : 'Changes apply to every copy in this cart row when you save. Matching designs combine quantities.'}</p></header>
     <div className="studio-layout">
+      {blocker.state === 'blocked' && <section role="alertdialog" aria-modal="false" aria-labelledby="unsaved-title" aria-describedby="unsaved-description">
+        <h2 id="unsaved-title">Leave without saving?</h2>
+        <p id="unsaved-description">Your cart still contains the original design. These edits will be discarded.</p>
+        <div className="studio-choices">
+          <button type="button" autoFocus onClick={() => blocker.reset()}>Keep editing</button>
+          <button type="button" onClick={() => blocker.proceed()}>Discard edits and leave</button>
+        </div>
+      </section>}
       {editIdentity === null && <section className="studio-draft-toolbar" aria-label="Studio draft">
         <p role="status">{saveResult?.snapshot !== draftSnapshot ? 'Saving draft…' : saveResult.saved ? 'Draft saved on this browser' : 'Draft not saved. Keep this page open to avoid losing changes.'}</p>
         <div className="studio-choices"><button ref={resetButton} type="button" aria-expanded={confirmReset} aria-controls="draft-reset-confirmation" onClick={() => setConfirmReset(true)}>Start new design</button></div>
