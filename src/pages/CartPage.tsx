@@ -8,6 +8,11 @@ function CartPage() {
     updateCartItemQuantity,
   } = useCart()
 
+  const cartSubtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  )
+
   return (
     <main className="cart-page">
       <div className="cart-page-inner">
@@ -31,69 +36,80 @@ function CartPage() {
             </Link>
           </section>
         ) : (
-          <section className="cart-items">
-            {cartItems.map((item, index) => (
-              <article
-                className="cart-item"
-                key={`${item.productSlug}-${item.colour}-${index}`}
-              >
-                {item.image && (
-                  <img
-                    src={item.image}
-                    alt={`${item.name} in ${item.colour}`}
-                  />
-                )}
+          <div className="cart-layout">
+            <section className="cart-items">
+              {cartItems.map((item, index) => (
+                <article
+                  className="cart-item"
+                  key={`${item.productSlug}-${item.colour}-${index}`}
+                >
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={`${item.name} in ${item.colour}`}
+                    />
+                  )}
 
-                <div className="cart-item-info">
-                  <h2>{item.name}</h2>
-                  <p>Colour: {item.colour}</p>
+                  <div className="cart-item-info">
+                    <h2>{item.name}</h2>
+                    <p>Colour: {item.colour}</p>
 
-                  <div className="cart-quantity-controls">
-                    <span>Quantity</span>
+                    <div className="cart-quantity-controls">
+                      <span>Quantity</span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateCartItemQuantity(
+                            index,
+                            item.quantity - 1
+                          )
+                        }
+                      >
+                        −
+                      </button>
+
+                      <strong>{item.quantity}</strong>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateCartItemQuantity(
+                            index,
+                            item.quantity + 1
+                          )
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="cart-item-actions">
+                    <strong>
+                      S${(item.price * item.quantity).toFixed(2)}
+                    </strong>
 
                     <button
                       type="button"
-                      onClick={() =>
-                        updateCartItemQuantity(
-                          index,
-                          item.quantity - 1
-                        )
-                      }
+                      onClick={() => removeFromCart(index)}
                     >
-                      −
-                    </button>
-
-                    <strong>{item.quantity}</strong>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateCartItemQuantity(
-                          index,
-                          item.quantity + 1
-                        )
-                      }
-                    >
-                      +
+                      Remove
                     </button>
                   </div>
-                </div>
+                </article>
+              ))}
+            </section>
 
-                <div className="cart-item-actions">
-                  <strong>
-                    S${(item.price * item.quantity).toFixed(2)}
-                  </strong>
+            <aside className="cart-summary">
+              <h2>Order summary</h2>
 
-                  <button
-                    type="button"
-                    onClick={() => removeFromCart(index)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </article>
-            ))}
-          </section>
+              <div className="cart-summary-row">
+                <span>Subtotal</span>
+                <strong>S${cartSubtotal.toFixed(2)}</strong>
+              </div>
+            </aside>
+          </div>
         )}
       </div>
     </main>

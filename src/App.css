@@ -997,6 +997,13 @@ So instead, put font-size after font: inherit:*/
   line-height: 1.6;
 }
 
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
 .cart-items {
   display: grid;
   gap: 1rem;
@@ -1103,9 +1110,46 @@ So instead, put font-size after font: inherit:*/
   color: var(--ink);
 }
 
+.cart-summary {
+  padding: 1.5rem;
+
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.cart-summary h2 {
+  margin: 0 0 1.25rem;
+
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+}
+
+.cart-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding-top: 1rem;
+
+  border-top: 1px solid var(--line);
+}
+
+.cart-summary-row span {
+  color: var(--muted);
+}
+
+.cart-summary-row strong {
+  white-space: nowrap;
+}
+
 @media (max-width: 650px) {
   .empty-cart {
     padding: 2rem;
+  }
+
+  .cart-layout {
+    grid-template-columns: 1fr;
   }
 
   .cart-item {
