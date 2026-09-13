@@ -35,6 +35,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const [characters, setCharacters] = useState<KeycapConfiguration['characters']>(() => Array.from({ length: 8 }, (_, index) => ({ ...(savedConfiguration?.characters[index] ?? draft?.configuration.characters[index] ?? { character: '', colour: '' }) })))
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const characterInputs = useRef<Array<HTMLInputElement | null>>([])
+  const lastCharacterIndex = useRef(0)
   const restoringFocus = useRef(false)
   const closePalette = () => {
     restoringFocus.current = true
@@ -112,7 +113,10 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
         <h2 id="unsaved-title">Leave without saving?</h2>
         <p id="unsaved-description">Your cart still contains the original design. These edits will be discarded.</p>
         <div className="studio-choices">
-          <button type="button" autoFocus onClick={() => blocker.reset()}>Keep editing</button>
+          <button type="button" autoFocus onClick={() => {
+            blocker.reset()
+            characterInputs.current[Math.min(lastCharacterIndex.current, count - 1)]?.focus()
+          }}>Keep editing</button>
           <button type="button" onClick={() => blocker.proceed()}>Discard edits and leave</button>
         </div>
       </section>}
@@ -141,7 +145,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                   ref={(element) => { characterInputs.current[index] = element }}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
                   aria-controls={selectedIndex !== null ? 'character-colour-palette' : undefined}
-                  onFocus={(event) => { if (!restoringFocus.current) setActiveIndex(index); event.target.select() }}
+                  onFocus={(event) => { lastCharacterIndex.current = index; if (!restoringFocus.current) setActiveIndex(index); event.target.select() }}
                   onKeyDown={(event) => {
                     if (event.key === 'Escape') { event.preventDefault(); closePalette() }
                     if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex(index) }
