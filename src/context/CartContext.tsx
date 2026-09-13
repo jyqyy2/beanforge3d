@@ -36,10 +36,30 @@ export function CartProvider({
   }, [cartItems])
 
   function addToCart(item: CartItem) {
-    setCartItems((currentItems) => [
-      ...currentItems,
-      item,
-    ])
+    setCartItems((currentItems) => {
+      const existingItem = currentItems.find(
+        (currentItem) =>
+          currentItem.productSlug === item.productSlug &&
+          currentItem.colour === item.colour
+      )
+
+      if (!existingItem) {
+        return [
+          ...currentItems,
+          item,
+        ]
+      }
+
+      return currentItems.map((currentItem) =>
+        currentItem.productSlug === item.productSlug &&
+        currentItem.colour === item.colour
+          ? {
+              ...currentItem,
+              quantity: currentItem.quantity + item.quantity,
+            }
+          : currentItem
+      )
+    })
   }
 
   function removeFromCart(itemIndex: number) {
