@@ -2,7 +2,7 @@ import type { KeycapConfiguration, KeycapPricing } from '../types/keycap'
 
 export function calculateKeycapPrice(configuration: KeycapConfiguration, pricing: KeycapPricing) {
   const boardMinor = pricing.boardPricesMinor[configuration.characters.length]
-  const prices = configuration.characters.map((character) =>
+  const prices = configuration.characters.map(({ character }) =>
     /^[A-Z0-9]$/.test(character) ? pricing.characterPricesMinor[character] : undefined
   )
   const completed = prices.filter((price) => typeof price === 'number' && Number.isSafeInteger(price) && price >= 0).length

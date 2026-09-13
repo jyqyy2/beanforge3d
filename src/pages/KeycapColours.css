@@ -1,0 +1,48 @@
+.keycap-strip {
+  --cap-top: #fff8e8;
+  --cap-bottom: #e9ddc3;
+  --cap-edge: #c5b694;
+  position: relative;
+  isolation: isolate;
+}
+.keycap-strip[data-board-colour="Pink"] { --cap-top: #f9dcde; --cap-bottom: #e8b5bc; --cap-edge: #bd8790; }
+.keycap-strip[data-board-colour="Black"] { --cap-top: #4b4946; --cap-bottom: #292724; --cap-edge: #161513; }
+.keycap-strip::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 24%;
+  bottom: 20%;
+  border-radius: 18px;
+  background: linear-gradient(145deg, var(--cap-top), var(--cap-bottom));
+  border: 1px solid var(--cap-edge);
+  box-shadow: 0 8px 0 var(--cap-edge), 0 18px 20px -12px #24231f55;
+}
+.keycap-object small {
+  color: var(--ink);
+  background: var(--paper);
+  border-radius: 50%;
+  width: 20px;
+  margin: 1rem auto 0;
+}
+[data-character-colour] {
+  --cap-top: #fff8e8;
+  --cap-bottom: #e9ddc3;
+  --cap-edge: #c5b694;
+  --cap-ink: #353027;
+}
+[data-character-colour="Pink"] { --cap-top: #f9dcde; --cap-bottom: #e8b5bc; --cap-edge: #bd8790; }
+[data-character-colour="Blue"] { --cap-top: #d7eafa; --cap-bottom: #9fc7e7; --cap-edge: #6b93b5; }
+[data-character-colour="Black"] { --cap-top: #4b4946; --cap-bottom: #292724; --cap-edge: #161513; --cap-ink: #fff9ed; }
+.studio-characters { grid-template-columns: repeat(8, minmax(0, 76px)); gap: 0.75rem; }
+.studio-characters label { display: block; }
+.character-colour-dot { display: block; width: 12px; height: 12px; border: 1px solid var(--cap-edge); border-radius: 50%; background: var(--cap-bottom); margin: 0.65rem auto 0.25rem; }
+.studio-characters [data-selected="true"] input { outline: 2px solid var(--accent-dark); outline-offset: 3px; }
+.character-palette { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); max-width: 600px; }
+.character-palette p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+.studio-swatch[data-colour="Blue"] { background: #9fc7e7; }
+@media (max-width: 850px) {
+  .studio-characters { grid-template-columns: repeat(4, minmax(0, 76px)); }
+}

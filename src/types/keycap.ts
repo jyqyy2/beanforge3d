@@ -1,7 +1,7 @@
 export type KeycapConfiguration = {
-  schemaVersion: 2
-  colour: string
-  characters: string[]
+  schemaVersion: 3
+  boardColour: string
+  characters: { character: string; colour: string }[]
 }
 
 export type KeycapPricing = {
