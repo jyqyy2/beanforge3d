@@ -58,14 +58,21 @@ button {
 }
 
 .logo {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
+
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
 }
 
 .logo span {
   color: var(--accent);
+  font-size: 0.75em;
+  letter-spacing: -0.03em;
 }
+
 
 .nav {
   display: flex;
@@ -112,6 +119,8 @@ button {
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 5rem;
 
   padding: 7rem 8vw;
 
@@ -122,8 +131,58 @@ button {
 }
 
 .hero-content {
-  max-width: 720px;
+  flex: 1.6;
+  max-width: 620px;
 }
+
+.hero-product {
+  flex: 1.15;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+  min-height: 500px;
+
+  position: relative;
+}
+
+.hero-product::before {
+  content: "";
+
+  position: absolute;
+  width: 360px;
+  height: 360px;
+
+  border-radius: 50%;
+
+  background: #ead6bd;
+
+  opacity: 0.55;
+
+  z-index: 0;
+}
+
+.hero-product img {
+  position: relative;
+  z-index: 1;
+
+  display: block;
+
+  width: min(100%, 460px);
+  height: auto;
+
+  object-fit: contain;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 24px 60px rgba(36, 35, 31, 0.12),
+    0 4px 16px rgba(36, 35, 31, 0.08);
+}
+
+
 
 .eyebrow {
   margin: 0 0 1.2rem;
@@ -138,7 +197,7 @@ button {
 .hero h1 {
   margin: 0;
 
-  font-size: clamp(3.6rem, 8vw, 7rem);
+  font-size: clamp(3.2rem, 6vw, 5.5rem);
   line-height: 0.92;
   letter-spacing: -0.075em;
   font-weight: 800;
@@ -227,7 +286,7 @@ button {
 }
 
 .category-card {
-  min-height: 270px;
+  min-height: 330px;
   padding: 2rem;
 
   display: flex;
@@ -238,19 +297,79 @@ button {
 
   transition:
     background 0.25s ease,
-    transform 0.25s ease;
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
+
 
 .category-card:hover {
   background: white;
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(36, 35, 31, 0.08);
 }
 
-.category-card span {
+.category-card > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  border: 1px solid var(--line);
+  border-radius: 50%;
+
   color: var(--accent);
-  font-size: 0.75rem;
+
+  font-size: 0.7rem;
   font-weight: 800;
 }
+
+
+.category-visual {
+  min-height: 110px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 1.5rem 0;
+
+  border-radius: 18px;
+
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.category-card:hover .category-visual {
+  transform: scale(1.03);
+}
+
+.category-visual-keycaps {
+  background: #e8d9c5;
+  color: #24231f;
+}
+
+.category-visual-skadis {
+  background: #d8e0d3;
+  color: #30372e;
+}
+
+.category-visual-qr {
+  background: #ddd8d0;
+  color: #24231f;
+}
+
+.category-visual-custom {
+  background: #f0d0c0;
+  color: #713b29;
+}
+
 
 .category-card h3 {
   margin: auto 0 0.7rem;
@@ -260,6 +379,8 @@ button {
 }
 
 .category-card p {
+  max-width: 260px;
+
   margin: 0;
 
   color: var(--muted);
@@ -278,7 +399,10 @@ button {
 
 .product-card {
   min-width: 0;
+
+  position: relative;
 }
+
 
 .product-image {
   min-height: 360px;
@@ -320,6 +444,60 @@ button {
 .product-image-stand span {
   font-size: 2.5rem;
 }
+
+.product-wishlist {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(36, 35, 31, 0.12);
+  border-radius: 50%;
+
+  background: rgba(255, 253, 248, 0.9);
+  color: var(--ink);
+
+  cursor: pointer;
+
+  font-size: 1.25rem;
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.product-wishlist:hover {
+  background: var(--ink);
+  color: white;
+  transform: scale(1.05);
+}
+
+.product-link {
+  display: inline-block;
+
+  margin-top: 0.9rem;
+
+  color: var(--ink);
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  transition: color 0.2s ease;
+}
+
+.product-link:hover {
+  color: var(--accent);
+}
+
 
 .product-info {
   display: flex;
@@ -538,4 +716,222 @@ button {
   .footer-links {
     flex-wrap: wrap;
   }
+}
+
+/* ========================================
+   BELOW PRODUCT PAGE (KEY CAP)
+   ======================================== */
+
+.product-page {
+  min-height: 100vh;
+  padding: 3rem 7vw 7rem;
+
+  background: var(--cream);
+}
+
+.product-page-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-block;
+
+  margin-bottom: 3rem;
+
+  color: var(--muted);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.product-detail {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 6rem;
+
+  align-items: center;
+}
+
+.product-detail-image {
+  min-height: 600px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e8d9c5;
+
+  border-radius: 24px;
+
+  overflow: hidden;
+}
+
+.product-detail-image span {
+  color: var(--ink);
+
+  font-size: clamp(5rem, 12vw, 10rem);
+  font-weight: 800;
+
+  letter-spacing: -0.08em;
+
+  transform: rotate(-8deg);
+}
+
+.product-detail-info {
+  max-width: 500px;
+}
+
+/* Featured Product 1 'Bean Keycap'*/
+.product-detail-info h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+}
+
+.product-price {
+  margin: 1.5rem 0;
+
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.product-description {
+  margin: 0 0 2.5rem;
+
+  color: var(--muted);
+
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.product-option {
+  margin-bottom: 2rem;
+}
+
+.product-option label {
+  display: block;
+
+  margin-bottom: 0.6rem;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.product-option select {
+  width: 100%;
+
+  min-height: 50px;
+
+  padding: 0 1rem;
+
+  border: 1px solid var(--line);
+  border-radius: 0;
+
+  background: var(--paper);
+  color: var(--ink);
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+.add-to-cart-button {
+  width: 100%;
+
+  min-height: 56px;
+
+  border: 1px solid var(--ink);
+
+  background: var(--ink);
+  color: white;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.add-to-cart-button:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+/* ========================================
+   MOBILE RULE - small screen, stack info
+   ======================================== */
+@media (max-width: 850px) {
+  .product-detail {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .product-detail-image {
+    min-height: 400px;
+  }
+
+  .product-detail-image img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  max-width: 100%;
+  max-height: 600px;
+
+  object-fit: contain;
+
+  border-radius: 24px;
+}
+
+  .product-detail-info {
+    max-width: none;
+  }
+}
+
+.colour-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/*font: inherit; comes after font-size, 
+it will override the font-size we just added.
+So instead, put font-size after font: inherit:*/
+.colour-button {
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.colour-button:hover {
+  border-color: var(--ink);
+}
+
+.colour-button.selected {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.selected-colour-text {
+  font-size: 15px;
+  color: var(--muted);
 }
