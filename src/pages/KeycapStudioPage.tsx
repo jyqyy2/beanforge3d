@@ -128,13 +128,14 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
         </div>
       </section>}
       {editIdentity === null && <section className="studio-draft-toolbar" aria-label="Studio draft">
-        <p role="status">{saveResult?.snapshot !== draftSnapshot ? 'Saving draft…' : saveResult.saved ? 'Draft saved on this browser' : 'Draft not saved. Keep this page open to avoid losing changes.'}</p>
+        <p role="status">{saveResult?.snapshot !== draftSnapshot ? 'Saving draft…' : saveResult.saved ? 'Draft saved' : 'Draft not saved. Keep this page open to avoid losing changes.'}</p>
         <div className="studio-choices"><button ref={resetButton} type="button" aria-expanded={confirmReset} aria-controls="draft-reset-confirmation" onClick={() => setConfirmReset(true)}>Start new design</button></div>
-        {confirmReset && <div id="draft-reset-confirmation" role="group" aria-label="Confirm new design">
-          <p className="studio-note">Replace this draft? All eight characters and their colours will reset, including hidden slots. Saved cart designs will not change.</p>
+        {confirmReset && <div id="draft-reset-confirmation" role="group" aria-labelledby="draft-reset-title" aria-describedby="draft-reset-description">
+          <p id="draft-reset-title"><strong>Start a new design?</strong></p>
+          <p id="draft-reset-description" className="studio-note">Your current draft will be reset, including all characters and colours. Saved cart designs won't be affected.</p>
           <div className="studio-choices">
             <button type="button" onClick={() => { setConfirmReset(false); resetButton.current?.focus() }}>Keep my design</button>
-            <button type="button" onClick={resetDraft}>Confirm new design</button>
+            <button type="button" onClick={resetDraft}>Start new design</button>
           </div>
         </div>}
       </section>}
