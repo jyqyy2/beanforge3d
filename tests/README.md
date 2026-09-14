@@ -1,5 +1,15 @@
 # Keycap regression checks
 
+## Browser tests
+
+Install development dependencies with `npm install`, then run `npx playwright install chromium` and `npm run test:e2e`. If browser downloads are unavailable and Microsoft Edge is installed, PowerShell users can run `$env:PLAYWRIGHT_CHANNEL='msedge'; npm run test:e2e` instead.
+
+The suite starts its own Vite server on port 5186 (must be free) and uses isolated browser contexts; it does not use your normal Studio draft/cart. Three scenarios run at desktop and mobile viewport sizes: counts/colours/hidden-character draft restoration, cart snapshots/reset/merge/edit/discard, and browser storage write failure/recovery. Mobile emulation is not real-device acceptance. Native refresh prompts and corrupt-storage/multi-tab recovery remain outside this suite. Failure traces are stored in ignored test-results; do not publish traces containing customer data.
+
+Verified on 2026-09-14 with installed Microsoft Edge after the bundled Chromium download timed out. Application code is unchanged.
+
+## Utility tests
+
 Run `npm test` from the project root with Node 24. Tests use Node's built-in runner and the existing Vite SSR loader to execute the actual TypeScript utilities, including catalogue imports. No browser or new dependency is required; the Vite loader closes after imports.
 
 Coverage includes counts 1–8, A–Z/0–9, incomplete/invalid configurations, current development pricing, independent colours, automatic-contrast identity normalization, cart edit snapshots and merges, malformed drafts, hidden-character persistence, and storage failures. Storage tests use an isolated in-memory substitute, not real browser data.

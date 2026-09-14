@@ -20,8 +20,8 @@ Draft reset/refresh acceptance is recorded in KEYCAP-FRONTEND-ACCEPTANCE.md. Car
 ## Remaining Studio acceptance gates
 
 - Real iOS/Android touch and virtual-keyboard testing, tablet use, screen-reader speech, and native refresh-warning checks on supported browsers. Record device/browser versions and outcomes. Narrow preview targets have larger equivalent character-card inputs.
-- Browser end-to-end automation: count changes, draft reset/reload, preview selection, cart Add/Edit/Save, merge and navigation guards. The current utility suite does not automate these UI paths.
-- Fault-inject browser storage reads/writes and recovery in disposable data; verify that warnings remain truthful and a failed read cannot silently destroy a recoverable draft/cart.
+- Browser end-to-end automation now covers count changes, draft reset/reload, preview selection, cart Add/Edit/Save, merge and in-app navigation guards on desktop/mobile viewports. See tests/e2e/studio.spec.ts and tests/README.md. Native refresh prompts and real-device acceptance remain open.
+- Browser storage write failure/recovery warnings now have passing fault-injection tests. Read failures and corrupt-data recovery still require hardening: verify that a failed read cannot silently destroy a recoverable draft/cart.
 - Decide and implement multi-tab conflict handling and unreadable-storage recovery. These are persistence changes, not visual polish; define conflict/recovery behaviour before implementation. Current storage is not cross-device and simultaneous tabs may overwrite each other's changes.
 
 ## Business approval worksheet
