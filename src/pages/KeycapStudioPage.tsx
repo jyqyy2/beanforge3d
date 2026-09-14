@@ -134,6 +134,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       </section>}
       <KeycapPreview configuration={configuration} activeIndex={activeIndex} />
       <section className="studio-options" aria-label="Design your keycaps">
+        <p className="studio-note">Board colour — The colour of your whole board.</p>
         <div className="studio-settings"><fieldset><legend>{count} {count === 1 ? 'board' : 'boards'} <span>· one character each</span></legend><div className="studio-choices">{Array.from({length: 8}, (_, i) => i + 1).map((amount) => <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>{amount}</button>)}</div></fieldset><fieldset><legend>Board colour <span>· {colour}</span></legend><div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => { setColour(option); setMessage('') }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div></fieldset></div>
         <fieldset aria-describedby="studio-characters-help">
           <legend>Make it yours.</legend>
@@ -164,6 +165,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
             }}>
               <div className="palette-heading"><strong>Character {selectedIndex + 1}</strong><span>{characters[selectedIndex].character || 'Choose a character'}</span></div>
               <p id="character-palette-label">Keycap colour</p>
+              <p className="studio-note">The colour of this keycap.</p>
               <div className="studio-choices" role="group" aria-labelledby="character-palette-label">
                 {characterColours.map((option) => (
                   <button type="button" key={option}
@@ -177,6 +179,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                 ))}
               </div>
               <p id="symbol-palette-label">Character colour</p>
+              <p className="studio-note">The colour of the character on this keycap.</p>
               <div className="studio-choices" role="group" aria-labelledby="symbol-palette-label">
                 <button type="button" aria-pressed={characters[selectedIndex].characterColour === undefined}
                   onClick={() => {
