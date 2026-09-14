@@ -138,7 +138,11 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           </div>
         </div>}
       </section>}
-      <KeycapPreview configuration={configuration} activeIndex={activeIndex} />
+      <KeycapPreview configuration={configuration} activeIndex={selectedIndex} onSelectCharacter={(index) => {
+        setActiveIndex(index)
+        lastCharacterIndex.current = index
+        characterInputs.current[index]?.focus({ preventScroll: true })
+      }} />
       <section className="studio-options" aria-label="Design your keycaps">
         <div className="studio-settings">
           <fieldset className="studio-count" aria-describedby="studio-count-help">
@@ -163,7 +167,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
             {configuration.characters.map((item, index) => (
               <label key={index} data-character-colour={item.colour} data-symbol-colour={item.characterColour} data-selected={selectedIndex === index}>
                 <span>Character {index + 1}</span>
-                <input aria-label={`Character ${index + 1}`} type="text" value={item.character} placeholder="—" aria-describedby={`character-state-${index}`}
+                <input aria-label={`Character ${index + 1}`} type="text" value={item.character} placeholder="+" aria-describedby={`character-state-${index}`}
                   ref={(element) => { characterInputs.current[index] = element }}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
                   aria-controls={selectedIndex !== null ? 'character-colour-palette' : undefined}
@@ -176,7 +180,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                   onChange={(event) => updateCharacter(index, event.target.value)} />
                 <span className="character-colour-dot" aria-hidden="true" />
                 <span>{item.colour || 'Auto colour'}</span>
-                <span id={`character-state-${index}`} className="character-state">{selectedIndex === index ? 'Editing · ' : ''}{item.character ? '✓ Complete' : 'Empty'}</span>
+                <span id={`character-state-${index}`} className="character-state">{selectedIndex === index ? 'Editing · ' : ''}{item.character ? '✓ Complete' : <>Empty<span className="studio-sr-only">. Add a character.</span></>}</span>
               </label>
             ))}
           </div>
