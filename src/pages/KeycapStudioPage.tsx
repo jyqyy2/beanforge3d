@@ -171,7 +171,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                 <input aria-label={`Character ${index + 1}`} type="text" value={item.character} placeholder="+" aria-describedby={`character-state-${index}`}
                   ref={(element) => { characterInputs.current[index] = element }}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
-                  aria-controls={selectedIndex !== null ? 'character-colour-palette' : undefined}
+                  aria-controls={selectedIndex === index ? 'character-colour-palette' : undefined}
                   onFocus={(event) => { lastCharacterIndex.current = index; if (!restoringFocus.current) setActiveIndex(index); event.target.select() }}
                   onKeyDown={(event) => {
                     if (event.key === 'Escape') { event.preventDefault(); closePalette() }
