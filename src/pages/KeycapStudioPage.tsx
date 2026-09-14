@@ -80,6 +80,12 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const characterColours = getCharacterColours()
   const selectedIndex = activeIndex !== null && activeIndex < count ? activeIndex : null
   const quote = calculateKeycapPrice(configuration, pricing)
+  const emptyBoards = configuration.characters.flatMap((item, index) => item.character ? [] : [index + 1])
+  const completionHelp = quote.complete
+    ? 'Your design is ready.'
+    : emptyBoards.length > 0
+      ? `Add a character to ${emptyBoards.length === 1 ? 'board' : 'boards'} ${emptyBoards.join(', ')} to continue.`
+      : 'Pricing is unavailable. Please try again later.'
   const addCreation = () => {
     if (!quote.complete || quote.totalMinor === null) return
     if (editIdentity !== null) {
@@ -98,7 +104,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       quantity: 1,
       configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })) },
     })
-    setMessage('Your creation was added to your cart.')
+    setMessage(`Added ${configuration.characters.map(({ character }) => character).join('')} to your cart · ${money(quote.totalMinor)} for one creation. You can keep designing; your cart has its own copy.`)
   }
   const updateCharacter = (index: number, value: string) => {
     const nextCharacter = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 1)
@@ -134,16 +140,30 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       </section>}
       <KeycapPreview configuration={configuration} activeIndex={activeIndex} />
       <section className="studio-options" aria-label="Design your keycaps">
-        <p className="studio-note">Board colour — The colour of your whole board.</p>
-        <div className="studio-settings"><fieldset><legend>{count} {count === 1 ? 'board' : 'boards'} <span>· one character each</span></legend><div className="studio-choices">{Array.from({length: 8}, (_, i) => i + 1).map((amount) => <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>{amount}</button>)}</div></fieldset><fieldset><legend>Board colour <span>· {colour}</span></legend><div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => { setColour(option); setMessage('') }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div></fieldset></div>
+        <div className="studio-settings">
+          <fieldset className="studio-count" aria-describedby="studio-count-help">
+            <legend>HOW MANY LETTERBOARDS?</legend>
+            <p id="studio-count-help" className="studio-note">Choose how many characters you want in your design.</p>
+            <div className="studio-choices">{Array.from({ length: 8 }, (_, index) => index + 1).map((amount) => (
+              <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>
+                <strong>{amount}</strong><span aria-hidden="true">{count === amount ? '✓ Selected' : amount === 1 ? 'character' : 'characters'}</span>
+              </button>
+            ))}</div>
+          </fieldset>
+          <fieldset>
+            <legend>Board colour <span>· {colour}</span></legend>
+            <p className="studio-note">The colour of your whole board.</p>
+            <div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => { setColour(option); setMessage('') }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div>
+          </fieldset>
+        </div>
         <fieldset aria-describedby="studio-characters-help">
           <legend>Make it yours.</legend>
-          <p id="studio-characters-help" className="studio-note">Choose a tile to type A–Z or 0–9. Set its keycap colour and the character colour separately.</p>
+          <p id="studio-characters-help" className="studio-note">Match each numbered character to its board in the preview. Type A–Z or 0–9, then choose its colours.</p>
           <div className="studio-characters">
             {configuration.characters.map((item, index) => (
               <label key={index} data-character-colour={item.colour} data-symbol-colour={item.characterColour} data-selected={selectedIndex === index}>
                 <span>Character {index + 1}</span>
-                <input aria-label={`Character ${index + 1}`} type="text" value={item.character}
+                <input aria-label={`Character ${index + 1}`} type="text" value={item.character} placeholder="—" aria-describedby={`character-state-${index}`}
                   ref={(element) => { characterInputs.current[index] = element }}
                   maxLength={1} autoComplete="off" autoCapitalize="characters" spellCheck={false}
                   aria-controls={selectedIndex !== null ? 'character-colour-palette' : undefined}
@@ -156,6 +176,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
                   onChange={(event) => updateCharacter(index, event.target.value)} />
                 <span className="character-colour-dot" aria-hidden="true" />
                 <span>{item.colour || 'Auto colour'}</span>
+                <span id={`character-state-${index}`} className="character-state">{selectedIndex === index ? 'Editing · ' : ''}{item.character ? '✓ Complete' : 'Empty'}</span>
               </label>
             ))}
           </div>
@@ -200,7 +221,29 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
         </fieldset>
       </section>
-      <section className="studio-purchase" aria-label="Your creation price"><div><p className="eyebrow">YOUR CREATION</p><h2 aria-label={`Your design: ${configuration.characters.map(({ character }) => character || 'blank').join(', ')}`} style={{ overflowWrap: 'anywhere' }}>{configuration.characters.map(({ character }) => character || '□').join(' ')}</h2><p className="studio-note">{count} {count === 1 ? 'board' : 'boards'} · {colour}</p><p id="studio-completion" role="status">{quote.completed} / {count} keycaps complete. {quote.complete ? '✓ Ready to save to cart.' : 'Add a character to each remaining tile.'}</p><p className="studio-note">Temporary development prices — not a production quote.</p></div><div className="studio-price-action"><dl><div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div><div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div><div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div></dl><button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>{editIdentity === null ? 'Add my creation to cart' : 'Save changes to cart'}</button><p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available yet.</p><p role="status" className="studio-action-message">{message}</p>{message && <Link to="/cart" className="back-link">View cart →</Link>}</div></section>
+      <section className="studio-purchase" aria-label="Your creation price">
+        <div>
+          <p className="eyebrow">YOUR CREATION</p>
+          <h2 aria-label={`Your design: ${configuration.characters.map(({ character }) => character || 'blank').join(', ')}`} style={{ overflowWrap: 'anywhere' }}>{configuration.characters.map(({ character }) => character || '□').join(' ')}</h2>
+          <p className="studio-note">{count} {count === 1 ? 'board' : 'boards'} · {colour}</p>
+          <div id="studio-completion" className="studio-completion" data-complete={quote.complete} role="status" aria-atomic="true">
+            <strong>{quote.completed} / {count} characters complete</strong>
+            <span>{completionHelp}</span>
+          </div>
+          <p className="studio-note">Temporary development prices — not a production quote.</p>
+        </div>
+        <div className="studio-price-action">
+          <dl>
+            <div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div>
+            <div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div>
+            <div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div>
+          </dl>
+          <button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>{!quote.complete ? (emptyBoards.length > 0 ? 'Complete your design to continue' : 'Price unavailable') : editIdentity === null ? 'Add my creation to cart' : 'Save changes to cart'}</button>
+          <p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available yet.</p>
+          <p role="status" className="studio-action-message">{message}</p>
+          {message && <Link to="/cart" className="back-link">View cart →</Link>}
+        </div>
+      </section>
       {editIdentity !== null && <p className="studio-session-note">Unsaved cart edits reset when you leave or refresh. Your separate studio draft is not changed.</p>}
     </div>
   </main>

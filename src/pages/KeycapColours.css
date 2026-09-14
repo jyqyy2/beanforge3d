@@ -112,3 +112,56 @@
 @media (max-width: 850px) {
   .studio-characters { grid-template-columns: repeat(4, minmax(0, 76px)); }
 }
+.keycap-studio .studio-heading { margin-bottom: 1.5rem; }
+.keycap-studio .studio-layout { max-width: 1120px; margin-inline: auto; gap: 1.5rem; }
+.keycap-studio .studio-note { font-size: 0.95rem; }
+.keycap-studio .keycap-preview { padding-block: 1.25rem; }
+.keycap-studio .keycap-strip { min-height: 240px; padding-inline: 8px; }
+.keycap-studio .keycap-object { flex-basis: 124px; }
+.keycap-studio .keycap-module .keycap-sketch { font-size: clamp(1rem, 3vw, 2.4rem); }
+.keycap-studio .keycap-object small { width: 26px; line-height: 26px; font-size: 0.85rem; font-weight: 700; }
+.keycap-studio .keycap-object[data-active="true"] .keycap-module { outline: 3px solid var(--accent-dark); outline-offset: 5px; border-radius: 20%; }
+.keycap-studio .keycap-object[data-active="true"] small { background: var(--ink); color: var(--paper); }
+.keycap-empty { position: relative; display: grid; place-items: center; width: 55%; aspect-ratio: 1; border: 1px dashed #625d54; border-radius: 20%; background: #fff8e8; color: #353027; font-weight: 700; font-size: clamp(1rem, 2vw, 1.5rem); }
+.preview-slot-state { display: block; margin-top: 0.35rem; font-size: 0.8rem; color: var(--ink); }
+.keycap-studio .studio-settings { grid-template-columns: 1fr; gap: 0; margin-bottom: 1.25rem; }
+.keycap-studio .studio-options legend { font-size: 1.2rem; margin-bottom: 0.25rem; }
+.keycap-studio .studio-options fieldset { margin-bottom: 1.25rem; }
+.studio-count .studio-choices { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.studio-count .studio-choices button { flex-direction: column; gap: 0.2rem; padding: 0.75rem 0.25rem; border-radius: 12px; border-color: #a69c8d; }
+.studio-count button strong { font-size: 1.5rem; }
+.studio-count button span { font-size: 0.8rem; }
+.studio-count .studio-choices button[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 3px 0 var(--accent-dark); }
+.keycap-studio .studio-characters { grid-template-columns: repeat(8, minmax(0, 1fr)); max-width: none; gap: 0.75rem; }
+.keycap-studio .studio-characters label { font-size: 0.85rem; color: var(--ink); }
+.keycap-studio .studio-characters label > span:first-child { font-weight: 700; }
+.keycap-studio .studio-characters input { font-size: 2rem; }
+.keycap-studio .studio-characters input::placeholder { color: var(--cap-ink); opacity: 0.7; }
+.keycap-studio .studio-characters [data-selected="true"] input { outline-width: 3px; }
+.character-state { display: block; min-height: 2.6em; margin-top: 0.4rem; font-size: 0.8rem; font-weight: 600; }
+.keycap-studio .studio-purchase { gap: 2rem; border-top: 3px solid var(--ink); }
+.keycap-studio .studio-purchase > div { min-width: 0; }
+.keycap-studio .studio-purchase h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 0.5rem; }
+.studio-completion { display: grid; gap: 0.4rem; padding-left: 1rem; border-left: 3px solid var(--accent-dark); margin-block: 1.25rem; }
+.studio-completion strong { font-size: 1.25rem; color: var(--ink); }
+.studio-completion[data-complete="true"] { border-left-color: var(--ink); }
+.keycap-studio .studio-price-action dl div { font-size: 1rem; }
+.keycap-studio .studio-price-action .studio-total { align-items: baseline; font-size: clamp(1.4rem, 3vw, 2rem); border-top-color: #a69c8d; }
+.keycap-studio .studio-add { min-height: 56px; }
+.keycap-studio .studio-add:disabled { border-style: dashed; border-color: #8a8174; color: #454039; }
+.keycap-studio .studio-add:not(:disabled):hover { background: #38332c; }
+@media (max-width: 850px) {
+  .keycap-studio .studio-characters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .keycap-studio .studio-characters input { max-height: 110px; }
+  .studio-count .studio-choices { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .keycap-studio .keycap-strip { padding: 10px 0; min-height: 180px; --board-gap: 4px; }
+  .keycap-studio .keycap-object { flex: 0 1 100px; }
+}
+@media (max-width: 520px) {
+  .keycap-studio .studio-purchase { padding: 1.25rem; }
+  .keycap-studio .studio-characters { gap: 0.65rem; }
+  .keycap-studio .studio-characters label { font-size: 0.8rem; }
+  .keycap-studio .keycap-object small { width: 20px; line-height: 20px; font-size: 0.75rem; }
+  .keycap-studio .preview-slot-state { font-size: 0.65rem; overflow-wrap: anywhere; }
+  .keycap-studio .keycap-module .keycap-sketch { font-size: clamp(0.7rem, 3vw, 1rem); border-bottom-width: 3px; }
+}
