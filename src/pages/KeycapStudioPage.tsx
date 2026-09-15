@@ -6,7 +6,7 @@ import type { KeycapConfiguration } from '../types/keycap'
 import { calculateKeycapPrice } from '../utils/keycapPricing'
 import { useCart } from '../context/useCart'
 import { cartItemIdentity } from '../utils/cartIdentity'
-import { readKeycapDraft, saveKeycapDraft } from '../utils/keycapDraft'
+import { exportDraftRecovery, needsDraftRecovery, readKeycapDraft, saveKeycapDraft } from '../utils/keycapDraft'
 
 const money = (minor: number) => `S$${(minor / 100).toFixed(2)}`
 
@@ -111,6 +111,29 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     setCharacters((current) => current.map((item, position) => position === index ? { ...item, character: nextCharacter, colour: item.colour || (nextCharacter ? (colour === 'Cream' ? 'Black' : 'Cream') : '') } : item))
     setMessage('')
   }
+  if (editIdentity === null && needsDraftRecovery()) return <main className="keycap-studio">
+    <p className="eyebrow">YOUR SAVED DESIGN</p>
+    <h1>Your saved draft could not be loaded.</h1>
+    <p role="alert">Your saved data has not been changed. You can download a recovery copy or reload to try again.</p>
+    <p className="studio-note">A recovery file keeps the available design data safe for later review. It does not repair the design, and cannot be imported here yet.</p>
+    <div className="studio-choices">
+      <button type="button" onClick={() => {
+        try {
+          const url = URL.createObjectURL(new Blob([exportDraftRecovery()], { type: 'application/json' }))
+          const link = document.createElement('a')
+          link.href = url
+          link.download = 'beanforge-design-recovery.json'
+          link.click()
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+          setMessage('Recovery download requested. Your saved data is unchanged.')
+        } catch {
+          setMessage('We could not access your saved data to download it. Nothing has been changed. Please reload and try again.')
+        }
+      }}>Download recovery file</button>
+      <button type="button" onClick={() => window.location.reload()}>Reload and retry</button>
+    </div>
+    <p role="status">{message}</p>
+  </main>
   return <main className="keycap-studio" data-colour={colour}>
     <Link to={editIdentity === null ? '/#custom' : '/cart'} className="back-link">{editIdentity === null ? '← Back to the shop' : '← Cancel and return to cart'}</Link>
     <header className="studio-heading"><p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p><h1>{editIdentity === null ? 'Build your own.' : 'Refine your creation.'}</h1><p>{editIdentity === null ? 'Your name. Your lucky number. Your little daily reminder.' : 'Changes apply to every copy in this cart row when you save. Matching designs combine quantities.'}</p></header>

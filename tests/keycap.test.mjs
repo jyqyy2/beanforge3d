@@ -140,7 +140,6 @@ test('browser persistence uses separate draft/cart keys and handles storage fail
   assert.deepEqual([...storage.keys()].sort(), ['beanforge-cart', 'beanforge-keycap-draft'])
   assert.deepEqual(readKeycapDraft(), draft)
   globalThis.localStorage = { getItem: () => { throw new Error('blocked') }, setItem: () => { throw new Error('quota') } }
-  assert.equal(readKeycapDraft(), null)
   assert.equal(saveKeycapDraft(draft), false)
   assert.equal(saveCart([cartItem()]), false)
 })
@@ -168,4 +167,11 @@ test('unreadable saved data is preserved and recovery copies are never overwritt
     assert.equal(storage.get(key), '{different')
     assert.equal(storage.get(`${key}-recovery`), '{broken')
   }
+  const originalRead = globalThis.localStorage.getItem
+  globalThis.localStorage.getItem = () => { throw new Error('initial read blocked') }
+  assert.equal(readKeycapDraft(), null)
+  globalThis.localStorage.getItem = originalRead
+  const before = storage.get('beanforge-keycap-draft')
+  assert.equal(saveKeycapDraft({ version: 1, count: 1, configuration: configuration('ABCDEFGH') }), false)
+  assert.equal(storage.get('beanforge-keycap-draft'), before)
 })

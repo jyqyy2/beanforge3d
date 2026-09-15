@@ -1,8 +1,20 @@
 import type { KeycapConfiguration } from '../types/keycap'
 import { isKeycapConfiguration } from './cartIdentity'
-import { preserveStoredValue } from './preserveStoredValue'
+import { preserveStoredValue, readStoredValue } from './preserveStoredValue'
 
 export const keycapDraftStorageKey = 'beanforge-keycap-draft'
+let draftNeedsRecovery = false
+
+export function needsDraftRecovery(): boolean {
+  return draftNeedsRecovery
+}
+
+export function exportDraftRecovery(): string {
+  const raw = localStorage.getItem(keycapDraftStorageKey)
+  const preservedRaw = localStorage.getItem(`${keycapDraftStorageKey}-recovery`)
+  if (raw === null && preservedRaw === null) throw new Error('No draft data available')
+  return JSON.stringify({ format: 'beanforge-draft-recovery', version: 1, raw, preservedRaw }, null, 2)
+}
 
 export type KeycapDraft = {
   version: 1
@@ -24,13 +36,18 @@ export function parseKeycapDraft(raw: string | null): KeycapDraft | null {
 
 export function readKeycapDraft(): KeycapDraft | null {
   try {
-    return parseKeycapDraft(localStorage.getItem(keycapDraftStorageKey))
+    const raw = readStoredValue(keycapDraftStorageKey)
+    const draft = parseKeycapDraft(raw)
+    if (raw !== null && draft === null) draftNeedsRecovery = true
+    return draft
   } catch {
+    draftNeedsRecovery = true
     return null
   }
 }
 
 export function saveKeycapDraft(draft: KeycapDraft): boolean {
+  if (draftNeedsRecovery) return false
   try {
     preserveStoredValue(keycapDraftStorageKey, (raw) => parseKeycapDraft(raw) !== null)
     localStorage.setItem(keycapDraftStorageKey, JSON.stringify(draft))

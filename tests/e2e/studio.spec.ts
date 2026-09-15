@@ -1,21 +1,64 @@
 import { expect, test } from '@playwright/test'
+import { Buffer } from 'node:buffer'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/studio/keycaps')
 })
 
-test('malformed saved cart and draft survive initialization in recovery copies', async ({ page }) => {
+for (const kind of ['cart', 'draft']) {
+  test(`initial ${kind} read failure preserves original data until reload retry`, async ({ page }) => {
+    await page.getByRole('textbox', { name: 'Character 1', exact: true }).fill('Z')
+    await page.getByRole('button', { name: 'Add my creation to cart' }).click()
+    const key = kind === 'cart' ? 'beanforge-cart' : 'beanforge-keycap-draft'
+    const original = await page.evaluate(key => localStorage.getItem(key), key)
+    await page.addInitScript(key => {
+      if (sessionStorage.getItem('read-fault-used')) return
+      sessionStorage.setItem('read-fault-used', 'yes')
+      const originalRead = Storage.prototype.getItem
+      let failed = false
+      Storage.prototype.getItem = function (name) {
+        if (name === key && !failed) { failed = true; throw new Error('Transient initial read failure') }
+        return originalRead.call(this, name)
+      }
+    }, key)
+    await page.reload()
+    await expect(page.getByRole('heading', { name: `Your saved ${kind} could not be loaded.` })).toBeVisible()
+    await expect(page.getByRole('textbox')).toHaveCount(0)
+    expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(original)
+    await page.getByRole('button', { name: 'Reload and retry' }).click()
+    await expect(page.getByRole('textbox', { name: 'Character 1', exact: true })).toHaveValue('Z')
+    expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe(original)
+    await page.goto('/cart')
+    await expect(page.getByRole('article')).toContainText('Custom keycaps · Z')
+  })
+}
+
+test('malformed draft stays untouched and exports exact data separately from cart', async ({ page }) => {
   await page.evaluate(() => {
     localStorage.setItem('beanforge-cart', '{broken cart')
     localStorage.setItem('beanforge-keycap-draft', '{broken draft')
+    localStorage.setItem('beanforge-keycap-draft-recovery', '{older draft')
   })
   await page.reload()
   await expect.poll(() => page.evaluate(() => localStorage.getItem('beanforge-cart-recovery'))).toBe('{broken cart')
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('beanforge-keycap-draft-recovery'))).toBe('{broken draft')
-  await expect(page.getByRole('textbox', { name: 'Character 1', exact: true })).toHaveValue('')
+  await expect(page.getByRole('heading', { name: 'Your saved draft could not be loaded.' })).toBeVisible()
+  const downloadPromise = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Download recovery file' }).press('Enter')
+  const download = await downloadPromise
+  const stream = await download.createReadStream()
+  const chunks = []
+  for await (const chunk of stream) chunks.push(chunk)
+  expect(JSON.parse(Buffer.concat(chunks).toString())).toEqual({ format: 'beanforge-draft-recovery', version: 1, raw: '{broken draft', preservedRaw: '{older draft' })
+  expect(await page.evaluate(() => localStorage.getItem('beanforge-keycap-draft'))).toBe('{broken draft')
+  expect(await page.evaluate(() => localStorage.getItem('beanforge-keycap-draft-recovery'))).toBe('{older draft')
+  await expect(page.getByRole('button', { name: 'Download recovery file' })).toBeFocused()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await page.getByRole('button', { name: 'Reload and retry' }).click()
+  await expect(page.getByRole('button', { name: 'Download recovery file' })).toBeVisible()
 })
 
 test('counts, empty selection, colours, hidden characters and draft restoration', async ({ page }) => {
+  await expect(page.getByRole('button', { name: 'Download recovery file' })).toHaveCount(0)
   for (let count = 1; count <= 8; count++) {
     await page.getByRole('button', { name: count === 1 ? '1 board' : `${count} boards`, exact: true }).click()
     await expect(page.getByRole('textbox', { name: /^Character / })).toHaveCount(count)

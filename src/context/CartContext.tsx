@@ -7,10 +7,11 @@ import { updateKeycapCart } from '../utils/updateKeycapCart'
 import type { KeycapConfiguration } from '../types/keycap'
 
 import { cartStorageKey, saveCart } from '../utils/cartStorage'
+import { hasStorageReadFailed, readStoredValue } from '../utils/preserveStoredValue'
 
 function getSavedCartItems() {
   try {
-    const savedCartItems = localStorage.getItem(cartStorageKey)
+    const savedCartItems = readStoredValue(cartStorageKey)
     const parsedItems: unknown = JSON.parse(savedCartItems ?? '[]')
     if (!Array.isArray(parsedItems)) return []
 
@@ -124,7 +125,11 @@ export function CartProvider({
         updateCartItemQuantity,
       }}
     >
-      {children}
+      {hasStorageReadFailed(cartStorageKey) ? <main className="keycap-studio">
+        <h1>Your saved cart could not be loaded.</h1>
+        <p role="alert">We have not changed your saved cart. Reload to try again before continuing.</p>
+        <button type="button" className="studio-add" onClick={() => window.location.reload()}>Reload and retry</button>
+      </main> : children}
     </CartContext.Provider>
   )
 }
