@@ -4,6 +4,17 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/studio/keycaps')
 })
 
+test('malformed saved cart and draft survive initialization in recovery copies', async ({ page }) => {
+  await page.evaluate(() => {
+    localStorage.setItem('beanforge-cart', '{broken cart')
+    localStorage.setItem('beanforge-keycap-draft', '{broken draft')
+  })
+  await page.reload()
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('beanforge-cart-recovery'))).toBe('{broken cart')
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('beanforge-keycap-draft-recovery'))).toBe('{broken draft')
+  await expect(page.getByRole('textbox', { name: 'Character 1', exact: true })).toHaveValue('')
+})
+
 test('counts, empty selection, colours, hidden characters and draft restoration', async ({ page }) => {
   for (let count = 1; count <= 8; count++) {
     await page.getByRole('button', { name: count === 1 ? '1 board' : `${count} boards`, exact: true }).click()

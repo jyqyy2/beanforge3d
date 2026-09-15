@@ -1,5 +1,6 @@
 import type { KeycapConfiguration } from '../types/keycap'
 import { isKeycapConfiguration } from './cartIdentity'
+import { preserveStoredValue } from './preserveStoredValue'
 
 export const keycapDraftStorageKey = 'beanforge-keycap-draft'
 
@@ -31,6 +32,7 @@ export function readKeycapDraft(): KeycapDraft | null {
 
 export function saveKeycapDraft(draft: KeycapDraft): boolean {
   try {
+    preserveStoredValue(keycapDraftStorageKey, (raw) => parseKeycapDraft(raw) !== null)
     localStorage.setItem(keycapDraftStorageKey, JSON.stringify(draft))
     return true
   } catch {

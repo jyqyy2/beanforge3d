@@ -144,3 +144,28 @@ test('browser persistence uses separate draft/cart keys and handles storage fail
   assert.equal(saveKeycapDraft(draft), false)
   assert.equal(saveCart([cartItem()]), false)
 })
+
+test('unreadable saved data is preserved and recovery copies are never overwritten', context => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
+  const storage = new Map()
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: {
+    getItem: key => storage.get(key) ?? null,
+    setItem: (key, value) => storage.set(key, value),
+  } })
+  context.after(() => {
+    if (descriptor) Object.defineProperty(globalThis, 'localStorage', descriptor)
+    else delete globalThis.localStorage
+  })
+  for (const [key, save] of [
+    ['beanforge-cart', () => saveCart([])],
+    ['beanforge-keycap-draft', () => saveKeycapDraft({ version: 1, count: 1, configuration: configuration('ABCDEFGH') })],
+  ]) {
+    storage.set(key, '{broken')
+    assert.equal(save(), true)
+    assert.equal(storage.get(`${key}-recovery`), '{broken')
+    storage.set(key, '{different')
+    assert.equal(save(), false)
+    assert.equal(storage.get(key), '{different')
+    assert.equal(storage.get(`${key}-recovery`), '{broken')
+  }
+})
