@@ -8,6 +8,8 @@ export type Product = {
   name: string
   category: string
   price: number
+  priceDisplay?: 'fixed' | 'from'
+  featuredRank?: number | null
   description: string
   colours: string[]
   image?: string

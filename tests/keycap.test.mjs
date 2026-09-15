@@ -3,8 +3,9 @@ import { test } from 'node:test'
 import { createServer } from 'vite'
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
-let pricing, calculateKeycapPrice, isKeycapConfiguration, cartItemIdentity, updateKeycapCart, parseKeycapDraft, readKeycapDraft, saveKeycapDraft, saveCart, loadCart
+let pricing, calculateKeycapPrice, isKeycapConfiguration, cartItemIdentity, updateKeycapCart, parseKeycapDraft, readKeycapDraft, saveKeycapDraft, saveCart, loadCart, mapCatalogueRecords, findCatalogueProduct
 try {
+  ;({ mapCatalogueRecords, findCatalogueProduct } = await server.ssrLoadModule('/src/data/catalogueAdapter.ts'))
   pricing = (await server.ssrLoadModule('/src/data/catalogue.ts')).getCustomKeycapPricing()
   ;({ calculateKeycapPrice } = await server.ssrLoadModule('/src/utils/keycapPricing.ts'))
   ;({ isKeycapConfiguration, cartItemIdentity } = await server.ssrLoadModule('/src/utils/cartIdentity.ts'))
@@ -227,4 +228,43 @@ test('cart initialization read failure remains blocked without changing original
   assert.equal(saveCart([]), false)
   assert.equal(writes, 0)
   assert.equal(globalThis.localStorage.getItem('beanforge-cart'), raw)
+})
+
+test('catalogue adapter maps active fixture records and preserves display metadata', () => {
+  const record = { product: { slug: 'x', name: 'X', description: 'D', is_active: true, price_display: 'from', featured_rank: 2 }, category: { name: 'C', is_active: true }, variants: [{ colour: { name: 'Pink' }, price_minor: 1800, is_active: true, sort_order: 2 }, { colour: { name: 'Cream' }, price_minor: 1800, is_active: true, sort_order: 1 }], images: [{ storage_path: 'base', sort_order: 0 }, { storage_path: 'pink', variant_colour: 'Pink', sort_order: 1 }] }
+  const result = mapCatalogueRecords([record])
+  assert.deepEqual(result.products[0], { slug: 'x', name: 'X', category: 'C', price: 18, description: 'D', colours: ['Cream', 'Pink'], image: 'base', colourImages: { Pink: 'pink' }, priceDisplay: 'from', featuredRank: 2 })
+  assert.equal(findCatalogueProduct(result, 'x').status, 'available')
+  assert.equal(findCatalogueProduct(result, 'missing').status, 'unavailable')
+  for (const field of ['product', 'category']) {
+    const inactive = structuredClone(record)
+    inactive[field].is_active = false
+    assert.deepEqual(mapCatalogueRecords([inactive]), { status: 'loaded', products: [] })
+  }
+  const inactive = structuredClone(record)
+  inactive.variants[0].is_active = false
+  assert.deepEqual(mapCatalogueRecords([inactive]).products[0].colours, ['Cream'])
+  assert.equal(mapCatalogueRecords([inactive]).products[0].colourImages, undefined)
+  const unequal = structuredClone(record)
+  unequal.variants[0].price_minor = 1
+  assert.equal(mapCatalogueRecords([unequal]).status, 'failed')
+  const first = structuredClone(record)
+  first.product.slug = 'first'
+  first.product.featured_rank = 0
+  first.product.price_display = 'fixed'
+  assert.deepEqual(mapCatalogueRecords([record, first]).products.map(product => product.slug), ['first', 'x'])
+  assert.equal(mapCatalogueRecords([first]).products[0].priceDisplay, 'fixed')
+})
+
+test('catalogue failure/loading are distinct from successful empty and do not change saved configuration validation', () => {
+  for (const raw of [null, {}, [null], [{ product: {} }]]) assert.equal(mapCatalogueRecords(raw).status, 'failed')
+  assert.deepEqual(mapCatalogueRecords([]), { status: 'loaded', products: [] })
+  for (const status of ['loading', 'failed']) {
+    const snapshot = status === 'failed' ? { status, error: 'Offline' } : { status }
+    assert.equal(findCatalogueProduct(snapshot, 'x').status, status)
+    assert.equal('products' in snapshot, false)
+    assert.equal(isKeycapConfiguration(configuration()), true)
+    const draft = { version: 1, count: 1, configuration: configuration('ABCDEFGH') }
+    assert.deepEqual(parseKeycapDraft(JSON.stringify(draft)), draft)
+  }
 })
