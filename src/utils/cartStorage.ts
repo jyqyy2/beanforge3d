@@ -1,21 +1,49 @@
 import type { CartItem } from '../types/cart'
 import { isKeycapConfiguration } from './cartIdentity'
-import { preserveStoredValue } from './preserveStoredValue'
+import { preserveStoredValue, readStoredValue } from './preserveStoredValue'
 
 export const cartStorageKey = 'beanforge-cart'
+
+type CartLoadResult = {
+  items: CartItem[]
+  status: 'loaded' | 'invalid-data' | 'read-failed'
+}
+
+function isCartItem(item: unknown): item is CartItem {
+  if (item === null || typeof item !== 'object') return false
+  const candidate = item as Record<string, unknown>
+  return typeof candidate.productSlug === 'string' &&
+    typeof candidate.name === 'string' && typeof candidate.colour === 'string' &&
+    typeof candidate.price === 'number' && Number.isFinite(candidate.price) && candidate.price >= 0 &&
+    typeof candidate.quantity === 'number' && Number.isSafeInteger(candidate.quantity) && candidate.quantity > 0 &&
+    (candidate.image === undefined || typeof candidate.image === 'string') &&
+    (candidate.configuration === undefined ? candidate.productSlug !== 'custom-keycaps' :
+      candidate.productSlug === 'custom-keycaps' && isKeycapConfiguration(candidate.configuration) && candidate.colour === candidate.configuration.boardColour)
+}
+
+export function loadCart(): CartLoadResult {
+  let raw: string | null
+  try {
+    raw = readStoredValue(cartStorageKey)
+  } catch {
+    return { items: [], status: 'read-failed' }
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw ?? '[]')
+    if (!Array.isArray(parsed)) return { items: [], status: 'invalid-data' }
+    const items = parsed.filter(isCartItem)
+    return { items, status: items.length === parsed.length ? 'loaded' : 'invalid-data' }
+  } catch {
+    return { items: [], status: 'invalid-data' }
+  }
+}
 
 export function saveCart(items: CartItem[]): boolean {
   try {
     preserveStoredValue(cartStorageKey, (raw) => {
       try {
         const parsed: unknown = JSON.parse(raw)
-        return Array.isArray(parsed) && parsed.every((item) => item !== null && typeof item === 'object' &&
-          typeof item.productSlug === 'string' && typeof item.name === 'string' && typeof item.colour === 'string' &&
-          typeof item.price === 'number' && Number.isFinite(item.price) && item.price >= 0 &&
-          Number.isSafeInteger(item.quantity) && item.quantity > 0 &&
-          (item.image === undefined || typeof item.image === 'string') &&
-          (item.configuration === undefined ? item.productSlug !== 'custom-keycaps' :
-            item.productSlug === 'custom-keycaps' && isKeycapConfiguration(item.configuration) && item.colour === item.configuration.boardColour))
+        return Array.isArray(parsed) && parsed.every(isCartItem)
       } catch {
         return false
       }

@@ -6,41 +6,15 @@ import { cartItemIdentity, isKeycapConfiguration } from '../utils/cartIdentity'
 import { updateKeycapCart } from '../utils/updateKeycapCart'
 import type { KeycapConfiguration } from '../types/keycap'
 
-import { cartStorageKey, saveCart } from '../utils/cartStorage'
-import { hasStorageReadFailed, readStoredValue } from '../utils/preserveStoredValue'
-
-function getSavedCartItems() {
-  try {
-    const savedCartItems = readStoredValue(cartStorageKey)
-    const parsedItems: unknown = JSON.parse(savedCartItems ?? '[]')
-    if (!Array.isArray(parsedItems)) return []
-
-    return parsedItems.filter((item): item is CartItem =>
-      item !== null && typeof item === 'object' &&
-      typeof item.productSlug === 'string' &&
-      typeof item.name === 'string' &&
-      typeof item.colour === 'string' &&
-      typeof item.price === 'number' &&
-      Number.isFinite(item.price) && item.price >= 0 &&
-      Number.isSafeInteger(item.quantity) && item.quantity > 0 &&
-      (item.image === undefined || typeof item.image === 'string') &&
-      (item.configuration === undefined
-        ? item.productSlug !== 'custom-keycaps'
-        : item.productSlug === 'custom-keycaps' && isKeycapConfiguration(item.configuration) && item.colour === item.configuration.boardColour)
-    )
-  } catch {
-    return []
-  }
-}
+import { loadCart, saveCart } from '../utils/cartStorage'
 
 export function CartProvider({
   children,
 }: {
   children: ReactNode
 }) { /* following 1 line is the cart memory | Building React memory → shared across the website*/
-  const [cartItems, setCartItems] = useState<CartItem[]>(
-    getSavedCartItems
-  )
+  const [initialCart] = useState(loadCart)
+  const [cartItems, setCartItems] = useState<CartItem[]>(initialCart.items)
 
   const [storageFailed, setStorageFailed] = useState(false)
   useEffect(() => {
@@ -125,7 +99,7 @@ export function CartProvider({
         updateCartItemQuantity,
       }}
     >
-      {hasStorageReadFailed(cartStorageKey) ? <main className="keycap-studio">
+      {initialCart.status === 'read-failed' ? <main className="keycap-studio">
         <h1>Your saved cart could not be loaded.</h1>
         <p role="alert">We have not changed your saved cart. Reload to try again before continuing.</p>
         <button type="button" className="studio-add" onClick={() => window.location.reload()}>Reload and retry</button>

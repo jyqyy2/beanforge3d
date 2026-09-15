@@ -3,14 +3,14 @@ import { test } from 'node:test'
 import { createServer } from 'vite'
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
-let pricing, calculateKeycapPrice, isKeycapConfiguration, cartItemIdentity, updateKeycapCart, parseKeycapDraft, readKeycapDraft, saveKeycapDraft, saveCart
+let pricing, calculateKeycapPrice, isKeycapConfiguration, cartItemIdentity, updateKeycapCart, parseKeycapDraft, readKeycapDraft, saveKeycapDraft, saveCart, loadCart
 try {
   pricing = (await server.ssrLoadModule('/src/data/catalogue.ts')).getCustomKeycapPricing()
   ;({ calculateKeycapPrice } = await server.ssrLoadModule('/src/utils/keycapPricing.ts'))
   ;({ isKeycapConfiguration, cartItemIdentity } = await server.ssrLoadModule('/src/utils/cartIdentity.ts'))
   ;({ updateKeycapCart } = await server.ssrLoadModule('/src/utils/updateKeycapCart.ts'))
   ;({ parseKeycapDraft, readKeycapDraft, saveKeycapDraft } = await server.ssrLoadModule('/src/utils/keycapDraft.ts'))
-  ;({ saveCart } = await server.ssrLoadModule('/src/utils/cartStorage.ts'))
+  ;({ saveCart, loadCart } = await server.ssrLoadModule('/src/utils/cartStorage.ts'))
 } finally {
   await server.close()
 }
@@ -144,6 +144,38 @@ test('browser persistence uses separate draft/cart keys and handles storage fail
   assert.equal(saveCart([cartItem()]), false)
 })
 
+test('cart initialization loads valid items and preserves invalid source data until saving', context => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
+  const storage = new Map()
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: {
+    getItem: key => storage.get(key) ?? null,
+    setItem: (key, value) => storage.set(key, value),
+  } })
+  context.after(() => {
+    if (descriptor) Object.defineProperty(globalThis, 'localStorage', descriptor)
+    else delete globalThis.localStorage
+  })
+  assert.deepEqual(loadCart(), { items: [], status: 'loaded' })
+  const ordinary = { productSlug: 'example', name: 'Example', colour: 'Cream', price: 0, quantity: 1 }
+  const valid = [cartItem(), ordinary]
+  storage.set('beanforge-cart', JSON.stringify(valid))
+  assert.deepEqual(loadCart(), { items: valid, status: 'loaded' })
+  const invalid = [null, {}, { ...ordinary, quantity: 0 }, { ...ordinary, price: -1 },
+    { ...ordinary, image: 5 }, { ...cartItem(), colour: 'Pink' },
+    { ...cartItem(), configuration: undefined }, { ...ordinary, configuration: configuration() }]
+  for (const raw of ['{broken', 'null', '{}', JSON.stringify([...valid, ...invalid])]) {
+    storage.set('beanforge-cart', raw)
+    const result = loadCart()
+    assert.equal(result.status, 'invalid-data')
+    assert.deepEqual(result.items, raw.startsWith('[') ? valid : [])
+    assert.equal(storage.get('beanforge-cart'), raw)
+    assert.equal(storage.has('beanforge-cart-recovery'), false)
+    assert.equal(saveCart(result.items), true)
+    assert.equal(storage.get('beanforge-cart-recovery'), raw)
+    storage.delete('beanforge-cart-recovery')
+  }
+})
+
 test('unreadable saved data is preserved and recovery copies are never overwritten', context => {
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
   const storage = new Map()
@@ -174,4 +206,25 @@ test('unreadable saved data is preserved and recovery copies are never overwritt
   const before = storage.get('beanforge-keycap-draft')
   assert.equal(saveKeycapDraft({ version: 1, count: 1, configuration: configuration('ABCDEFGH') }), false)
   assert.equal(storage.get('beanforge-keycap-draft'), before)
+})
+
+test('cart initialization read failure remains blocked without changing original data', context => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
+  const raw = JSON.stringify([cartItem()])
+  let blocked = true
+  let writes = 0
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: {
+    getItem: () => { if (blocked) throw new Error('blocked'); return raw },
+    setItem: () => { writes++ },
+  } })
+  context.after(() => {
+    if (descriptor) Object.defineProperty(globalThis, 'localStorage', descriptor)
+    else delete globalThis.localStorage
+  })
+  assert.deepEqual(loadCart(), { items: [], status: 'read-failed' })
+  blocked = false
+  assert.deepEqual(loadCart(), { items: [], status: 'read-failed' })
+  assert.equal(saveCart([]), false)
+  assert.equal(writes, 0)
+  assert.equal(globalThis.localStorage.getItem('beanforge-cart'), raw)
 })
