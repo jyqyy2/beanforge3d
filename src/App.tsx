@@ -297,14 +297,13 @@ return (
             <section className="custom-section" id="custom">
               <img className="landing-gifts" src={customBanner} alt="Personalised keycap keychains on wrapped gifts" width="295" height="163" loading="lazy" />
               <div className="custom-content">
-                <p className="eyebrow">MADE FOR YOU</p>
+                <p className="eyebrow">BESPOKE IDEAS</p>
 
                 <h2>Have something in mind?</h2>
 
                 <p>
-                  A birthday gift. A desk accessory. A name tag. A
-                  clicker for your work-from-home friend. Tell us what
-                  you're thinking and we'll see what we can make.
+                  Something beyond keycaps? A desk accessory, a name tag
+                  or a thoughtful gift — made around your own idea.
                 </p>
 
                 <a
