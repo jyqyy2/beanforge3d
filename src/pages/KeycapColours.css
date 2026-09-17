@@ -167,3 +167,95 @@
   .keycap-studio .preview-slot-state { font-size: 0.65rem; overflow-wrap: anywhere; }
   .keycap-studio .keycap-module .keycap-sketch { font-size: clamp(0.7rem, 3vw, 1rem); border-bottom-width: 3px; }
 }
+
+.keycap-studio .studio-heading {
+  text-align: center;
+  margin-block: clamp(2rem, 5vw, 4rem) clamp(2.5rem, 5vw, 4rem);
+}
+.keycap-studio .studio-heading h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.keycap-studio .eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+}
+.keycap-studio .studio-draft-toolbar {
+  padding-block: 0.75rem;
+  border-block: 1px solid var(--line);
+}
+.keycap-studio .keycap-preview {
+  border-color: #cfbdab;
+  border-radius: 28px 8px 28px 8px;
+  background: radial-gradient(ellipse at 50% 30%, var(--paper), #eee2d0);
+}
+.keycap-studio .studio-options {
+  padding: clamp(1rem, 4vw, 3rem);
+  border: 1px solid #cfbdab;
+  border-radius: 16px;
+  background: var(--paper);
+}
+.keycap-studio .studio-options legend {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.65rem, 3vw, 2.2rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+.keycap-studio .studio-choices button {
+  border-color: #cfbdab;
+  font-weight: 600;
+}
+.keycap-studio .studio-choices button[aria-pressed="true"] {
+  border-color: #a94f30;
+  background: #a94f30;
+  color: var(--paper);
+}
+.keycap-studio .studio-count .studio-choices button[aria-pressed="true"] {
+  box-shadow: 0 3px 0 #853a22;
+}
+.keycap-studio .studio-choices button:not([aria-pressed="true"]):hover {
+  border-color: #a94f30;
+  background: var(--cream);
+}
+.keycap-studio .character-palette {
+  border-color: #cfbdab;
+  border-radius: 16px;
+  background: var(--cream);
+}
+.keycap-studio .studio-purchase {
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border: 1px solid #cfbdab;
+  border-top: 3px solid #a94f30;
+  border-radius: 16px;
+}
+.keycap-studio .studio-price-action .studio-total {
+  color: #91472e;
+}
+.keycap-studio .studio-add:not(:disabled) {
+  background: #a94f30;
+  border-color: #a94f30;
+  font-weight: 600;
+}
+.keycap-studio .studio-add:not(:disabled):hover {
+  background: #853a22;
+  border-color: #853a22;
+}
+
+.keycap-studio .studio-layout { gap: clamp(1.5rem, 4vw, 3rem); }
+.keycap-studio .studio-heading > p:last-child { max-width: 38rem; margin-inline: auto; }
+.keycap-studio .studio-options fieldset { margin-bottom: 2rem; }
+.keycap-studio .studio-options legend { margin-bottom: 0.75rem; line-height: 1.15; }
+.keycap-studio .studio-options .studio-note { margin-block: 0.5rem 1.25rem; }
+.keycap-studio .studio-settings { margin-bottom: 2rem; }
+.keycap-studio .character-palette .studio-note { margin-bottom: 0.75rem; }
+#root:has(.keycap-studio) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
+#root:has(.keycap-studio) > .header .nav { gap: 1.25rem; }
+#root:has(.keycap-studio) > .header .nav a { display: inline-flex; align-items: center; min-height: 44px; }
+#root:has(.keycap-studio) > .header :focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
+
+@media (max-width: 850px) {
+  #root:has(.keycap-studio) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
+  #root:has(.keycap-studio) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
+}

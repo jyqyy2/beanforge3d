@@ -170,7 +170,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       <section className="studio-options" aria-label="Design your keycaps">
         <div className="studio-settings">
           <fieldset className="studio-count" aria-describedby="studio-count-help">
-            <legend>HOW MANY LETTERBOARDS?</legend>
+            <legend>How many letterboards</legend>
             <p id="studio-count-help" className="studio-note">Choose how many characters you want in your design.</p>
             <div className="studio-choices">{Array.from({ length: 8 }, (_, index) => index + 1).map((amount) => (
               <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>
@@ -179,7 +179,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
             ))}</div>
           </fieldset>
           <fieldset>
-            <legend>Board colour <span>· {colour}</span></legend>
+            <legend>Board colour</legend>
             <p className="studio-note">The colour of your whole board.</p>
             <div className="studio-choices">{colours.map((option) => <button type="button" key={option} aria-pressed={colour === option} onClick={() => { setColour(option); setMessage('') }}><span className="studio-swatch" data-colour={option} aria-hidden="true" />{option}</button>)}</div>
           </fieldset>
@@ -258,7 +258,6 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
             <strong>{quote.completed} / {count} characters complete</strong>
             <span>{completionHelp}</span>
           </div>
-          <p className="studio-note">Temporary development prices — not a production quote.</p>
         </div>
         <div className="studio-price-action">
           <dl>
