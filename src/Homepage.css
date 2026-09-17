@@ -137,14 +137,15 @@
 .site .product-card:focus-within { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
 .site article[id] { scroll-margin-top: 180px; }
 .site .product-link { border: 0; font-size: 0.8rem; }
-.site .landing-studio { margin: 0 4%; display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; overflow: hidden; border-radius: 28px; background: linear-gradient(115deg, #a64728 5%, #b9542b 55%, #e6a273); color: var(--paper); }
-.site .landing-studio > div { padding: clamp(1.5rem, 4vw, 3.5rem); }
-.site .landing-studio h2 { font-size: clamp(2.5rem, 4.5vw, 3.6rem); line-height: 1.05; margin: 0 0 1rem; }
-.site .landing-studio p:not(.eyebrow) { max-width: 28rem; font-size: 0.9rem; line-height: 1.6; }
+.site .landing-studio { position: relative; isolation: isolate; margin: 0 4%; display: grid; grid-template-columns: 1fr 1fr; align-items: center; overflow: hidden; border-radius: 24px; background: radial-gradient(ellipse at 0 0, #ce8259, transparent 28%), linear-gradient(105deg, #ad4325 48%, #ed9564); color: var(--paper); }
+.site .landing-studio::before { content: ''; position: absolute; z-index: -1; width: 48%; height: 140%; right: -3%; top: -24%; border-radius: 42% 58% 65% 35%; background: #f5ae7940; transform: rotate(-20deg); }
+.site .landing-studio > div { padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.5rem, 5vw, 4.5rem); }
+.site .landing-studio h2 { font-size: clamp(2.5rem, 4.5vw, 3.8rem); line-height: 0.98; margin: 0 0 1rem; }
+.site .landing-studio p:not(.eyebrow) { max-width: 25rem; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.8rem; }
 .site .landing-studio .eyebrow { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 999px; background: var(--paper); color: #91472e; }
 .site .landing-studio .button { margin-top: 0.5rem; border-color: var(--paper); color: var(--paper); }
 .site .landing-studio .button:hover { background: #853a22; }
-.site .landing-studio > img { width: 94%; height: auto; aspect-ratio: 1.15; object-fit: cover; border-radius: 45% 28% 35% 20%; margin: 1rem 0; }
+.site .landing-studio > img { width: 92%; height: auto; aspect-ratio: 1.65; object-fit: cover; border-radius: 58% 30% 44% 25% / 65% 44% 48% 30%; margin: 1.25rem 0; }
 .site .landing-gifts { order: 1; width: 100%; height: 100%; min-height: 0; object-fit: cover; border-radius: 0; }
 .site .custom-content { padding: clamp(1.25rem, 3vw, 2rem); border: 0; }
 .site .custom-content h2 { margin-bottom: 1rem; }
@@ -183,7 +184,7 @@
 
 @media (min-width: 700px) and (max-width: 850px) {
   .site .landing-studio { grid-template-columns: 1.1fr 1fr; }
-  .site .landing-studio > img { width: 94%; max-height: none; margin: 1rem 0; }
+  .site .landing-studio > img { width: 92%; max-height: none; margin: 1rem 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
