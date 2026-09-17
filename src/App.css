@@ -1035,6 +1035,61 @@ So instead, put font-size after font: inherit:*/
   letter-spacing: -0.07em;
 }
 
+.cart-page { text-align: left; }
+.cart-page .cart-heading { text-align: center; margin-block: clamp(2rem, 5vw, 4rem); }
+.cart-page .cart-heading h1,
+.cart-page .empty-cart h2,
+.cart-page .cart-summary h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.cart-page .cart-heading h1 { font-size: clamp(2.8rem, 6vw, 4.5rem); }
+.cart-page .eyebrow { font-size: 0.68rem; letter-spacing: 0.14em; }
+.cart-page .cart-items { gap: 1.5rem; }
+.cart-page .cart-item,
+.cart-page .cart-summary {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border-color: #cfbdab;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px #35302705;
+}
+.cart-page .cart-item { align-items: start; }
+.cart-page .cart-item img { object-fit: contain; background: var(--cream); border-radius: 10px; }
+.cart-page .cart-item-info h2 { line-height: 1.35; }
+.cart-page .cart-item-info p { line-height: 1.6; color: #625d53; }
+.cart-page .cart-item-actions strong,
+.cart-page .cart-summary-total strong { color: #91472e; font-variant-numeric: tabular-nums; }
+.cart-page .cart-item-actions button { min-height: 44px; text-decoration: underline; text-underline-offset: 4px; }
+.cart-page .cart-quantity-controls { margin-top: 1.25rem; }
+.cart-page .cart-quantity-controls button { border-color: #cfbdab; }
+.cart-page .cart-quantity-controls button:not(:disabled):hover { background: var(--cream); border-color: #a94f30; }
+.cart-page .cart-summary { border-top: 3px solid #a94f30; }
+.cart-page .cart-summary h2 { font-size: 1.8rem; }
+.cart-page .cart-summary-note { margin-bottom: 1.25rem; color: #625d53; }
+.cart-page .checkout-button { border-radius: 999px; font-weight: 600; }
+.cart-page .keycap-preview-compact { border-color: #cfbdab; background: radial-gradient(ellipse at 50% 30%, var(--paper), #eee2d0); }
+.cart-page .empty-cart {
+  text-align: center;
+  padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 4vw, 3rem);
+  border-color: #cfbdab;
+  border-radius: 28px 8px 28px 8px;
+}
+.cart-page .empty-cart h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.cart-page .empty-cart p { margin-inline: auto; color: #625d53; }
+.cart-page .empty-cart .button { border-radius: 999px; background: #a94f30; border-color: #a94f30; font-weight: 600; }
+.cart-page .empty-cart .button:hover { background: #853a22; }
+#root:has(.cart-page) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
+#root:has(.cart-page) > .header .nav { gap: 1.25rem; }
+#root:has(.cart-page) > .header .nav a { display: inline-flex; align-items: center; min-height: 44px; }
+#root:has(.cart-page) > .header :focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
+@media (max-width: 850px) {
+  #root:has(.cart-page) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
+  #root:has(.cart-page) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
+}
+
 .empty-cart {
   padding: 3rem;
 
