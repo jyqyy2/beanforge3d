@@ -1,4 +1,5 @@
 .site {
+  --section-space: clamp(2.5rem, 5vw, 4rem);
   text-align: left;
   color: var(--ink);
   overflow-x: clip;
@@ -22,7 +23,7 @@
 .site .hero {
   min-height: 0;
   padding: clamp(2.5rem, 5vw, 4.5rem) 6%;
-  gap: 2rem;
+  gap: clamp(1.5rem, 4vw, 3rem);
   background: transparent;
   border-bottom: 0;
 }
@@ -47,10 +48,10 @@
 .site .button-dark { background: #a94f30; border-color: #a94f30; }
 .site .button-dark:hover { background: #853a22; }
 .site .categories, .site .featured { padding: clamp(2rem, 4vw, 3rem) 6%; }
-.site .section-heading { margin-bottom: 2rem; }
+.site .section-heading { margin-bottom: clamp(1.25rem, 2.5vw, 2rem); }
 .site .section-heading h2 { font-size: clamp(2.2rem, 4vw, 3.3rem); line-height: 1.1; }
 .site .eyebrow { font-size: 0.68rem; letter-spacing: 0.14em; }
-.site .category-grid { background: transparent; border: 0; gap: 1rem; }
+.site .category-grid { background: transparent; border: 0; gap: clamp(0.75rem, 1.8vw, 1.4rem); }
 .site .category-card {
   position: relative;
   justify-content: flex-start;
@@ -60,13 +61,14 @@
   border-radius: 16px;
   box-shadow: 0 6px 18px #75482708;
 }
-.site .category-visual { order: -1; min-height: 0; margin: 0 0 1rem; background: #f3e6d5; border-radius: 12px; overflow: hidden; aspect-ratio: 1.4; }
+.site .category-visual { position: relative; order: -1; min-height: 0; margin: 0 0 1rem; background: #f3e6d5; border-radius: 12px; overflow: hidden; aspect-ratio: 1.4; }
+.site .category-badge { position: absolute; z-index: 1; top: 0.5rem; right: 0.5rem; padding: 0.3rem 0.65rem; border-radius: 999px; background: #a34424; color: #fffdf8; font-size: 0.65rem; font-weight: 700; line-height: 1.4; letter-spacing: 0.02em; }
 .site .category-visual img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
 .site .category-card::after { content: '→'; position: absolute; bottom: 1rem; right: 0.75rem; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #a94f30; color: var(--paper); }
 .site .category-card h3 { font-size: 1.1rem; margin: 0.5rem 0.4rem; }
 .site .category-card p { font-size: 0.82rem; color: #625d53; padding: 0 2rem 0 0.4rem; }
-.site .categories { margin: 0 4% 3rem; padding: 1.75rem 2%; border-radius: 28px; background: #f2e8d988; }
-.site .featured { padding-block: clamp(3rem, 6vw, 5rem); background: transparent; border: 0; }
+.site .categories { margin: 0; padding: 1.5rem 6% var(--section-space); border: 0; border-radius: 0; background: transparent; }
+.site .featured { padding-block: var(--section-space); background: transparent; border: 0; }
 .site .product-grid { gap: 1.4rem; }
 .site .product-card { padding: 0.65rem 0.65rem 1.2rem; border: 1px solid #cfbdab; border-radius: 16px; }
 .site .product-image { position: relative; min-height: 0; aspect-ratio: 220 / 123; border-radius: 10px; }
@@ -97,7 +99,7 @@
 .site .corporate-content { gap: 2.5rem; }
 .site .corporate-content h2 { font-size: clamp(2rem, 3.8vw, 3rem); line-height: 1.1; }
 .site .corporate-section .eyebrow { color: #efb59a; }
-.site .footer { padding: 3rem 6%; }
+.site .footer { padding: clamp(2rem, 4vw, 3rem) 6%; align-items: center; }
 .site :focus-visible, #root:has(.site) > .header :focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
 #root:has(.site) > .header { min-height: 76px; padding-inline: 6%; gap: 1rem; border-bottom: 0; }
 #root:has(.site) > .header .nav { gap: 1.25rem; }

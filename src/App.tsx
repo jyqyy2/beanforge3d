@@ -170,6 +170,7 @@ return (
                   <span>01</span>
 
                   <div className="category-visual category-visual-keycaps">
+                    <span className="category-badge" aria-hidden="true">KEY</span>
                     <img src={categoryKeycaps} alt="" width="131" height="88" loading="lazy" />
                   </div>
 
@@ -183,6 +184,7 @@ return (
                   <span>02</span>
 
                   <div className="category-visual category-visual-skadis">
+                    <span className="category-badge" aria-hidden="true">SKÅDIS</span>
                     <img src={categorySkadis} alt="" width="133" height="89" loading="lazy" />
                   </div>
 
@@ -196,6 +198,7 @@ return (
                   <span>03</span>
 
                   <div className="category-visual category-visual-qr">
+                    <span className="category-badge" aria-hidden="true">SCAN</span>
                     <img src={categoryQr} alt="" width="133" height="88" loading="lazy" />
                   </div>
 
@@ -209,6 +212,7 @@ return (
                   <span>04</span>
 
                   <div className="category-visual category-visual-custom">
+                    <span className="category-badge" aria-hidden="true">MADE</span>
                     <img src={categoryCustom} alt="" width="133" height="88" loading="lazy" />
                   </div>
 
