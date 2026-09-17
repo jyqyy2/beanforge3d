@@ -170,7 +170,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       <section className="studio-options" aria-label="Design your keycaps">
         <div className="studio-settings">
           <fieldset className="studio-count" aria-describedby="studio-count-help">
-            <legend>How many letterboards</legend>
+            <legend>How many characters</legend>
             <p id="studio-count-help" className="studio-note">Choose how many characters you want in your design.</p>
             <div className="studio-choices">{Array.from({ length: 8 }, (_, index) => index + 1).map((amount) => (
               <button type="button" key={amount} aria-pressed={count === amount} aria-label={`${amount} ${amount === 1 ? 'board' : 'boards'}`} onClick={() => { setCount(amount); setActiveIndex(null); setMessage('') }}>

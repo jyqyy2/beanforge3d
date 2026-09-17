@@ -1,8 +1,17 @@
-import { createBrowserRouter, RouterProvider, Routes, Route, Link } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Routes, Route, Link, useLocation } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import KeycapStudioPage from './pages/KeycapStudioPage'
-import nameTag from './assets/name-tag-1280.webp'
+import landingHero from './assets/landing-hero.png'
+import categoryKeycaps from './assets/landing-category-keycaps.png'
+import categorySkadis from './assets/landing-category-skadis.png'
+import categoryQr from './assets/landing-category-qr.png'
+import categoryCustom from './assets/landing-category-custom.png'
+import productKeycap from './assets/landing-product-keycap.png'
+import productCustom from './assets/landing-product-custom.png'
+import productQr from './assets/landing-product-qr.png'
+import studioImage from './assets/landing-studio.png'
+import giftsImage from './assets/landing-gifts.png'
 import ResponsiveImage from './components/ResponsiveImage'
 import { useCart } from './context/useCart'
 import { getProducts } from './data/catalogue'
@@ -14,22 +23,26 @@ const featuredPresentation: Record<string, {
   label: string
   imageClass: string
   pricePrefix: string
+  image: string
 }> = {
   'bean-keycap': {
     description: 'For keyboards that need a little bean.',
-    label: 'BEAN',
+    label: 'KEYCAPS',
+    image: productKeycap,
     imageClass: 'product-image-bean',
     pricePrefix: '',
   },
   'custom-name-keychain': {
     description: 'Your name. Your colour. Your way.',
-    label: 'ABC',
+    label: 'CUSTOM',
+    image: productCustom,
     imageClass: 'product-image-keychain',
     pricePrefix: 'From ',
   },
   'qr-nfc-stand': {
     description: 'A little stand for your business.',
-    label: 'SCAN',
+    label: 'QR / NFC',
+    image: productQr,
     imageClass: 'product-image-stand',
     pricePrefix: 'From ',
   },
@@ -37,6 +50,7 @@ const featuredPresentation: Record<string, {
 
 function Header() {
   const { cartItems } = useCart()
+  const { pathname } = useLocation()
 
   const cartItemCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -51,6 +65,7 @@ function Header() {
 
       <nav className="nav">
         <a href="/#shop">Shop</a>
+        {pathname === '/' && <Link to="/studio/keycaps">Keycap Studio</Link>}
         <a href="/#custom">Custom</a>
         <a href="/#corporate">Corporate</a>
         <a href="/#about">About</a>
@@ -123,21 +138,22 @@ return (
                     Shop now
                   </a>
 
-                  <a className="button button-light" href="#custom">
-                    Make something custom
-                  </a>
+                  <Link className="button button-light" to="/studio/keycaps">
+                    Explore keycap studio
+                  </Link>
                 </div>
               </div>
 
               <div className="hero-product">
                 <ResponsiveImage
-                  src={nameTag}
-                  width={1280}
-                  height={1280}
+                  src={landingHero}
+                  width={284}
+                  height={251}
                   sizes="(max-width: 520px) 90vw, (max-width: 850px) 70vw, 460px"
                   fetchPriority="high"
-                  alt="BeanForge custom name tag"
+                  alt="Cream, pink and charcoal keycaps with playful character designs"
                 />
+                <span className="hero-handwritten" aria-hidden="true">Small details,<br />big joy ♡</span>
               </div>
             </section>
 
@@ -153,7 +169,7 @@ return (
                   <span>01</span>
 
                   <div className="category-visual category-visual-keycaps">
-                    KEY
+                    <img src={categoryKeycaps} alt="" width="131" height="88" loading="lazy" />
                   </div>
 
                   <h3>Keycaps</h3>
@@ -166,7 +182,7 @@ return (
                   <span>02</span>
 
                   <div className="category-visual category-visual-skadis">
-                    SKÅDIS
+                    <img src={categorySkadis} alt="" width="133" height="89" loading="lazy" />
                   </div>
 
                   <h3>SKÅDIS</h3>
@@ -179,7 +195,7 @@ return (
                   <span>03</span>
 
                   <div className="category-visual category-visual-qr">
-                    SCAN
+                    <img src={categoryQr} alt="" width="133" height="88" loading="lazy" />
                   </div>
 
                   <h3>QR / NFC</h3>
@@ -192,7 +208,7 @@ return (
                   <span>04</span>
 
                   <div className="category-visual category-visual-custom">
-                    MADE
+                    <img src={categoryCustom} alt="" width="133" height="88" loading="lazy" />
                   </div>
 
                   <h3>Custom</h3>
@@ -207,7 +223,8 @@ return (
             <section className="featured" id="keycaps">
               <div className="section-heading">
                 <p className="eyebrow">THE BEANFORGE SHOP</p>
-                <h2>Featured things</h2>
+                <h2>Featured products</h2>
+                <a className="featured-browse" href="#shop">View all products →</a>
               </div>
 
               <div className="product-grid">
@@ -226,12 +243,12 @@ return (
                           ♡
                         </button>
 
-                        {product.image && (
+                        {presentation.image && (
                           <ResponsiveImage
-                            src={product.image}
+                            src={presentation.image}
                             alt={product.name}
-                            width={1280}
-                            height={1280}
+                            width={190}
+                            height={100}
                             loading="lazy"
                             sizes="(max-width: 600px) 88vw, (max-width: 850px) 42vw, 340px"
                           />
@@ -260,14 +277,20 @@ return (
 
               </div>
 
-              <div className="center-button">
-                <a className="button button-dark" href="#shop">
-                  View all products
-                </a>
+            </section>
+
+            <section className="landing-studio" aria-labelledby="landing-studio-title">
+              <div>
+                <p className="eyebrow">THE KEYCAP STUDIO</p>
+                <h2 id="landing-studio-title">Design your<br />own keycaps</h2>
+                <p>Choose your letters and colours to create something uniquely yours. Perfect for names, initials, gifts and more.</p>
+                <Link className="button button-light" to="/studio/keycaps">Start designing →</Link>
               </div>
+              <img src={studioImage} alt="J, O and Y keycaps in cream, pink and charcoal" width="259" height="210" loading="lazy" />
             </section>
 
             <section className="custom-section" id="custom">
+              <img className="landing-gifts" src={giftsImage} alt="Playful keycaps arranged beside a keyboard and a cup" width="356" height="167" loading="lazy" />
               <div className="custom-content">
                 <p className="eyebrow">MADE FOR YOU</p>
 
@@ -330,6 +353,7 @@ return (
 
             <div className="footer-links">
               <a href="#shop">Shop</a>
+              <Link to="/studio/keycaps">Keycap Studio</Link>
               <a href="#custom">Custom</a>
               <a href="#corporate">Corporate</a>
               <a href="#about">About</a>
