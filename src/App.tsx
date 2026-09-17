@@ -11,7 +11,8 @@ import productKeycap from './assets/landing-product-keycap.png'
 import productCustom from './assets/landing-product-custom.png'
 import productQr from './assets/landing-product-qr.png'
 import studioImage from './assets/landing-studio.png'
-import giftsImage from './assets/landing-gifts.png'
+import customBanner from './assets/landing-custom-banner.png'
+import corporateBanner from './assets/landing-corporate-banner.png'
 import ResponsiveImage from './components/ResponsiveImage'
 import { useCart } from './context/useCart'
 import { getProducts } from './data/catalogue'
@@ -220,6 +221,16 @@ return (
               </div>
             </section>
 
+            <section className="landing-studio" aria-labelledby="landing-studio-title">
+              <div>
+                <p className="eyebrow">THE KEYCAP STUDIO</p>
+                <h2 id="landing-studio-title">Design your<br />own keycaps.</h2>
+                <p>Create something uniquely yours. Choose your letters and colours, express your style — and bring your ideas to life, one keycap at a time.</p>
+                <Link className="button button-light" to="/studio/keycaps">Start designing →</Link>
+              </div>
+              <img src={studioImage} alt="J, O and Y keycaps in cream, pink and charcoal" width="259" height="210" loading="lazy" />
+            </section>
+
             <section className="featured" id="keycaps">
               <div className="section-heading">
                 <p className="eyebrow">THE BEANFORGE SHOP</p>
@@ -234,7 +245,7 @@ return (
                   if (!presentation) return null
 
                   return (
-                    <article className="product-card" key={product.slug}>
+                    <article className="product-card" key={product.slug} id={product.slug === 'qr-nfc-stand' ? 'qr-nfc' : undefined}>
                       <div className={`product-image ${presentation.imageClass}`}>
                         <button
                           className="product-wishlist"
@@ -279,18 +290,8 @@ return (
 
             </section>
 
-            <section className="landing-studio" aria-labelledby="landing-studio-title">
-              <div>
-                <p className="eyebrow">THE KEYCAP STUDIO</p>
-                <h2 id="landing-studio-title">Design your<br />own keycaps</h2>
-                <p>Choose your letters and colours to create something uniquely yours. Perfect for names, initials, gifts and more.</p>
-                <Link className="button button-light" to="/studio/keycaps">Start designing →</Link>
-              </div>
-              <img src={studioImage} alt="J, O and Y keycaps in cream, pink and charcoal" width="259" height="210" loading="lazy" />
-            </section>
-
             <section className="custom-section" id="custom">
-              <img className="landing-gifts" src={giftsImage} alt="Playful keycaps arranged beside a keyboard and a cup" width="356" height="167" loading="lazy" />
+              <img className="landing-gifts" src={customBanner} alt="Personalised keycap keychains on wrapped gifts" width="295" height="163" loading="lazy" />
               <div className="custom-content">
                 <p className="eyebrow">MADE FOR YOU</p>
 
@@ -303,10 +304,10 @@ return (
                 </p>
 
                 <a
-                  className="button button-light"
+                  className="custom-studio-link"
                   href="/studio/keycaps"
                 >
-                  Explore the keycap studio
+                  Explore the keycap studio →
                 </a>
               </div>
             </section>
@@ -339,6 +340,7 @@ return (
                   </a>
                 </div>
               </div>
+              <img className="corporate-banner-image" src={corporateBanner} alt="BeanForge 3D gift box wrapped with twine" width="287" height="140" loading="lazy" />
             </section>
           </main>
 
