@@ -7,6 +7,7 @@ import ResponsiveImage from './components/ResponsiveImage'
 import { useCart } from './context/useCart'
 import { getProducts } from './data/catalogue'
 import './App.css'
+import './Homepage.css'
 
 const featuredPresentation: Record<string, {
   description: string
@@ -225,6 +226,16 @@ return (
                           ♡
                         </button>
 
+                        {product.image && (
+                          <ResponsiveImage
+                            src={product.image}
+                            alt={product.name}
+                            width={1280}
+                            height={1280}
+                            loading="lazy"
+                            sizes="(max-width: 600px) 88vw, (max-width: 850px) 42vw, 340px"
+                          />
+                        )}
                         <span>{presentation.label}</span>
                       </div>
 
