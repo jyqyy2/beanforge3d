@@ -57,13 +57,14 @@ function CartPage() {
                       sizes="(max-width: 650px) 88px, 120px"
                       loading="lazy"
                       src={item.image}
-                      alt={`${item.name} in ${item.colour}`}
+                      alt={item.standDesign ? `${item.standDesign} stand reference photograph` : `${item.name} in ${item.colour}`}
                     />
                   )}
 
                   <div className="cart-item-info">
                     <h2><Link to={item.configuration ? `/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}` : `/product/${item.productSlug}`}>{item.name}</Link></h2>
                     <p>{item.configuration ? 'Board colour' : 'Colour'}: {item.colour}</p>
+                    {item.standDesign && <p>Stand: {item.standDesign}</p>}
                     {item.configuration && <>
                       <KeycapPreview configuration={item.configuration} compact />
                       <Link className="back-link" to={`/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}`}>Edit design</Link>
@@ -76,7 +77,7 @@ function CartPage() {
 
                       <button
                         type="button"
-                        aria-label={`Decrease quantity of ${item.name} in ${item.colour}`}
+                        aria-label={`Decrease quantity of ${item.name}${item.standDesign ? ` · ${item.standDesign}` : ''} in ${item.colour}`}
                         disabled={item.quantity === 1}
                         onClick={() =>
                           updateCartItemQuantity(
@@ -92,7 +93,7 @@ function CartPage() {
 
                       <button
                         type="button"
-                        aria-label={`Increase quantity of ${item.name} in ${item.colour}`}
+                        aria-label={`Increase quantity of ${item.name}${item.standDesign ? ` · ${item.standDesign}` : ''} in ${item.colour}`}
                         onClick={() =>
                           updateCartItemQuantity(
                             index,
@@ -112,7 +113,7 @@ function CartPage() {
 
                     <button
                       type="button"
-                      aria-label={`Remove ${item.name} in ${item.colour}`}
+                      aria-label={`Remove ${item.name}${item.standDesign ? ` · ${item.standDesign}` : ''} in ${item.colour}`}
                       onClick={() => removeFromCart(index)}
                     >
                       Remove

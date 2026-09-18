@@ -7,9 +7,12 @@ import { getProductBySlug } from '../data/catalogue'
 import type { CartItem } from '../types/cart'
 import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
+import StandStudioPage from './StandStudioPage'
 
 function ProductPage() {
   const { slug } = useParams()
+  const product = getProductBySlug(slug)
+  if (product?.slug === 'qr-nfc-stand' && product.standDesigns?.length) return <StandStudioPage product={product} />
   return <ProductDetails key={slug} slug={slug} />
 }
 

@@ -2,6 +2,7 @@
 CartItem = what the customer has chosen to buy.*/
 
 import type { KeycapConfiguration } from './keycap'
+import type { StandDesign } from './stand'
 
 export type CartItem = {
   productSlug: string
@@ -10,5 +11,6 @@ export type CartItem = {
   colour: string
   quantity: number
   image?: string
+  standDesign?: StandDesign
   configuration?: KeycapConfiguration
 }

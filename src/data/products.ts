@@ -1,6 +1,9 @@
 import beanKeycap from '../assets/bean-keycap-1280.webp'
 import nameTag from '../assets/name-tag-1280.webp'
 import qrStand from '../assets/qr-stand-1280.webp'
+import chickPhoto from '../assets/qr-chick.png'
+import beePhoto from '../assets/qr-bee.png'
+import type { StandDesign } from '../types/stand'
 
 /* mini product database (not real db, is notebook kinda only)*/
 export type Product = {
@@ -13,6 +16,7 @@ export type Product = {
   description: string
   colours: string[]
   image?: string
+  standDesigns?: { name: StandDesign; image: string }[]
   /* colour: string]: string means
   a product can optionally have a collection of images
   where each colour has its own image
@@ -54,6 +58,10 @@ export const products: Product[] = [
     category: 'QR / NFC',
     price: 15,
     image: qrStand,
+    standDesigns: [
+      { name: 'Chick', image: chickPhoto },
+      { name: 'Bee', image: beePhoto },
+    ],
     description:
       'A simple little stand for your business, perfect for QR payments, menus and NFC interactions.',
     colours: ['Black', 'White', 'Orange'],

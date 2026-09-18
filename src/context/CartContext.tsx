@@ -5,6 +5,7 @@ import { CartContext } from './cartContextValue'
 import { cartItemIdentity, isKeycapConfiguration } from '../utils/cartIdentity'
 import { updateKeycapCart } from '../utils/updateKeycapCart'
 import type { KeycapConfiguration } from '../types/keycap'
+import { isStandDesign } from '../types/stand'
 
 import { loadCart, saveCart } from '../utils/cartStorage'
 
@@ -25,6 +26,7 @@ export function CartProvider({
 
   function addToCart(item: CartItem) {
     if (!Number.isSafeInteger(item.quantity) || item.quantity < 1) return
+    if (item.standDesign !== undefined && (item.productSlug !== 'qr-nfc-stand' || !isStandDesign(item.standDesign))) return
     if (item.productSlug === 'custom-keycaps' && (!isKeycapConfiguration(item.configuration) || item.colour !== item.configuration.boardColour)) return
     if (item.configuration && item.productSlug !== 'custom-keycaps') return
     const identity = cartItemIdentity(item)

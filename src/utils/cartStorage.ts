@@ -1,4 +1,5 @@
 import type { CartItem } from '../types/cart'
+import { isStandDesign } from '../types/stand'
 import { isKeycapConfiguration } from './cartIdentity'
 import { preserveStoredValue, readStoredValue } from './preserveStoredValue'
 
@@ -17,6 +18,7 @@ function isCartItem(item: unknown): item is CartItem {
     typeof candidate.price === 'number' && Number.isFinite(candidate.price) && candidate.price >= 0 &&
     typeof candidate.quantity === 'number' && Number.isSafeInteger(candidate.quantity) && candidate.quantity > 0 &&
     (candidate.image === undefined || typeof candidate.image === 'string') &&
+    (candidate.standDesign === undefined || (candidate.productSlug === 'qr-nfc-stand' && isStandDesign(candidate.standDesign))) &&
     (candidate.configuration === undefined ? candidate.productSlug !== 'custom-keycaps' :
       candidate.productSlug === 'custom-keycaps' && isKeycapConfiguration(candidate.configuration) && candidate.colour === candidate.configuration.boardColour)
 }

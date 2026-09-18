@@ -23,5 +23,7 @@ export function cartItemIdentity(item: CartItem): string {
       item.configuration.characters.map(({ character, colour, characterColour }) =>
         characterColour === undefined || characterColour === (colour === 'Black' ? 'Cream' : 'Black')
           ? [character, colour] : [character, colour, characterColour])]
-    : [item.productSlug, item.colour])
+    : item.productSlug === 'qr-nfc-stand' && item.standDesign !== undefined
+      ? [item.productSlug, item.colour, item.standDesign]
+      : [item.productSlug, item.colour])
 }

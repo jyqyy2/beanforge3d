@@ -45,7 +45,7 @@ test('all implemented landing links navigate, and every product can be bought in
       await expect(page.locator('.hero')).toBeVisible()
     } else {
       await expect(page).toHaveURL(new RegExp(`${link.href}$`))
-      await expect(page.locator('.product-detail')).toBeVisible()
+      await expect(page.locator(link.href.endsWith('/qr-nfc-stand') ? '.stand-studio' : '.product-detail')).toBeVisible()
     }
   }
   const products = [
@@ -62,12 +62,12 @@ test('all implemented landing links navigate, and every product can be bought in
       expect(bounds).not.toBeNull()
       await page.mouse.click(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height / 2)
       await expect(page).toHaveURL(new RegExp(`/product/${product.slug}$`))
-      await expect(page.locator('h1')).toHaveText(product.name)
-      await expect(page.locator('.product-price')).toHaveText(product.price)
+      await expect(page.locator('h1')).toHaveText(product.slug === 'qr-nfc-stand' ? 'Build your stand.' : product.name)
+      await expect(page.locator(product.slug === 'qr-nfc-stand' ? '.studio-price-action dd' : '.product-price').first()).toHaveText(product.price)
     }
-    await page.locator('.colour-button').last().click()
+    await page.locator(product.slug === 'qr-nfc-stand' ? '.studio-options fieldset:nth-child(2) button' : '.colour-button').last().click()
     await page.getByRole('button', { name: 'Increase quantity', exact: true }).click()
-    await page.getByRole('button', { name: 'Add to cart', exact: true }).click()
+    await page.getByRole('button', { name: product.slug === 'qr-nfc-stand' ? 'Add my stand to cart' : 'Add to cart', exact: true }).click()
     await page.getByRole('link', { name: 'View cart →' }).click()
     const row = page.locator('.cart-item').filter({ hasText: product.name })
     await expect(row.locator('.cart-quantity-controls strong')).toHaveText('2')
