@@ -60,22 +60,27 @@
 .site .section-heading h2 { font-size: var(--type-section); line-height: 1.1; }
 .site .eyebrow { font-size: var(--type-label); font-weight: 700; line-height: 1.5; letter-spacing: 0.14em; margin-bottom: 0.75rem; }
 .site p { text-wrap: pretty; }
-.site .category-grid { background: transparent; border: 0; gap: clamp(0.75rem, 1.8vw, 1.4rem); }
+.site .category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); background: transparent; border: 0; gap: clamp(1.25rem, 2.5vw, 2rem); }
+.site .category-introduction { margin: 1rem 0 0; max-width: 44ch; color: #625d53; font-size: var(--type-body); line-height: 1.7; }
 .site .category-card {
   position: relative;
   justify-content: flex-start;
   min-height: 0;
-  padding: 0.6rem 0.6rem 1.25rem;
+  padding: 0.75rem 0.75rem 1.5rem;
   border: 1px solid var(--line);
   border-radius: 16px;
   box-shadow: 0 6px 18px #75482708;
 }
 .site .category-visual { position: relative; order: -1; min-height: 0; margin: 0 0 1rem; background: #f3e6d5; border-radius: 12px; overflow: hidden; aspect-ratio: 1.5; }
 .site .category-badge { position: absolute; z-index: 1; top: 0.5rem; right: 0.5rem; padding: 0.3rem 0.65rem; border-radius: 999px; background: #a34424; color: #fffdf8; font-size: 0.65rem; font-weight: 700; line-height: 1.4; letter-spacing: 0.02em; }
-.site .category-visual img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.site .category-card::after { content: '→'; position: absolute; bottom: 1rem; right: 0.75rem; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #a94f30; color: var(--paper); }
-.site .category-card h3 { font-size: var(--type-title); line-height: 1.35; margin: 0.65rem 0.4rem 0.5rem; }
-.site .category-card p { font-size: 0.82rem; color: #625d53; padding: 0 2rem 0 0.4rem; }
+.site .category-visual img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.site a.category-card::after { content: '→'; position: absolute; bottom: 1.25rem; right: 1rem; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #a94f30; color: var(--paper); }
+.site .category-card h3 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: clamp(1.4rem, 2vw, 1.75rem); line-height: 1.2; margin: 0.65rem 0.4rem 0.75rem; }
+.site .category-card p { font-size: var(--type-support); line-height: 1.65; color: #625d53; padding: 0 2.5rem 0 0.4rem; margin: 0; }
+.site .category-placeholder { text-align: center; font: italic 1.5rem/1.4 Georgia, 'Times New Roman', serif; letter-spacing: -0.03em; color: #786858; padding: 2.5rem 1rem; }
+.site .category-coming-soon .category-badge { background: var(--paper); color: #786858; border: 1px solid #ddc9b4; }
+.site .category-coming-soon:hover { background: #fffaf14d; transform: none; box-shadow: 0 6px 18px #75482708; }
+.site .category-coming-soon:hover .category-visual { transform: none; }
 .site .categories { margin: 0; padding: 1.5rem 6% var(--section-space); border: 0; border-radius: 0; background: transparent; }
 .site .featured { padding-block: var(--section-space); background: transparent; border: 0; }
 .site .product-grid { gap: 1.4rem; }
@@ -115,6 +120,7 @@
 #root:has(.site) > .header .nav a { display: inline-flex; align-items: center; min-height: 44px; }
 
 @media (max-width: 850px) {
+  .site .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #root:has(.site) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
   #root:has(.site) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
   .site .hero { gap: 2.5rem; }
@@ -126,7 +132,7 @@
 @media (max-width: 600px) {
   .site .hero h1 { font-size: clamp(2.65rem, 10vw, 3.6rem); }
   .site .product-grid { grid-template-columns: minmax(0, 1fr); }
-  .site .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+  .site .category-grid { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   .site .category-card { padding: 0.85rem; }
   .site .category-visual { font-size: 1.2rem; }
   .site .custom-section { grid-template-columns: 1fr; }
@@ -186,8 +192,6 @@
   .site .hero-handwritten { right: 0; font-size: 0.85rem; }
   .site .custom-section { grid-template-columns: 1fr; }
   .site .landing-gifts { max-height: 180px; }
-  .site .category-card { padding: 0.4rem 0.4rem 1rem; }
-  .site .category-card p { padding-right: 0.4rem; padding-bottom: 2rem; }
   .site section[id] { scroll-margin-top: 180px; }
 }
 

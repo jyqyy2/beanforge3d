@@ -30,7 +30,7 @@ test('all implemented landing links navigate, and every product can be bought in
   })))
   for (let index = 0; index < links.length; index++) {
     const link = links[index]
-    if (['#skadis', '#corporate-request'].includes(link.href)) continue
+    if (link.href === '#corporate-request') continue
     await page.goto('/')
     await page.locator('.header a, .site a').nth(index).click()
     if (link.href.includes('#')) {
@@ -101,7 +101,43 @@ test('desktop, tablet and mobile preserve images, section order and keyboard acc
   }
 })
 
-for (const fragment of ['skadis', 'corporate-request']) {
+test('six categories expose four working destinations and two non-interactive previews', async ({ page }) => {
+  await page.goto('/')
+  const cards = page.locator('.category-card')
+  await expect(cards).toHaveCount(6)
+  await expect(cards.locator('h3')).toHaveText(['Keycap Studio', 'QR / NFC', 'Keycaps', 'Custom Nametags', 'Custom Carplates', 'SKÅDIS Accessories'])
+  const destinations = ['/studio/keycaps', '/product/qr-nfc-stand', '/product/bean-keycap', '/product/custom-name-keychain']
+  for (const [index, destination] of destinations.entries()) {
+    const card = cards.nth(index)
+    await expect(card).toHaveAttribute('href', destination)
+    await expect(card.locator('a, button')).toHaveCount(0)
+    await card.focus()
+    expect(await card.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe('none')
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(new RegExp(`${destination}$`))
+    await expect(page.locator('h1')).toBeVisible()
+    await page.goBack()
+    await expect(cards).toHaveCount(6)
+  }
+  for (const card of await page.locator('.category-coming-soon').all()) {
+    await expect(card).toContainText('Coming soon')
+    await expect(card.locator('a, button, [tabindex]')).toHaveCount(0)
+    expect(await card.getAttribute('href')).toBeNull()
+    await card.hover()
+    expect(await card.evaluate(element => getComputedStyle(element).transform)).toBe('none')
+    expect(await card.evaluate(element => getComputedStyle(element, '::after').content)).toBe('none')
+    const url = page.url()
+    await card.click()
+    expect(page.url()).toBe(url)
+  }
+  for (const [width, columns] of [[1280, 3], [820, 2], [390, 1]]) {
+    await page.setViewportSize({ width, height: 900 })
+    expect(await page.locator('.category-grid').evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(columns)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  }
+})
+
+for (const fragment of ['corporate-request']) {
   test(`known missing destination: ${fragment}`, async ({ page }) => {
     test.fail(true, 'Existing destination has no section or implementation; needs product/business direction, not a route rewrite.')
     await page.goto('/')

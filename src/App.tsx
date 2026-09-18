@@ -158,70 +158,36 @@ return (
               </div>
             </section>
 
-            <section className="categories" id="shop">
+            <section className="categories" id="shop" aria-labelledby="categories-title">
               <div className="section-heading">
-                <p className="eyebrow">EXPLORE</p>
-                <h2>Shop by category</h2>
+                <p className="eyebrow">EXPLORE THE COLLECTION</p>
+                <h2 id="categories-title">Shop by category</h2>
+                <p className="category-introduction">Little things for your desk, keyboard, business and everyday spaces.</p>
               </div>
-
               <div className="category-grid">
-
-                <a href="#keycaps" className="category-card">
-                  <span>01</span>
-
-                  <div className="category-visual category-visual-keycaps">
-                    <span className="category-badge" aria-hidden="true">KEY</span>
-                    <img src={categoryKeycaps} alt="" width="131" height="88" loading="lazy" />
-                  </div>
-
-                  <h3>Keycaps</h3>
-                  <p>
-                    Give your keyboard a little personality.
-                  </p>
-                </a>
-
-                <a href="#skadis" className="category-card">
-                  <span>02</span>
-
-                  <div className="category-visual category-visual-skadis">
-                    <span className="category-badge" aria-hidden="true">SKÅDIS</span>
-                    <img src={categorySkadis} alt="" width="133" height="89" loading="lazy" />
-                  </div>
-
-                  <h3>SKÅDIS</h3>
-                  <p>
-                    Modular accessories for a tidier space.
-                  </p>
-                </a>
-
-                <a href="#qr-nfc" className="category-card">
-                  <span>03</span>
-
-                  <div className="category-visual category-visual-qr">
-                    <span className="category-badge" aria-hidden="true">SCAN</span>
-                    <img src={categoryQr} alt="" width="133" height="88" loading="lazy" />
-                  </div>
-
-                  <h3>QR / NFC</h3>
-                  <p>
-                    Useful stands and displays for businesses.
-                  </p>
-                </a>
-
-                <a href="#custom" className="category-card">
-                  <span>04</span>
-
-                  <div className="category-visual category-visual-custom">
-                    <span className="category-badge" aria-hidden="true">MADE</span>
-                    <img src={categoryCustom} alt="" width="133" height="88" loading="lazy" />
-                  </div>
-
-                  <h3>Custom</h3>
-                  <p>
-                    Made-to-order pieces made for you.
-                  </p>
-                </a>
-
+                {[
+                  { name: 'Keycap Studio', description: 'Design your own letters, colours and combination.', to: '/studio/keycaps', image: studioImage, badge: 'CREATE' },
+                  { name: 'QR / NFC', description: 'Character stands made for counters and businesses.', to: '/product/qr-nfc-stand', image: categoryQr, badge: 'SCAN' },
+                  { name: 'Keycaps', description: 'Small details for keyboards with personality.', to: '/product/bean-keycap', image: categoryKeycaps, badge: 'KEY' },
+                  { name: 'Custom Nametags', description: 'Names, words and little pieces made for you.', to: '/product/custom-name-keychain', image: categoryCustom, badge: 'MADE' },
+                  { name: 'Custom Carplates', description: 'Personalised plates made your way.', image: null, badge: 'Coming soon' },
+                  { name: 'SKÅDIS Accessories', description: 'Modular accessories for a tidier setup.', image: categorySkadis, badge: 'Coming soon' },
+                ].map((category, index) => {
+                  const content = <>
+                    <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="category-visual">
+                      <span className="category-badge">{category.badge}</span>
+                      {category.image
+                        ? <img src={category.image} alt="" width="259" height="180" loading="lazy" />
+                        : <span className="category-placeholder">Something personal.<br />In the making.</span>}
+                    </div>
+                    <h3>{category.name}</h3>
+                    <p>{category.description}</p>
+                  </>
+                  return category.to
+                    ? <Link key={category.name} to={category.to} className="category-card">{content}</Link>
+                    : <article key={category.name} className="category-card category-coming-soon">{content}</article>
+                })}
               </div>
             </section>
 
