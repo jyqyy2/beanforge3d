@@ -1291,6 +1291,30 @@ So instead, put font-size after font: inherit:*/
   font-weight: 800;
 }
 
+.checkout-button:not(:disabled) {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  cursor: pointer;
+}
+
+.checkout-button:not(:disabled):hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.cart-summary select {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0 1.25rem;
+  padding: 0.8rem 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  font: inherit;
+}
+
 .cart-summary-note {
   margin: 1rem 0 0;
 

@@ -1,8 +1,12 @@
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
 import { cartItemIdentity } from '../utils/cartIdentity'
 import KeycapPreview from '../components/KeycapPreview'
+import { checkoutConfigured, requestQuote, startCheckout } from '../utils/checkout'
+import type { ServerQuote } from '../utils/checkout'
+import type { CartItem } from '../types/cart'
 
 function CartPage() {
   const location = useLocation()
@@ -12,13 +16,47 @@ function CartPage() {
     removeFromCart,
     updateCartItemQuantity,
   } = useCart()
+  const [country, setCountry] = useState<'SG' | 'MY'>('SG')
+  const [quoteState, setQuoteState] = useState<{ items: CartItem[]; country: 'SG' | 'MY'; quote: ServerQuote } | null>(null)
+  const [quoteError, setQuoteError] = useState('')
+  const [checkoutBusy, setCheckoutBusy] = useState(false)
+  const serverQuote = quoteState?.items === cartItems && quoteState.country === country ? quoteState.quote : null
 
-  const cartSubtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  )
+  useEffect(() => {
+    if (!checkoutConfigured || cartItems.length === 0) return
+    const controller = new AbortController()
+    void requestQuote(cartItems, country, controller.signal).then(quote => {
+      if (controller.signal.aborted) return
+      setQuoteState({ items: cartItems, country, quote })
+      setQuoteError('')
+    }).catch(error => {
+      if (controller.signal.aborted) return
+      setQuoteState(null)
+      setQuoteError(error instanceof Error ? error.message : 'Quote unavailable.')
+    })
+    return () => controller.abort()
+  }, [cartItems, country])
 
-  const cartTotal = cartSubtotal
+  async function handleCheckout() {
+    if (!serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy) return
+    setCheckoutBusy(true)
+    try {
+      const checkout = await startCheckout(cartItems)
+      if (checkout.quote.payableTotalMinor !== serverQuote.payableTotalMinor ||
+        checkout.quote.lines.some((line, index) =>
+          line.unitAmountMinor !== serverQuote.lines[index]?.unitAmountMinor ||
+          line.lineAmountMinor !== serverQuote.lines[index]?.lineAmountMinor)) {
+        setQuoteState({ items: cartItems, country, quote: checkout.quote })
+        setQuoteError('Prices changed. Please review the new total before continuing.')
+        setCheckoutBusy(false)
+        return
+      }
+      window.location.assign(checkout.url)
+    } catch (error) {
+      setQuoteError(error instanceof Error ? error.message : 'Checkout unavailable.')
+      setCheckoutBusy(false)
+    }
+  }
 
   return (
     <main className="cart-page">
@@ -70,7 +108,7 @@ function CartPage() {
                       <Link className="back-link" to={`/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}`}>Edit design</Link>
                       <p>Illustrative preview · temporary development price.</p>
                     </>}
-                    <p>S${item.price.toFixed(2)} each</p>
+                    <p>{serverQuote?.lines[index] ? `S$${(serverQuote.lines[index].unitAmountMinor / 100).toFixed(2)} each` : 'Price pending'}</p>
 
                     <div className="cart-quantity-controls">
                       <span>Quantity</span>
@@ -108,7 +146,7 @@ function CartPage() {
 
                   <div className="cart-item-actions">
                     <strong>
-                      S${(item.price * item.quantity).toFixed(2)}
+                      {serverQuote?.lines[index] ? `S$${(serverQuote.lines[index].lineAmountMinor / 100).toFixed(2)}` : '—'}
                     </strong>
 
                     <button
@@ -125,28 +163,45 @@ function CartPage() {
 
             <aside className="cart-summary">
               <h2>Order summary</h2>
+              <label htmlFor="shipping-country">Deliver to</label>
+              <select id="shipping-country" value={country} onChange={event => {
+                setCountry(event.target.value as 'SG' | 'MY')
+              }}>
+                <option value="SG">Singapore</option>
+                <option value="MY">Malaysia</option>
+              </select>
 
               <div className="cart-summary-row">
                 <span>Subtotal</span>
-                <strong>S${cartSubtotal.toFixed(2)}</strong>
+                <strong>{serverQuote ? `S$${(serverQuote.merchandiseSubtotalMinor / 100).toFixed(2)}` : '—'}</strong>
+              </div>
+              <div className="cart-summary-row">
+                <span>Shipping</span>
+                <strong>{serverQuote?.shipping.status === 'quoted'
+                  ? `S$${(serverQuote.shipping.amountMinor / 100).toFixed(2)}`
+                  : serverQuote?.shipping.status === 'requires_carrier_quote' ? 'Carrier quote required' : '—'}</strong>
               </div>
 
               <div className="cart-summary-row cart-summary-total">
                 <span>Total</span>
-                <strong>S${cartTotal.toFixed(2)}</strong>
+                <strong>{serverQuote?.payableTotalMinor !== null && serverQuote?.payableTotalMinor !== undefined
+                  ? `S$${(serverQuote.payableTotalMinor / 100).toFixed(2)}` : '—'}</strong>
               </div>
 
               <button
                 type="button"
                 className="checkout-button"
-                disabled
+                disabled={!serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy || storageFailed}
+                onClick={() => void handleCheckout()}
               >
-                Checkout coming soon
+                {checkoutBusy ? 'Opening secure checkout…' : 'Pay securely with Stripe'}
               </button>
 
-              <p className="cart-summary-note">
-                Shipping is not included. Checkout is not available yet.
-              </p>
+              <p className="cart-summary-note">Stripe test checkout. No live payments are accepted.</p>
+              {!checkoutConfigured && <p role="status">Checkout has not been configured yet.</p>}
+              {quoteError && <p role="alert">{quoteError}</p>}
+              {serverQuote?.shipping.status === 'requires_carrier_quote' &&
+                <p role="status">Malaysia checkout will be available after carrier rates are connected.</p>}
               <Link to="/#shop" className="back-link">Continue shopping →</Link>
             </aside>
           </div>

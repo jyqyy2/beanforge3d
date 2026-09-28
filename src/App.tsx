@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Routes, Route, Link, useLocation } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
+import CheckoutResultPage from './pages/CheckoutResultPage'
 import KeycapStudioPage from './pages/KeycapStudioPage'
 import landingHero from './assets/landing-hero.png'
 import categoryKeycaps from './assets/landing-category-keycaps.png'
@@ -109,6 +110,7 @@ return (
       path="/cart"
       element={<CartPage />}
     />
+    <Route path="/checkout/success" element={<CheckoutResultPage />} />
 
     {/* Homepage */}
     <Route
