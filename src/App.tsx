@@ -3,7 +3,8 @@ import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import CheckoutResultPage from './pages/CheckoutResultPage'
 import KeycapStudioPage from './pages/KeycapStudioPage'
-import landingHero from './assets/landing-hero.png'
+import StudioHubPage from './pages/StudioHubPage'
+import landingHero from './assets/halloweenimg.png'
 import categoryKeycaps from './assets/landing-category-keycaps.png'
 import categorySkadis from './assets/landing-category-skadis.png'
 import categoryQr from './assets/landing-category-qr.png'
@@ -67,7 +68,7 @@ function Header() {
 
       <nav className="nav">
         <a href="/#shop">Shop</a>
-        {pathname === '/' && <Link to="/studio/keycaps">Keycap Studio</Link>}
+        {pathname === '/' && <Link to="/studio">Keycap Studio</Link>}
         <a href="/#custom">Custom</a>
         <a href="/#corporate">Corporate</a>
         <a href="/#about">About</a>
@@ -97,6 +98,7 @@ return (
     <Header />
 
     <Routes>
+    <Route path="/studio" element={<StudioHubPage />} />
     <Route path="/studio/keycaps" element={<KeycapStudioPage />} />
 
     {/* Bean Keycap product page */}
@@ -141,7 +143,7 @@ return (
                     Shop now
                   </a>
 
-                  <Link className="button button-light" to="/studio/keycaps">
+                  <Link className="button button-light" to="/studio">
                     Explore keycap studio
                   </Link>
                 </div>
@@ -168,12 +170,12 @@ return (
               </div>
               <div className="category-grid">
                 {[
-                  { name: 'Keycap Studio', description: 'Design your own letters, colours and combination.', to: '/studio/keycaps', image: studioImage, badge: 'CREATE' },
+                  { name: 'Keycap Studio', description: 'Design your own letters, colours and combination.', to: '/studio', image: studioImage, badge: 'CREATE' },
                   { name: 'QR / NFC', description: 'Character stands made for counters and businesses.', to: '/product/qr-nfc-stand', image: categoryQr, badge: 'SCAN' },
                   { name: 'Keycaps', description: 'Small details for keyboards with personality.', to: '/product/bean-keycap', image: categoryKeycaps, badge: 'KEY' },
-                  { name: 'Custom Nametags', description: 'Names, words and little pieces made for you.', to: '/product/custom-name-keychain', image: categoryCustom, badge: 'MADE' },
-                  { name: 'Custom Carplates', description: 'Personalised plates made your way.', image: null, badge: 'Coming soon' },
-                  { name: 'SKÅDIS Accessories', description: 'Modular accessories for a tidier setup.', image: categorySkadis, badge: 'Coming soon' },
+                  { name: 'Custom Nametags', description: 'Names, words and little pieces made for you.', to: '/product/custom-name-keychain', image: categoryCustom, badge: 'PERSONALISE' },
+                  { name: 'Custom Carplate Keychain', description: 'Personalised plates made your way.', image: null, badge: 'PERSONALISE' },
+                  { name: 'SKADIS Accessories', description: 'Modular accessories for a tidier setup.', image: categorySkadis, badge: 'ORGANISE' },
                 ].map((category, index) => {
                   const content = <>
                     <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
@@ -198,7 +200,7 @@ return (
                 <p className="eyebrow">THE KEYCAP STUDIO</p>
                 <h2 id="landing-studio-title">Design your<br />own keycaps.</h2>
                 <p>Create something uniquely yours. Choose your letters and colours, express your style — and bring your ideas to life, one keycap at a time.</p>
-                <Link className="button button-light" to="/studio/keycaps">Start designing →</Link>
+                <Link className="button button-light" to="/studio">Start designing →</Link>
               </div>
               <img src={studioImage} alt="J, O and Y keycaps in cream, pink and charcoal" width="259" height="210" loading="lazy" />
             </section>
@@ -276,7 +278,7 @@ return (
 
                 <a
                   className="custom-studio-link"
-                  href="/studio/keycaps"
+                  href="/studio"
                 >
                   Explore the keycap studio →
                 </a>
@@ -326,7 +328,7 @@ return (
 
             <div className="footer-links">
               <a href="#shop">Shop</a>
-              <Link to="/studio/keycaps">Keycap Studio</Link>
+              <Link to="/studio">Keycap Studio</Link>
               <a href="#custom">Custom</a>
               <a href="#corporate">Corporate</a>
               <a href="#about">About</a>
