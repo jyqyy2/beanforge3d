@@ -1,10 +1,17 @@
 .studio-hub {
   min-height: calc(100vh - 76px);
-  padding: clamp(1.25rem, 3vw, 2.5rem) 6% clamp(4rem, 8vw, 7rem);
+  padding: 2.5rem clamp(1rem, 5vw, 4rem) clamp(4rem, 8vw, 7rem);
   color: #241026;
   background:
     radial-gradient(circle at 90% 10%, #eadcf1 0, transparent 25%),
     linear-gradient(135deg, #f8efe2 0%, #fffaf4 52%, #f2e7f1 100%);
+}
+
+#root:has(.studio-hub) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
+
+@media (max-width: 850px) {
+  #root:has(.studio-hub) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
+  #root:has(.studio-hub) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
 }
 
 .studio-hub-hero,
@@ -24,13 +31,8 @@
 }
 
 .studio-hub-back {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  margin-bottom: clamp(2.5rem, 6vw, 5rem);
-  color: #6b5470;
-  font-size: 0.85rem;
-  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0;
 }
 
 .studio-hub-hero h1,
@@ -207,7 +209,6 @@
 @media (max-width: 600px) {
   .studio-hub { padding-inline: 5%; }
   .studio-hub-hero { grid-template-columns: 1fr; min-height: 0; padding-block: 1rem 4rem; }
-  .studio-hub-back { margin-bottom: 2.5rem; }
   .studio-hub-hero-mark { width: min(72vw, 280px); justify-self: center; }
   .studio-hub-heading { grid-template-columns: 1fr; gap: 1rem; }
   .studio-product-grid { grid-template-columns: 1fr; }
@@ -215,6 +216,13 @@
 }
 
 /* Full-width storefront canvas and responsive polish */
+#root:has(.studio-hub) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
+
+@media (max-width: 850px) {
+  #root:has(.studio-hub) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
+  #root:has(.studio-hub) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
+}
+
 .studio-hub-hero,
 .studio-hub-list {
   width: 100%;
@@ -250,7 +258,7 @@
 }
 
 @media (max-width: 600px) {
-  .studio-hub { padding-top: 0.75rem; }
+  .studio-hub { padding-top: 2.5rem; }
   .studio-hub-hero { padding-inline: 0; }
   .studio-hub-hero h1 { font-size: clamp(3rem, 14vw, 4.5rem); }
   .studio-hub-introduction { margin-top: 1.25rem; font-size: 1rem; }
@@ -268,7 +276,6 @@
 
 .studio-hub-hero-copy {
   min-width: 0;
-  padding-inline: clamp(0.25rem, 1vw, 0.75rem);
 }
 
 .studio-hub-hero h1 {
@@ -337,7 +344,6 @@
 
 @media (max-width: 600px) {
   .studio-hub-hero { padding-block: 1.25rem 3.5rem; }
-  .studio-hub-hero-copy { padding-inline: 0; }
   .studio-hub-hero h1 { font-size: clamp(2.7rem, 12vw, 3.6rem); }
   .studio-hub-introduction { max-width: 38ch; margin-top: 1.25rem; font-size: 0.95rem; }
   .studio-hub-hero-mark { width: min(76vw, 270px); }

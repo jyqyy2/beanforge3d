@@ -18,22 +18,22 @@ type StudioProduct = {
 const studioProducts: StudioProduct[] = [
   {
     title: 'Keycap Studio',
-    eyebrow: 'PERSONALISED KEYCAPS',
+    eyebrow: 'PERSONALISED NAME CLICKER',
     description: 'Build a small set of letters, colours and character details made around your idea.',
     href: '/studio/keycaps',
-    image: studioImage,
+    image: heroImage,
     imageAlt: 'Cream, pink and charcoal custom keycaps',
     badge: 'Ready to design',
     action: 'Open the studio',
   },
   {
     title: 'F1 Fidget Clickers',
-    eyebrow: 'COMING SOON',
+    eyebrow: 'RACES DROP',
     description: 'A satisfying little desk object inspired by the rhythm, colour and energy of race day.',
-    image: heroImage,
+    image: studioImage,
     imageAlt: 'BeanForge 3D product detail',
-    badge: 'In development',
-    action: 'Explore soon',
+    badge: 'FOR RACE LOVERS',
+    action: 'Open the studio',
   },
   {
     title: 'Halloween Fidget Clicker',
@@ -42,7 +42,7 @@ const studioProducts: StudioProduct[] = [
     image: halloweenImage,
     imageAlt: 'BeanForge 3D Halloween themed product image',
     badge: 'Coming this season',
-    action: 'Explore soon',
+    action: 'Open the studio',
   },
 ]
 
@@ -51,11 +51,10 @@ function StudioHubPage() {
     <main className="studio-hub">
       <section className="studio-hub-hero" aria-labelledby="studio-hub-title">
         <div className="studio-hub-hero-copy">
-          <Link className="studio-hub-back" to="/">← Back to the shop</Link>
           <p className="eyebrow">THE BEANFORGE WORKSHOP</p>
           <h1 id="studio-hub-title">Choose something<br />to make your own.</h1>
           <p className="studio-hub-introduction">
-            Personalise a small object with a big personality. Start with keycaps,
+            Personalise a small object with a big personality.<br/>Start with keycaps,
             then explore new clickers and seasonal ideas as they arrive.
           </p>
         </div>

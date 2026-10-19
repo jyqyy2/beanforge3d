@@ -13,6 +13,7 @@ import productKeycap from './assets/landing-product-keycap.png'
 import productCustom from './assets/landing-product-custom.png'
 import productQr from './assets/landing-product-qr.png'
 import studioImage from './assets/landing-studio.png'
+import studioImage2 from './assets/hero.png'
 import customBanner from './assets/landing-custom-banner.png'
 import corporateBanner from './assets/landing-corporate-banner.png'
 import ResponsiveImage from './components/ResponsiveImage'
@@ -202,7 +203,7 @@ return (
                 <p>Create something uniquely yours. Choose your letters and colours, express your style — and bring your ideas to life, one keycap at a time.</p>
                 <Link className="button button-light" to="/studio">Start designing →</Link>
               </div>
-              <img src={studioImage} alt="J, O and Y keycaps in cream, pink and charcoal" width="259" height="210" loading="lazy" />
+              <img src={studioImage2} alt="J, O and Y keycaps in cream, pink and charcoal" width="259" height="210" loading="lazy" />
             </section>
 
             <section className="featured" id="keycaps">
