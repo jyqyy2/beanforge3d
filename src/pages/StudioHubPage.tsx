@@ -68,7 +68,7 @@ function StudioHubPage() {
         <div className="studio-hub-heading">
           <div>
             <p className="eyebrow">CUSTOM CREATIONS</p>
-            <h2 id="studio-products-title">Pick your starting point.</h2>
+            <h2 id="studio-products-title">Pick your starting point.</h2><br/>
           </div>
           <p>Each product opens into its own focused experience, so there is room to make every detail feel considered.</p>
         </div>

@@ -259,3 +259,42 @@
   #root:has(.keycap-studio) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
   #root:has(.keycap-studio) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
 }
+
+/* Connected board preview without visible middle connectors */
+.keycap-studio:not(.stand-studio) .keycap-strip {
+  gap: 0;
+}
+
+.keycap-studio:not(.stand-studio) .keycap-object:not(:last-child) .keycap-module::after,
+.keycap-studio:not(.stand-studio) .keycap-object:not(:first-child) .keycap-module::before {
+  display: none;
+}
+
+.keycap-studio:not(.stand-studio) .keycap-object:not(:last-child) {
+  margin-right: -5px;
+}
+
+/* Rounded outer board silhouette only */
+.keycap-studio:not(.stand-studio) .keycap-housing {
+  clip-path: none;
+  border-radius: 24%;
+}
+
+/* Keep compact cart previews consistent with the live board design */
+.keycap-preview-compact .keycap-strip {
+  gap: 0;
+}
+
+.keycap-preview-compact .keycap-object:not(:last-child) {
+  margin-right: -3px;
+}
+
+.keycap-preview-compact .keycap-object:not(:last-child) .keycap-module::after,
+.keycap-preview-compact .keycap-object:not(:first-child) .keycap-module::before {
+  display: none;
+}
+
+.keycap-preview-compact .keycap-housing {
+  clip-path: none;
+  border-radius: 24%;
+}
