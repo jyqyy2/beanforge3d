@@ -105,6 +105,9 @@
 .board-cream { --board-top: #fff8e8; --board-bottom: #e9ddc3; --board-edge: #c5b694; }
 .board-pink { --board-top: #f9dcde; --board-bottom: #e8b5bc; --board-edge: #bd8790; }
 .board-black { --board-top: #4b4946; --board-bottom: #292724; --board-edge: #161513; --halloween-ink: #fff9ed; }
+.board-purple { --board-top: #c9b4df; --board-bottom: #a888c3; --board-edge: #775a91; }
+.board-white { --board-top: #fffefa; --board-bottom: #eae8e3; --board-edge: #c7c3bb; }
+.board-turquoise { --board-top: #a9e6df; --board-bottom: #6bc5be; --board-edge: #398f8d; }
 .halloween-slot-image {
   display: block;
   width: min(100%, 112px);
@@ -318,11 +321,11 @@
 }
 .halloween-keycap-picker legend,
 .halloween-keycap-picker > .studio-note {
-  text-align: center;
+  text-align: left;
 }
 .halloween-keycap-picker > .studio-note {
   max-width: 42ch;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 .halloween-keycap-grid {
   align-items: start;
@@ -426,6 +429,9 @@
 }
 
 .halloween-studio .halloween-workspace .halloween-options {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
   min-width: 0;
   padding: clamp(1.25rem, 3vw, 2.25rem);
   border: 0;
@@ -438,11 +444,104 @@
   margin-bottom: 0;
 }
 
+.halloween-workspace .halloween-options fieldset {
+  margin-bottom: 0;
+}
+
+.halloween-workspace .halloween-step {
+  min-width: 0;
+  padding: clamp(0.9rem, 1.8vw, 1.2rem);
+  border: 1px solid #e6d8cd;
+  border-radius: 16px;
+  background: #f8f3edb8;
+}
+
+.halloween-workspace .halloween-step-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #785080;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.halloween-studio .halloween-workspace .halloween-options legend {
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+}
+
+.halloween-studio .halloween-workspace .halloween-options .studio-note {
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.halloween-workspace .halloween-layout-choices strong {
+  font-size: 0.95rem;
+}
+
+.halloween-workspace .halloween-layout-choices {
+  max-width: 540px;
+  gap: 0.65rem;
+}
+
+.halloween-workspace .halloween-layout-choices button {
+  min-height: 64px;
+  padding: 0.45rem;
+}
+
+.halloween-workspace .halloween-layout-choices span {
+  margin-top: 0.25rem;
+}
+
+.halloween-studio .halloween-workspace .halloween-colours button {
+  min-height: 44px;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.875rem;
+}
+
+.halloween-studio .halloween-workspace .halloween-colours {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 0.5rem;
+}
+
+.halloween-workspace .halloween-colours .studio-swatch {
+  width: 14px;
+  height: 14px;
+}
+
+.halloween-studio .studio-swatch[data-colour="Purple"] { background: #a888c3; border-color: #775a91; }
+.halloween-studio .studio-swatch[data-colour="White"] { background: #fffefa; border-color: #a9a49c; }
+.halloween-studio .studio-swatch[data-colour="Turquoise"] { background: #6bc5be; border-color: #398f8d; }
+
+.halloween-workspace .halloween-keycap-card strong {
+  font-size: 1rem;
+}
+
+.halloween-workspace .halloween-keycap-card small {
+  font-size: 0.76rem;
+}
+
 @media (max-width: 850px) {
   .halloween-workspace { grid-template-columns: minmax(0, 1fr); }
+  .halloween-workspace .halloween-layout-choices { max-width: 300px; }
   .halloween-studio .halloween-workspace .halloween-preview { position: static; }
   .halloween-studio .halloween-workspace .halloween-options {
     border-top: 1px solid #d9c3ae;
     border-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .halloween-studio .halloween-workspace .halloween-colours {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+
+@media (min-width: 601px) and (max-width: 850px) {
+  .halloween-workspace .halloween-layout-choices {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: 540px;
   }
 }

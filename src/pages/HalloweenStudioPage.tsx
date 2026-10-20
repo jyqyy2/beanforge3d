@@ -9,7 +9,7 @@ import catBackImage from '../assets/halloween-cat-back.png'
 import './HalloweenStudioPage.css'
 
 type LayoutId = '1x1' | '2x1' | '2x2' | '4x1'
-type BoardColour = 'Cream' | 'Pink' | 'Black'
+type BoardColour = 'Cream' | 'Pink' | 'Black' | 'Purple' | 'White' | 'Turquoise'
 type KeycapId = 'pumpkin' | 'ghost' | 'skull' | 'spider' | 'cat-side' | 'cat-back'
 
 type HalloweenDraft = {
@@ -28,6 +28,7 @@ type HalloweenKeycap = {
 }
 
 const draftKey = 'beanforge-halloween-clicker-draft'
+const boardColours: BoardColour[] = ['Cream', 'Pink', 'Black', 'Purple', 'White', 'Turquoise']
 const layouts: Array<{ id: LayoutId; label: string; slots: number; className: string }> = [
   { id: '1x1', label: '1 × 1', slots: 1, className: 'layout-one' },
   { id: '2x1', label: '2 × 1', slots: 2, className: 'layout-two' },
@@ -49,7 +50,7 @@ function readDraft(): HalloweenDraft {
   try {
     const parsed = JSON.parse(localStorage.getItem(draftKey) ?? 'null') as Partial<HalloweenDraft> | null
     if (!parsed || parsed.version !== 1 || !layouts.some(layout => layout.id === parsed.layout) ||
-      !['Cream', 'Pink', 'Black'].includes(parsed.boardColour ?? '') || !Array.isArray(parsed.slots)) return fallback
+      !boardColours.includes(parsed.boardColour as BoardColour) || !Array.isArray(parsed.slots)) return fallback
     const layout = layouts.find(option => option.id === parsed.layout) ?? layouts[0]
     const slots = parsed.slots.slice(0, layout.slots).map(slot => keycaps.some(keycap => keycap.id === slot) ? slot : null)
     return { version: 1, layout: layout.id, boardColour: parsed.boardColour as BoardColour, slots: [...slots, ...Array(layout.slots - slots.length).fill(null)] }
@@ -141,24 +142,29 @@ function HalloweenStudioPage() {
           </section>
 
           <section className="studio-options halloween-options" aria-label="Build your Halloween clicker">
+          <div className="halloween-step">
           <fieldset>
-            <legend>How many boards</legend>
+            <legend><span className="halloween-step-label" aria-hidden="true">STEP 1</span>How many boards</legend>
             <p className="studio-note">Choose the shape of your clicker.</p>
             <div className="halloween-layout-choices">
               {layouts.map(option => <button type="button" key={option.id} aria-pressed={draft.layout === option.id} onClick={() => updateLayout(option.id)}><strong>{option.label}</strong><span>{option.slots} {option.slots === 1 ? 'board' : 'boards'}</span></button>)}
             </div>
           </fieldset>
+          </div>
 
+          <div className="halloween-step">
           <fieldset>
-            <legend>Board colour</legend>
+            <legend><span className="halloween-step-label" aria-hidden="true">STEP 2</span>Board colour</legend>
             <p className="studio-note">The colour of your whole clicker board.</p>
             <div className="studio-choices halloween-colours">
-              {(['Cream', 'Pink', 'Black'] as BoardColour[]).map(colour => <button type="button" key={colour} aria-pressed={draft.boardColour === colour} onClick={() => setDraft(current => ({ ...current, boardColour: colour }))}><span className="studio-swatch" data-colour={colour} />{colour}</button>)}
+              {boardColours.map(colour => <button type="button" key={colour} aria-pressed={draft.boardColour === colour} onClick={() => setDraft(current => ({ ...current, boardColour: colour }))}><span className="studio-swatch" data-colour={colour} />{colour}</button>)}
             </div>
           </fieldset>
+          </div>
 
+          <div className="halloween-step">
           <fieldset className="halloween-keycap-picker">
-            <legend>Build your fidget clicker!</legend>
+            <legend><span className="halloween-step-label" aria-hidden="true">STEP 3</span>Build your fidget clicker!</legend>
             <p className="studio-note">Choose a board above, then click a Halloween keycap to fill that slot.</p>
             <div className="halloween-keycap-grid">
               {keycaps.map(keycap => <button type="button" className={`halloween-keycap-card card-${keycap.colour} ${selectedKeycaps.includes(keycap.id) ? 'is-selected' : ''}`} key={keycap.id} onClick={() => chooseKeycap(keycap.id)}>
@@ -169,6 +175,7 @@ function HalloweenStudioPage() {
               </button>)}
             </div>
           </fieldset>
+          </div>
           </section>
         </div>
       </div>
