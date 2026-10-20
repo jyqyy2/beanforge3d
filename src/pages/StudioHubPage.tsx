@@ -39,9 +39,10 @@ const studioProducts: StudioProduct[] = [
     title: 'Halloween Fidget Clicker',
     eyebrow: 'SEASONAL DROP',
     description: 'A playful seasonal clicker with a little more mischief for your desk or display shelf.',
+    href: '/studio/halloween',
     image: halloweenImage,
     imageAlt: 'BeanForge 3D Halloween themed product image',
-    badge: 'Coming this season',
+    badge: 'Ready to design',
     action: 'Open the studio',
   },
 ]

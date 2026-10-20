@@ -7,13 +7,6 @@
     linear-gradient(135deg, #f8efe2 0%, #fffaf4 52%, #f2e7f1 100%);
 }
 
-#root:has(.studio-hub) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
-
-@media (max-width: 850px) {
-  #root:has(.studio-hub) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
-  #root:has(.studio-hub) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
-}
-
 .studio-hub-hero,
 .studio-hub-list {
   max-width: 1180px;
@@ -216,13 +209,6 @@
 }
 
 /* Full-width storefront canvas and responsive polish */
-#root:has(.studio-hub) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
-
-@media (max-width: 850px) {
-  #root:has(.studio-hub) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
-  #root:has(.studio-hub) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
-}
-
 .studio-hub-hero,
 .studio-hub-list {
   width: 100%;

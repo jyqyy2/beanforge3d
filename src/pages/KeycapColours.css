@@ -250,16 +250,6 @@
 .keycap-studio .studio-options .studio-note { margin-block: 0.5rem 1.25rem; }
 .keycap-studio .studio-settings { margin-bottom: 2rem; }
 .keycap-studio .character-palette .studio-note { margin-bottom: 0.75rem; }
-#root:has(.keycap-studio) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
-#root:has(.keycap-studio) > .header .nav { gap: 1.25rem; }
-#root:has(.keycap-studio) > .header .nav a { display: inline-flex; align-items: center; min-height: 44px; }
-#root:has(.keycap-studio) > .header :focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
-
-@media (max-width: 850px) {
-  #root:has(.keycap-studio) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
-  #root:has(.keycap-studio) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
-}
-
 /* Connected board preview without visible middle connectors */
 .keycap-studio:not(.stand-studio) .keycap-strip {
   gap: 0;

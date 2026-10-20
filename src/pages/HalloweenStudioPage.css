@@ -1,0 +1,417 @@
+.halloween-studio {
+  --halloween-purple: #5b2b72;
+  --halloween-orange: #ef8a1c;
+  --halloween-ink: #241026;
+  background:
+    radial-gradient(circle at 90% 8%, #eadcf1 0, transparent 26%),
+    linear-gradient(135deg, #fffaf2 0%, #f8efe2 54%, #f1e5f1 100%);
+}
+
+.halloween-heading h1 { color: var(--halloween-ink); }
+.halloween-heading > p:last-child { max-width: 42ch; margin-inline: auto; }
+.halloween-layout { gap: clamp(1.5rem, 3vw, 2.5rem); }
+.halloween-draft-toolbar { position: relative; }
+.halloween-draft-toolbar > button,
+.halloween-reset button {
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  border: 1px solid #cdb7cc;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--halloween-ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+.halloween-draft-toolbar > button:hover,
+.halloween-reset button:hover { border-color: var(--halloween-purple); }
+.halloween-reset {
+  flex-basis: 100%;
+  padding: 1rem;
+  border: 1px solid #cdb7cc;
+  border-radius: 16px;
+  background: #fffdfb;
+}
+.halloween-reset p { margin: 0 0 0.5rem; color: #6b5470; }
+.halloween-reset button { margin: 0.5rem 0.5rem 0 0; }
+.halloween-reset button:last-child { background: var(--halloween-purple); color: white; }
+
+.halloween-preview {
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  border-color: #d9c3ae;
+  background: radial-gradient(ellipse at 50% 30%, #fffdf7, #f0e1ce);
+}
+.halloween-board {
+  position: relative;
+  display: grid;
+  place-items: stretch;
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  min-height: 120px;
+  margin: 2.5rem auto 1.25rem;
+  padding: 0.85rem;
+  border: 2px solid var(--board-edge);
+  border-radius: 22px;
+  background: linear-gradient(145deg, var(--board-top), var(--board-bottom));
+  box-shadow: inset 0 2px 2px #ffffff99, inset 0 -5px 0 #00000016, 0 12px 18px #5c3b2924;
+}
+.halloween-board.layout-one {
+  grid-template-columns: minmax(110px, 150px);
+  grid-template-rows: minmax(110px, 150px);
+}
+.halloween-board.layout-two,
+.halloween-board.layout-tall {
+  grid-template-columns: minmax(110px, 150px);
+  grid-template-rows: repeat(2, minmax(90px, 125px));
+}
+.halloween-board.layout-four.layout-square {
+  grid-template-columns: repeat(2, minmax(100px, 135px));
+  grid-template-rows: repeat(2, minmax(100px, 135px));
+}
+.halloween-board.layout-four.layout-tall {
+  grid-template-columns: minmax(100px, 135px);
+  grid-template-rows: repeat(4, minmax(68px, 105px));
+}
+.halloween-board-handle {
+  position: absolute;
+  top: -2.35rem;
+  left: 50%;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 0.45rem solid var(--board-bottom);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0;
+  box-shadow: inset 0.15rem 0 0 #ffffff66, 0.1rem 0 0 var(--board-edge);
+  transform: translateX(-50%);
+}
+.halloween-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.45rem;
+  border: 0;
+  border-right: 1px solid #00000014;
+  border-bottom: 1px solid #00000014;
+  background: transparent;
+  color: var(--halloween-ink);
+  cursor: pointer;
+  transition: background 160ms ease, outline 160ms ease;
+}
+.halloween-slot:hover { background: #ffffff1c; }
+.halloween-slot.is-active { z-index: 1; outline: 3px solid var(--halloween-purple); outline-offset: -3px; }
+.board-cream { --board-top: #fff8e8; --board-bottom: #e9ddc3; --board-edge: #c5b694; }
+.board-pink { --board-top: #f9dcde; --board-bottom: #e8b5bc; --board-edge: #bd8790; }
+.board-black { --board-top: #4b4946; --board-bottom: #292724; --board-edge: #161513; --halloween-ink: #fff9ed; }
+.halloween-slot-image {
+  display: block;
+  width: min(100%, 112px);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 18%;
+  box-shadow: 0 5px 8px #5c3b2926;
+}
+.halloween-slot-empty {
+  display: grid;
+  place-items: center;
+  width: min(54%, 66px);
+  aspect-ratio: 1;
+  border: 1px solid #5b2b7222;
+  border-radius: 20%;
+  background: #fffdf3;
+  box-shadow: inset 0 0 0 2px #ffffff80;
+  color: var(--halloween-ink);
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+}
+.halloween-slot small { position: absolute; bottom: -1.7rem; color: #6b5470; font-size: 0.8rem; font-weight: 700; }
+
+
+.halloween-preview-note { min-height: 1.5em; margin: 1rem 0 0; color: #6b5470; font-size: 0.85rem; text-align: center; }
+
+.halloween-options { padding: clamp(1.25rem, 4vw, 3rem); }
+.halloween-options fieldset { margin-bottom: 2.5rem; }
+.halloween-options legend { color: var(--halloween-ink); font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.65rem, 3vw, 2.2rem); font-weight: 400; letter-spacing: -0.025em; }
+.halloween-layout-choices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.65rem; }
+.halloween-layout-choices button {
+  min-height: 76px;
+  padding: 0.65rem;
+  border: 1px solid #cdb7cc;
+  border-radius: 14px;
+  background: #fffdfb;
+  color: var(--halloween-ink);
+  cursor: pointer;
+}
+.halloween-layout-choices button[aria-pressed="true"] { border-color: var(--halloween-purple); background: var(--halloween-purple); color: white; box-shadow: 0 3px 0 #3e1b51; }
+.halloween-layout-choices strong,
+.halloween-layout-choices span { display: block; }
+.halloween-layout-choices strong { font-size: 1.1rem; }
+.halloween-layout-choices span { margin-top: 0.35rem; font-size: 0.72rem; }
+.halloween-config-image {
+  display: block;
+  width: 100%;
+  max-height: 300px;
+  margin-top: 1.25rem;
+  border: 1px solid #ddcadd;
+  border-radius: 16px;
+  object-fit: cover;
+  object-position: center;
+}
+.halloween-colours button[aria-pressed="true"] { border-color: var(--halloween-purple); background: #f1e5f1; }
+.halloween-keycap-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; }
+.halloween-keycap-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 0.6rem;
+  border: 1px solid #ddcadd;
+  border-radius: 16px;
+  background: #fffdfb;
+  color: var(--halloween-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+.halloween-keycap-card:hover,
+.halloween-keycap-card:focus-visible,
+.halloween-keycap-card.is-selected { border-color: var(--halloween-purple); box-shadow: 0 8px 18px #5b2b721c; transform: translateY(-3px); }
+.halloween-card-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 11px;
+  object-fit: contain;
+}.halloween-keycap-card strong { margin-top: 0.7rem; font-family: Georgia, 'Times New Roman', serif; font-size: 1.15rem; font-weight: 400; }
+.halloween-keycap-card small { margin-top: 0.4rem; color: #6b5470; line-height: 1.45; }
+.halloween-keycap-card em { margin-top: 0.6rem; color: var(--halloween-purple); font-size: 0.7rem; font-style: normal; font-weight: 800; }
+
+@media (max-width: 850px) {
+  .halloween-layout-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .halloween-keycap-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .halloween-studio { padding-inline: 5%; }
+  .halloween-heading h1 { font-size: clamp(2.6rem, 12vw, 3.6rem); }
+  .halloween-board { min-height: 210px; padding-inline: 0.65rem; }
+  .halloween-board.layout-one { grid-template-columns: 100px; }
+  .halloween-board.layout-two,
+  .halloween-board.layout-tall { grid-template-columns: 90px; grid-template-rows: repeat(2, 90px); }
+  .halloween-board.layout-four.layout-square { grid-template-columns: repeat(2, 88px); grid-template-rows: repeat(2, 88px); }
+  .halloween-board.layout-four.layout-tall { grid-template-rows: repeat(4, 72px); }
+  .halloween-keycap-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .halloween-keycap-card strong { font-size: 1rem; }
+  .halloween-keycap-card small { font-size: 0.78rem; }
+}
+
+.halloween-preview {
+  padding: clamp(0.9rem, 2.4vw, 1.5rem);
+}
+.halloween-board {
+  max-width: calc(100% - 1rem);
+  margin-block: 1.9rem 0.85rem;
+  padding: 0.6rem;
+  border-radius: 18px;
+}
+.halloween-board.layout-one {
+  grid-template-columns: minmax(92px, 122px);
+  grid-template-rows: minmax(92px, 122px);
+}
+.halloween-board.layout-two,
+.halloween-board.layout-tall {
+  grid-template-columns: minmax(92px, 122px);
+  grid-template-rows: repeat(2, minmax(78px, 104px));
+}
+.halloween-board.layout-four.layout-square {
+  grid-template-columns: repeat(2, minmax(86px, 110px));
+  grid-template-rows: repeat(2, minmax(86px, 110px));
+}
+.halloween-board.layout-four.layout-tall {
+  grid-template-columns: minmax(86px, 110px);
+  grid-template-rows: repeat(4, minmax(58px, 84px));
+}
+.halloween-board-handle {
+  top: -1.9rem;
+  width: 1.95rem;
+  height: 1.95rem;
+  border-width: 0.36rem;
+}
+.halloween-slot { padding: 0.3rem; }
+.halloween-slot-image { width: min(100%, 92px); }
+.halloween-slot-empty {
+  width: min(52%, 56px);
+  font-size: clamp(1.3rem, 3vw, 2rem);
+}
+.halloween-slot small { bottom: -1.4rem; font-size: 0.72rem; }
+.halloween-preview-note { margin-top: 0.7rem; font-size: 0.78rem; }
+.halloween-card-art {
+  width: 78%;
+  margin-inline: auto;
+}
+
+@media (max-width: 600px) {
+  .halloween-preview { padding: 0.85rem; }
+  .halloween-board { min-height: 180px; padding: 0.45rem; }
+  .halloween-board.layout-one { grid-template-columns: 84px; grid-template-rows: 84px; }
+  .halloween-board.layout-two,
+  .halloween-board.layout-tall { grid-template-columns: 78px; grid-template-rows: repeat(2, 74px); }
+  .halloween-board.layout-four.layout-square { grid-template-columns: repeat(2, 74px); grid-template-rows: repeat(2, 74px); }
+  .halloween-board.layout-four.layout-tall { grid-template-columns: 72px; grid-template-rows: repeat(4, 58px); }
+  .halloween-board-handle { top: -1.65rem; width: 1.7rem; height: 1.7rem; border-width: 0.32rem; }
+  .halloween-slot-image { width: min(100%, 68px); }
+  .halloween-slot-empty { width: 50%; font-size: 1.5rem; }
+}
+.halloween-slot small {
+  left: 50%;
+  bottom: 0.35rem;
+  min-width: 1.25rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid #5b2b7240;
+  border-radius: 999px;
+  background: #fffdf3e8;
+  box-shadow: 0 1px 3px #24102626;
+  color: #241026;
+  line-height: 1.2;
+  text-align: center;
+  transform: translateX(-50%);
+}
+.halloween-options {
+  padding: clamp(1.25rem, 4vw, 3rem);
+}
+.halloween-options fieldset {
+  margin-bottom: 2.75rem;
+}
+.halloween-options legend {
+  margin-bottom: 0.9rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+  line-height: 1.2;
+}
+.halloween-layout-choices {
+  margin-block: 0.85rem 1.15rem;
+}
+.halloween-keycap-grid {
+  margin-top: 1rem;
+}
+.halloween-keycap-card {
+  padding: 0.25rem;
+  border-color: transparent;
+  background: transparent;
+}
+.halloween-keycap-card:hover,
+.halloween-keycap-card:focus-visible,
+.halloween-keycap-card.is-selected {
+  border-color: var(--halloween-purple);
+  background: #ffffff30;
+  box-shadow: 0 6px 14px #5b2b7218;
+}
+.halloween-card-art {
+  width: 35%;
+}
+.halloween-keycap-card strong { margin-top: 0.55rem; }
+.halloween-layout-choices {
+  align-items: stretch;
+  gap: 0.75rem;
+}
+.halloween-layout-choices button {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  line-height: 1.25;
+}
+.halloween-layout-choices strong {
+  letter-spacing: -0.02em;
+}
+.halloween-layout-choices span {
+  color: currentColor;
+  opacity: 0.78;
+}
+.halloween-keycap-picker legend,
+.halloween-keycap-picker > .studio-note {
+  text-align: center;
+}
+.halloween-keycap-picker > .studio-note {
+  max-width: 42ch;
+  margin-inline: auto;
+}
+.halloween-keycap-grid {
+  align-items: start;
+  column-gap: clamp(0.85rem, 2vw, 1.35rem);
+  row-gap: clamp(1.2rem, 2.5vw, 1.8rem);
+}
+.halloween-keycap-card {
+  align-items: center;
+  min-height: 100%;
+  padding: 0.45rem 0.35rem 0.65rem;
+  text-align: center;
+}
+.halloween-card-art {
+  margin-bottom: 0.35rem;
+}
+.halloween-keycap-card strong {
+  display: block;
+  width: 100%;
+  min-height: 1.45em;
+  color: var(--halloween-ink);
+  line-height: 1.2;
+}
+.halloween-keycap-card small {
+  display: block;
+  width: min(100%, 22ch);
+  min-height: 2.7em;
+  margin-top: 0.45rem;
+  line-height: 1.4;
+}
+.halloween-keycap-card em {
+  min-height: 1.2em;
+  margin-top: 0.55rem;
+  text-align: center;
+}
+.halloween-board {
+  gap: clamp(0.12rem, 0.4vw, 0.25rem);
+}
+.halloween-slot {
+  padding: 0.45rem 0.6rem;
+}
+.halloween-slot-image {
+  width: min(100%, 86px);
+}
+.halloween-slot small {
+  right: 0.3rem;
+  bottom: 0.3rem;
+  left: auto;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .halloween-slot {
+    padding: 0.4rem 0.5rem;
+  }
+  .halloween-slot-image {
+    width: min(100%, 60px);
+  }
+  .halloween-slot small {
+    right: 0.2rem;
+    bottom: 0.2rem;
+  }
+}
+.halloween-board.layout-four.layout-tall {
+  grid-template-rows: repeat(4, minmax(68px, 84px));
+}
+.halloween-board.layout-four.layout-tall .halloween-slot {
+  padding-block: 0.4rem;
+}
+.halloween-board.layout-four.layout-tall .halloween-slot-image {
+  width: min(100%, 78px);
+  max-height: 78px;
+}
+
+@media (max-width: 600px) {
+  .halloween-board.layout-four.layout-tall {
+    grid-template-rows: repeat(4, 68px);
+  }
+  .halloween-board.layout-four.layout-tall .halloween-slot-image {
+    width: min(100%, 52px);
+    max-height: 52px;
+  }
+}

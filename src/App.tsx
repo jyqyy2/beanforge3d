@@ -1,9 +1,10 @@
-import { createBrowserRouter, RouterProvider, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Routes, Route, Link } from 'react-router-dom'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import CheckoutResultPage from './pages/CheckoutResultPage'
 import KeycapStudioPage from './pages/KeycapStudioPage'
 import StudioHubPage from './pages/StudioHubPage'
+import HalloweenStudioPage from './pages/HalloweenStudioPage'
 import landingHero from './assets/halloweenimg.png'
 import categoryKeycaps from './assets/landing-category-keycaps.png'
 import categorySkadis from './assets/landing-category-skadis.png'
@@ -54,7 +55,6 @@ const featuredPresentation: Record<string, {
 
 function Header() {
   const { cartItems } = useCart()
-  const { pathname } = useLocation()
 
   const cartItemCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -69,7 +69,7 @@ function Header() {
 
       <nav className="nav">
         <a href="/#shop">Shop</a>
-        {pathname === '/' && <Link to="/studio">Keycap Studio</Link>}
+        <Link to="/studio">Keycap Studio</Link>
         <a href="/#custom">Custom</a>
         <a href="/#corporate">Corporate</a>
         <a href="/#about">About</a>
@@ -100,6 +100,7 @@ return (
 
     <Routes>
     <Route path="/studio" element={<StudioHubPage />} />
+    <Route path="/studio/halloween" element={<HalloweenStudioPage />} />
     <Route path="/studio/keycaps" element={<KeycapStudioPage />} />
 
     {/* Bean Keycap product page */}

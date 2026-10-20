@@ -39,6 +39,13 @@ button {
   min-height: 100vh;
 }
 
+#root {
+  width: 100%;
+  max-width: none;
+  border: 0;
+  text-align: left;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -49,10 +56,11 @@ button {
   justify-content: space-between;
 
   min-height: 76px;
-  padding: 0 5vw;
+  gap: 1rem;
+  padding-inline: max(6%, calc((100vw - 1160px) / 2));
 
-  background: rgba(247, 244, 237, 0.94);
-  border-bottom: 1px solid var(--line);
+  background: #fbf7efeb;
+  border-bottom: 1px solid #dfcdb74d;
 
   backdrop-filter: blur(12px);
 }
@@ -76,9 +84,22 @@ button {
 
 .nav {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 1.25rem;
   color: #57534b;
   font-size: 0.92rem;
+}
+
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.header :focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 4px;
 }
 
 .nav a,
@@ -671,8 +692,17 @@ button {
 }
 
 @media (max-width: 850px) {
+  .header {
+    flex-wrap: wrap;
+    padding-block: 0.75rem;
+  }
+
   .nav {
-    display: none;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
   }
 
   .hero {
@@ -721,8 +751,8 @@ button {
 }
 
 @media (max-width: 520px) {
-  .header {
-    padding: 0 5vw;
+  .nav {
+    column-gap: 2rem;
   }
 
   .header-actions button,
@@ -1081,15 +1111,6 @@ So instead, put font-size after font: inherit:*/
 .cart-page .empty-cart p { margin-inline: auto; color: #625d53; }
 .cart-page .empty-cart .button { border-radius: 999px; background: #a94f30; border-color: #a94f30; font-weight: 600; }
 .cart-page .empty-cart .button:hover { background: #853a22; }
-#root:has(.cart-page) > .header { min-height: 90px; padding-inline: 6%; gap: 1rem; }
-#root:has(.cart-page) > .header .nav { gap: 1.25rem; }
-#root:has(.cart-page) > .header .nav a { display: inline-flex; align-items: center; min-height: 44px; }
-#root:has(.cart-page) > .header :focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
-@media (max-width: 850px) {
-  #root:has(.cart-page) > .header { flex-wrap: wrap; padding-block: 0.75rem; }
-  #root:has(.cart-page) > .header .nav { display: flex; order: 3; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem; }
-}
-
 .empty-cart {
   padding: 3rem;
 
