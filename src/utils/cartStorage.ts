@@ -1,6 +1,7 @@
 import type { CartItem } from '../types/cart'
 import { isStandDesign } from '../types/stand'
 import { isKeycapConfiguration } from './cartIdentity'
+import { isHalloweenConfiguration } from '../types/halloween'
 import { preserveStoredValue, readStoredValue } from './preserveStoredValue'
 
 export const cartStorageKey = 'beanforge-cart'
@@ -18,6 +19,10 @@ function isCartItem(item: unknown): item is CartItem {
     typeof candidate.price === 'number' && Number.isFinite(candidate.price) && candidate.price >= 0 &&
     typeof candidate.quantity === 'number' && Number.isSafeInteger(candidate.quantity) && candidate.quantity > 0 &&
     (candidate.image === undefined || typeof candidate.image === 'string') &&
+    (candidate.productSlug === 'halloween-clicker'
+      ? candidate.price === 0 && candidate.configuration === undefined && candidate.standDesign === undefined &&
+        isHalloweenConfiguration(candidate.halloweenConfiguration) && candidate.colour === candidate.halloweenConfiguration.boardColour
+      : candidate.halloweenConfiguration === undefined) &&
     (candidate.standDesign === undefined || (candidate.productSlug === 'qr-nfc-stand' && isStandDesign(candidate.standDesign))) &&
     (candidate.configuration === undefined ? candidate.productSlug !== 'custom-keycaps' :
       candidate.productSlug === 'custom-keycaps' && isKeycapConfiguration(candidate.configuration) && candidate.colour === candidate.configuration.boardColour)

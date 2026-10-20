@@ -28,6 +28,7 @@ function intent(items: CartItem[], country: 'SG' | 'MY') {
 }
 
 async function requestCommerce(action: 'quote' | 'checkout', items: CartItem[], country: 'SG' | 'MY', signal?: AbortSignal) {
+  if (items.some(item => item.halloweenConfiguration)) throw new Error('Halloween checkout is unavailable until pricing is configured.')
   if (!checkoutConfigured) throw new Error('Checkout is not configured.')
   const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/functions/v1/commerce-checkout`, {
     method: 'POST',

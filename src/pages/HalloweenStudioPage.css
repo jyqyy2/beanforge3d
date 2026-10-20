@@ -419,6 +419,45 @@
   background: radial-gradient(ellipse at 18% 24%, #fffdf7, #f0e1ce);
 }
 
+.halloween-extras {
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid #dfd0c6;
+  border-radius: 18px;
+  background: #fffdf8;
+  color: var(--halloween-ink);
+}
+
+.halloween-extras h2 { margin: 0.2rem 0 0.4rem; font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.25; }
+.halloween-extras > p:not(.eyebrow) { max-width: 70ch; margin-block: 0.45rem 0.85rem; font-size: 0.85rem; line-height: 1.55; }
+.halloween-extras .eyebrow { font-size: 0.67rem; }
+.halloween-extra { margin: 0.8rem 0; padding: 0.8rem; border-radius: 14px; background: #f8f3ed; }
+.halloween-extra-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.65rem; font-size: 0.85rem; }
+.halloween-extra-heading button { border: 0; background: transparent; color: #794e83; text-decoration: underline; cursor: pointer; font-size: 0.8rem; }
+.halloween-extra-choices { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5rem; }
+.halloween-extra-choices button {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.4rem 0.25rem;
+  border: 1px solid #dfd0c6;
+  border-radius: 12px;
+  background: #fffdfb;
+  color: var(--halloween-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+}
+.halloween-extra-choices button[aria-pressed="true"] { border: 2px solid var(--halloween-purple); background: #f2e9f6; }
+.halloween-extra-choices img { width: min(100%, 54px); height: 54px; object-fit: contain; }
+.halloween-add-extra { min-height: 44px; padding: 0.5rem 0.8rem; border: 1px dashed #aa8bae; border-radius: 12px; background: #fffdfb; color: var(--halloween-ink); cursor: pointer; font: inherit; font-size: 0.85rem; font-weight: 700; }
+.halloween-add-extra:disabled { opacity: 0.5; cursor: not-allowed; }
+.halloween-extra-choices button:focus-visible, .halloween-add-extra:focus-visible, .halloween-extra-heading button:focus-visible { outline: 3px solid #a063ad; outline-offset: 2px; }
+
+@media (max-width: 700px) { .halloween-extra-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 360px) { .halloween-extra-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 .halloween-studio .halloween-workspace .halloween-preview {
   position: sticky;
   top: 92px;

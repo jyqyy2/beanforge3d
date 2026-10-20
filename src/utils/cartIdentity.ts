@@ -18,7 +18,9 @@ export function isKeycapConfiguration(value: unknown, allowIncomplete = false): 
 }
 
 export function cartItemIdentity(item: CartItem): string {
-  return JSON.stringify(item.configuration
+  return JSON.stringify(item.halloweenConfiguration
+    ? [item.productSlug, item.halloweenConfiguration.layout, item.halloweenConfiguration.boardColour, item.halloweenConfiguration.slots, item.halloweenConfiguration.extras ?? []]
+    : item.configuration
     ? [item.productSlug, item.configuration.schemaVersion, item.configuration.boardColour,
       item.configuration.characters.map(({ character, colour, characterColour }) =>
         characterColour === undefined || characterColour === (colour === 'Black' ? 'Cream' : 'Black')

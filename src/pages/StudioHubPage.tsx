@@ -23,7 +23,7 @@ const studioProducts: StudioProduct[] = [
     href: '/studio/keycaps',
     image: heroImage,
     imageAlt: 'Cream, pink and charcoal custom keycaps',
-    badge: 'Ready to design',
+    badge: 'PERSONAL',
     action: 'Open the studio',
   },
   {
@@ -42,7 +42,7 @@ const studioProducts: StudioProduct[] = [
     href: '/studio/halloween',
     image: halloweenImage,
     imageAlt: 'BeanForge 3D Halloween themed product image',
-    badge: 'Ready to design',
+    badge: 'HALLOWEEN',
     action: 'Open the studio',
   },
 ]

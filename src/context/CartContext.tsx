@@ -6,6 +6,7 @@ import { cartItemIdentity, isKeycapConfiguration } from '../utils/cartIdentity'
 import { updateKeycapCart } from '../utils/updateKeycapCart'
 import type { KeycapConfiguration } from '../types/keycap'
 import { isStandDesign } from '../types/stand'
+import { isHalloweenConfiguration } from '../types/halloween'
 
 import { loadCart, saveCart } from '../utils/cartStorage'
 
@@ -26,6 +27,9 @@ export function CartProvider({
 
   function addToCart(item: CartItem) {
     if (!Number.isSafeInteger(item.quantity) || item.quantity < 1) return
+    if (item.productSlug === 'halloween-clicker'
+      ? item.price !== 0 || !isHalloweenConfiguration(item.halloweenConfiguration) || item.colour !== item.halloweenConfiguration.boardColour
+      : item.halloweenConfiguration !== undefined) return
     if (item.standDesign !== undefined && (item.productSlug !== 'qr-nfc-stand' || !isStandDesign(item.standDesign))) return
     if (item.productSlug === 'custom-keycaps' && (!isKeycapConfiguration(item.configuration) || item.colour !== item.configuration.boardColour)) return
     if (item.configuration && item.productSlug !== 'custom-keycaps') return

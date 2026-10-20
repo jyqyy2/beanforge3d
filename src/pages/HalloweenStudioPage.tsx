@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useCart } from '../context/useCart'
+import type { HalloweenConfiguration } from '../types/halloween'
 import pumpkinImage from '../assets/halloween-pumpkin.png'
 import ghostImage from '../assets/halloween-ghost.png'
 import skullImage from '../assets/halloween-skull.png'
@@ -17,6 +19,7 @@ type HalloweenDraft = {
   layout: LayoutId
   boardColour: BoardColour
   slots: Array<KeycapId | null>
+  extras?: Array<KeycapId | null>
 }
 
 type HalloweenKeycap = {
@@ -53,13 +56,17 @@ function readDraft(): HalloweenDraft {
       !boardColours.includes(parsed.boardColour as BoardColour) || !Array.isArray(parsed.slots)) return fallback
     const layout = layouts.find(option => option.id === parsed.layout) ?? layouts[0]
     const slots = parsed.slots.slice(0, layout.slots).map(slot => keycaps.some(keycap => keycap.id === slot) ? slot : null)
-    return { version: 1, layout: layout.id, boardColour: parsed.boardColour as BoardColour, slots: [...slots, ...Array(layout.slots - slots.length).fill(null)] }
+    const extras = Array.isArray(parsed.extras) && parsed.extras.length <= 20
+      ? parsed.extras.map(extra => keycaps.some(keycap => keycap.id === extra) ? extra : null) : []
+    return { version: 1, layout: layout.id, boardColour: parsed.boardColour as BoardColour, slots: [...slots, ...Array(layout.slots - slots.length).fill(null)], extras }
   } catch {
     return fallback
   }
 }
 
 function HalloweenStudioPage() {
+  const { addToCart, storageFailed } = useCart()
+  const [cartMessage, setCartMessage] = useState('')
   const [draft, setDraft] = useState<HalloweenDraft>(() => readDraft())
   const [activeSlot, setActiveSlot] = useState(0)
   const [confirmReset, setConfirmReset] = useState(false)
@@ -67,6 +74,7 @@ function HalloweenStudioPage() {
   const layout = layouts.find(option => option.id === draft.layout) ?? layouts[0]
   const selectedKeycaps = useMemo(() => draft.slots.filter((slot): slot is KeycapId => slot !== null), [draft.slots])
   const selectedNames = selectedKeycaps.map(id => keycaps.find(keycap => keycap.id === id)?.name ?? '').filter(Boolean)
+  const extras = draft.extras ?? []
 
   useEffect(() => {
     try {
@@ -98,6 +106,14 @@ function HalloweenStudioPage() {
     setDraft({ version: 1, layout: '1x1', boardColour: 'Cream', slots: [null] })
     setActiveSlot(0)
     setConfirmReset(false)
+  }
+
+  function addCreation() {
+    if (draft.slots.some(slot => slot === null) || extras.some(extra => extra === null)) return
+    const design = { ...draft, slots: [...draft.slots], extras: [...extras] } as HalloweenConfiguration
+    addToCart({ productSlug: 'halloween-clicker', name: 'Halloween Fidget Clicker', price: 0,
+      colour: design.boardColour, quantity: 1, halloweenConfiguration: design })
+    setCartMessage('Your design was added to the cart. Your studio draft remains available here.')
   }
 
   return (
@@ -178,6 +194,36 @@ function HalloweenStudioPage() {
           </div>
           </section>
         </div>
+        <section className="halloween-extras" aria-label="Additional keycaps">
+          <p className="eyebrow">MAKE IT YOURS</p>
+          <h2>Need more keycaps?</h2>
+          <p>Extra keycaps are separate from your clicker board. Choose any of the Halloween designs above; they won’t change your board layout or its selected keycaps.</p>
+          {extras.map((extra, index) => <div className="halloween-extra" key={index}>
+            <div className="halloween-extra-heading"><strong>Extra keycap {index + 1}</strong><button type="button" onClick={() => setDraft(current => ({ ...current, extras: (current.extras ?? []).filter((_, extraIndex) => extraIndex !== index) }))}>Remove keycap</button></div>
+            <div className="halloween-extra-choices" role="group" aria-label={`Choose extra keycap ${index + 1}`}>
+              {keycaps.map(keycap => <button type="button" key={keycap.id} aria-pressed={extra === keycap.id} onClick={() => setDraft(current => ({ ...current, extras: (current.extras ?? []).map((choice, extraIndex) => extraIndex === index ? keycap.id : choice) }))}>
+                <img src={keycap.image} alt="" /><span>{keycap.name}</span>
+              </button>)}
+            </div>
+          </div>)}
+          <button type="button" className="halloween-add-extra" disabled={extras.length >= 20} onClick={() => setDraft(current => ({ ...current, extras: [...(current.extras ?? []), null] }))}>+ Add another keycap</button>
+          {extras.some(extra => extra === null) && <p role="status">Choose a design for each extra keycap before adding your creation to cart.</p>}
+          <p className="studio-note">Additional keycap pricing is pending; checkout remains unavailable for this design.</p>
+        </section>
+        <section className="studio-purchase halloween-purchase" aria-label="Your Halloween creation">
+          <div>
+            <p className="eyebrow">YOUR CREATION</p>
+            <h2>Halloween Fidget Clicker</h2>
+            <p className="studio-note">{layout.label} · {draft.boardColour} · {selectedNames.join(' · ') || 'Choose your keycaps'}{extras.length ? ` · ${extras.length} extra ${extras.length === 1 ? 'keycap' : 'keycaps'}` : ''}</p>
+            <p role="status">{selectedKeycaps.length} / {layout.slots} keycaps selected</p>
+          </div>
+          <div className="studio-price-action">
+            <p className="studio-note">Price pending. This design can be saved to your cart, but checkout is unavailable until pricing is configured.</p>
+            <button type="button" className="studio-add" disabled={selectedKeycaps.length !== layout.slots || extras.some(extra => extra === null) || storageFailed} onClick={addCreation}>Add my creation to cart</button>
+            {storageFailed && <p role="alert">Cart storage is unavailable. Please retry before leaving this page.</p>}
+            {cartMessage && <p role="status">{cartMessage} <Link to="/cart">View cart →</Link></p>}
+          </div>
+        </section>
       </div>
     </main>
   )
