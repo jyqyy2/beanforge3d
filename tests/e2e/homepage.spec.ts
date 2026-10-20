@@ -68,7 +68,7 @@ test('all implemented landing links navigate, and every product can be bought in
     await page.locator(product.slug === 'qr-nfc-stand' ? '.studio-options fieldset:nth-child(2) button' : '.colour-button').last().click()
     await page.getByRole('button', { name: 'Increase quantity', exact: true }).click()
     await page.getByRole('button', { name: product.slug === 'qr-nfc-stand' ? 'Add my stand to cart' : 'Add to cart', exact: true }).click()
-    await page.getByRole('link', { name: 'View cart →' }).click()
+    await page.getByRole('dialog', { name: '✓ Item added to your cart' }).getByRole('link', { name: /View cart/ }).click()
     const row = page.locator('.cart-item').filter({ hasText: product.name })
     await expect(row.locator('.cart-quantity-controls strong')).toHaveText('2')
     await row.getByRole('button', { name: /Increase quantity/ }).click()

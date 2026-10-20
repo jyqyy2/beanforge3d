@@ -23,6 +23,7 @@ function intent(items: CartItem[], country: 'SG' | 'MY') {
       colour: item.colour,
       ...(item.standDesign ? { standDesign: item.standDesign } : {}),
       ...(item.configuration ? { configuration: item.configuration } : {}),
+      ...(item.halloweenConfiguration ? { halloweenConfiguration: item.halloweenConfiguration } : {}),
     })),
   }
 }

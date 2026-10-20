@@ -1,0 +1,31 @@
+.cart-confirmation-popover {
+  position: fixed;
+  z-index: 30;
+  top: 5.5rem;
+  right: clamp(1rem, 3vw, 2rem);
+  width: min(360px, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid #e4d9ce;
+  border-radius: 16px;
+  background: #fffdfb;
+  box-shadow: 0 18px 45px #24102629;
+  color: var(--ink);
+}
+.cart-confirmation-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.cart-confirmation-heading h2 { margin: 0; font-family: inherit; font-size: 0.95rem; font-weight: 600; line-height: 1.5; }
+.cart-confirmation-heading button { width: 32px; height: 32px; margin: -0.4rem -0.4rem 0 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; font-size: 1.6rem; line-height: 1; }
+.cart-confirmation-product { display: flex; align-items: center; gap: 0.85rem; margin-block: 1.25rem 1.5rem; }
+.cart-confirmation-product img,
+.cart-confirmation-initial { width: 70px; height: 70px; flex: none; padding: 0.3rem; border-radius: 8px; background: #f5ede4; object-fit: contain; }
+.cart-confirmation-initial { display: grid; place-items: center; overflow: hidden; font-size: 1.1rem; font-weight: 700; }
+.cart-confirmation-product strong { display: block; font-size: 0.9rem; overflow-wrap: anywhere; }
+.cart-confirmation-product p { margin: 0.25rem 0 0; color: #625d54; font-size: 0.8rem; }
+.cart-confirmation-actions { display: grid; gap: 0.6rem; text-align: center; }
+.cart-confirmation-actions a,
+.cart-confirmation-actions > button:not(.cart-confirmation-continue) { display: grid; place-items: center; min-height: 44px; border: 1px solid #a98d7e; border-radius: 10px; background: #fffdfb; color: var(--ink); font: inherit; font-size: 0.9rem; }
+.cart-confirmation-actions .cart-confirmation-checkout { border-color: var(--ink); background: var(--ink); color: #fff; }
+.cart-confirmation-actions > button:disabled { border-color: #ded9cf; background: #ebe5d9; color: #625d54; cursor: not-allowed; }
+.cart-confirmation-actions p { margin: 0; color: #625d54; font-size: 0.78rem; }
+.cart-confirmation-continue { min-height: 44px; border: 0; background: transparent; color: #794e83; cursor: pointer; font: inherit; font-size: 0.85rem; text-decoration: underline; text-underline-offset: 3px; }
+.cart-confirmation-popover :focus-visible { outline: 2px solid #5b2b72; outline-offset: 2px; }
+@media (max-width: 600px) { .cart-confirmation-popover { top: 1rem; right: 1rem; } }

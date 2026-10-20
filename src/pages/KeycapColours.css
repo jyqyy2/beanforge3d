@@ -264,6 +264,94 @@
   margin-right: -5px;
 }
 
+.keycap-design-studio { padding-top: clamp(1.5rem, 3vw, 2.25rem); }
+.keycap-design-studio .studio-heading {
+  margin-block: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.25rem);
+}
+.keycap-design-studio .studio-heading h1 {
+  margin-bottom: 0.65rem;
+  font-size: clamp(2.4rem, 4.5vw, 3.5rem);
+  line-height: 1.08;
+}
+.keycap-design-studio .studio-heading > p:last-child {
+  max-width: 52ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.keycap-design-studio .studio-layout { gap: clamp(1.25rem, 2.5vw, 2rem); }
+.keycap-design-studio .keycap-preview { padding: clamp(1rem, 2.5vw, 1.75rem); }
+.keycap-design-studio .keycap-strip { min-height: 200px; }
+.keycap-design-studio .studio-options {
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+.keycap-design-studio .studio-settings {
+  gap: 0.8rem;
+  margin-bottom: 1.25rem;
+}
+.keycap-design-studio .studio-options fieldset { margin-bottom: 1.25rem; }
+.keycap-design-studio .studio-options legend {
+  margin-bottom: 0.4rem;
+  font-size: clamp(1.2rem, 1.7vw, 1.4rem);
+  line-height: 1.25;
+}
+.keycap-design-studio .studio-options .studio-note {
+  margin-block: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+}
+.keycap-design-studio .studio-count .studio-choices { gap: 0.5rem; }
+.keycap-design-studio .studio-count .studio-choices button {
+  min-height: 60px;
+  padding: 0.45rem 0.25rem;
+}
+.keycap-design-studio .studio-count button strong { font-size: 1.15rem; }
+.keycap-design-studio .studio-count button span { font-size: 0.72rem; }
+.keycap-design-studio .studio-characters { margin-block: 1rem; gap: 0.65rem; }
+.keycap-design-studio .studio-characters input { max-width: 88px; }
+.keycap-design-studio .studio-purchase {
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+.keycap-design-studio .studio-purchase h2 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+.keycap-design-studio .studio-completion strong { font-size: 1rem; }
+.keycap-design-studio .studio-price-action .studio-total { font-size: clamp(1.2rem, 2vw, 1.5rem); }
+
+.keycap-studio .creation-summary {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  border-top: 3px solid #a94f30;
+}
+.keycap-studio .creation-summary .studio-price-action dl { margin: 0 0 1rem; }
+.keycap-studio .creation-summary .studio-price-action dl div {
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.95rem;
+}
+.keycap-studio .creation-summary .studio-price-action dl dd { text-align: right; }
+.keycap-studio .creation-summary .studio-price-action .studio-total {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  color: #91472e;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+}
+.keycap-studio .creation-summary .studio-add { min-height: 52px; }
+.keycap-studio .creation-summary .studio-note { margin: 0.4rem 0 0; font-size: 0.85rem; line-height: 1.55; }
+.keycap-studio .creation-summary .studio-completion { margin-block: 1rem 0; }
+
+@media (max-width: 850px) {
+  .keycap-studio .creation-summary { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .keycap-design-studio .studio-heading { margin-block: 1.75rem 1.5rem; }
+  .keycap-design-studio .studio-heading h1 { font-size: clamp(2.15rem, 9vw, 2.7rem); }
+  .keycap-design-studio .studio-heading > p:last-child { font-size: 0.9rem; }
+  .keycap-design-studio .keycap-preview,
+  .keycap-design-studio .studio-options { padding: 1rem; }
+  .keycap-design-studio .keycap-strip { min-height: 180px; }
+  .keycap-design-studio .studio-options legend { font-size: 1.25rem; }
+}
+
 /* Rounded outer board silhouette only */
 .keycap-studio:not(.stand-studio) .keycap-housing {
   clip-path: none;

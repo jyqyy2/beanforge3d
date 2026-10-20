@@ -4,6 +4,8 @@ import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
 import { cartItemIdentity } from '../utils/cartIdentity'
 import KeycapPreview from '../components/KeycapPreview'
+import HalloweenCartPreview from '../components/HalloweenCartPreview'
+import { halloweenKeycaps } from '../types/halloween'
 import { checkoutConfigured, requestQuote, startCheckout } from '../utils/checkout'
 import type { ServerQuote } from '../utils/checkout'
 import type { CartItem } from '../types/cart'
@@ -105,11 +107,11 @@ function CartPage() {
                     <p>{item.configuration ? 'Board colour' : 'Colour'}: {item.colour}</p>
                     {item.standDesign && <p>Stand: {item.standDesign}</p>}
                     {item.halloweenConfiguration && <p>Layout: {item.halloweenConfiguration.layout} · Keycaps: {item.halloweenConfiguration.slots.join(' · ')}</p>}
-                    {item.halloweenConfiguration?.extras?.length ? <p>Extra keycaps: {item.halloweenConfiguration.extras.join(' · ')}</p> : null}
+                    {item.halloweenConfiguration?.extras?.length ? <p>Extra keycaps: {halloweenKeycaps.filter(id => item.halloweenConfiguration?.extras?.includes(id)).map(id => `${id} × ${item.halloweenConfiguration?.extras?.filter(extra => extra === id).length}`).join(' · ')}</p> : null}
+                    {item.halloweenConfiguration && <HalloweenCartPreview configuration={item.halloweenConfiguration} />}
                     {item.configuration && <>
                       <KeycapPreview configuration={item.configuration} compact />
                       <Link className="back-link" to={`/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}`}>Edit design</Link>
-                      <p>Illustrative preview · temporary development price.</p>
                     </>}
                     <p>{item.halloweenConfiguration ? 'Price pending · checkout unavailable for this design' : serverQuote?.lines[index] ? `S$${(serverQuote.lines[index].unitAmountMinor / 100).toFixed(2)} each` : 'Price pending'}</p>
 

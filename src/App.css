@@ -1354,17 +1354,6 @@ So instead, put font-size after font: inherit:*/
   }
 }
 
-.cart-confirmation {
-  min-height: 4rem;
-  color: var(--accent-dark);
-  line-height: 1.6;
-}
-
-.cart-confirmation a {
-  font-weight: 700;
-  text-decoration: underline;
-}
-
 .cart-item, .cart-summary, .empty-cart {
   border-radius: 20px;
 }
@@ -1423,3 +1412,19 @@ So instead, put font-size after font: inherit:*/
     justify-items: start;
   }
 }
+
+.cart-page .cart-item-custom { gap: clamp(1rem, 2vw, 1.5rem); padding: clamp(1rem, 2vw, 1.5rem); }
+.cart-page .cart-item-info > p { margin-block: 0.4rem; }
+.cart-page .cart-item-info .keycap-preview { margin-block: 1rem; }
+.cart-page .cart-item-info .back-link { display: inline-block; margin-block: 0.3rem 0.6rem; }
+.cart-page .halloween-cart-preview { padding: 1rem; border-radius: 16px; background: radial-gradient(ellipse at 50% 30%, #fffdf7, #f0e1ce); }
+.cart-page .halloween-cart-preview .halloween-board { min-height: 0; margin: 2rem auto 1rem; padding: 0.4rem; border-radius: 14px; }
+.cart-page .halloween-cart-preview .halloween-board.layout-one { grid-template-columns: 76px; grid-template-rows: 76px; }
+.cart-page .halloween-cart-preview .halloween-board.layout-two { grid-template-columns: 76px; grid-template-rows: repeat(2, 72px); }
+.cart-page .halloween-cart-preview .halloween-board.layout-four.layout-square { grid-template-columns: repeat(2, 72px); grid-template-rows: repeat(2, 72px); }
+.cart-page .halloween-cart-preview .halloween-board.layout-four.layout-tall { grid-template-columns: 76px; grid-template-rows: repeat(4, 64px); }
+.cart-page .halloween-cart-preview .halloween-board-handle { top: -1.3rem; width: 1.4rem; height: 1.4rem; border-width: 0.25rem; }
+.cart-page .halloween-cart-preview .halloween-slot { padding: 0.25rem; cursor: default; }
+.cart-page .cart-item .halloween-cart-preview .halloween-slot-image { width: min(100%, 60px); height: auto; aspect-ratio: 1; object-fit: contain; background: transparent; box-shadow: none; }
+.cart-page .halloween-cart-preview .halloween-slot small { right: 0.15rem; bottom: 0.15rem; font-size: 0.65rem; }
+.cart-page .halloween-cart-preview .preview-summary { gap: 0.5rem; }

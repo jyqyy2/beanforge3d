@@ -431,32 +431,33 @@
 .halloween-extras h2 { margin: 0.2rem 0 0.4rem; font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.25; }
 .halloween-extras > p:not(.eyebrow) { max-width: 70ch; margin-block: 0.45rem 0.85rem; font-size: 0.85rem; line-height: 1.55; }
 .halloween-extras .eyebrow { font-size: 0.67rem; }
-.halloween-extra { margin: 0.8rem 0; padding: 0.8rem; border-radius: 14px; background: #f8f3ed; }
-.halloween-extra-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.65rem; font-size: 0.85rem; }
-.halloween-extra-heading button { border: 0; background: transparent; color: #794e83; text-decoration: underline; cursor: pointer; font-size: 0.8rem; }
-.halloween-extra-choices { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5rem; }
-.halloween-extra-choices button {
+.halloween-extra-choices { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.65rem; margin-block: 1rem; }
+.halloween-extra-card {
   display: grid;
   justify-items: center;
-  gap: 0.25rem;
+  align-content: start;
+  gap: 0.35rem;
   min-width: 0;
-  padding: 0.4rem 0.25rem;
+  padding: 0.65rem 0.4rem;
   border: 1px solid #dfd0c6;
   border-radius: 12px;
   background: #fffdfb;
   color: var(--halloween-ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
 }
-.halloween-extra-choices button[aria-pressed="true"] { border: 2px solid var(--halloween-purple); background: #f2e9f6; }
-.halloween-extra-choices img { width: min(100%, 54px); height: 54px; object-fit: contain; }
-.halloween-add-extra { min-height: 44px; padding: 0.5rem 0.8rem; border: 1px dashed #aa8bae; border-radius: 12px; background: #fffdfb; color: var(--halloween-ink); cursor: pointer; font: inherit; font-size: 0.85rem; font-weight: 700; }
-.halloween-add-extra:disabled { opacity: 0.5; cursor: not-allowed; }
-.halloween-extra-choices button:focus-visible, .halloween-add-extra:focus-visible, .halloween-extra-heading button:focus-visible { outline: 3px solid #a063ad; outline-offset: 2px; }
+.halloween-extra-card img { width: min(100%, 54px); height: 54px; object-fit: contain; }
+.halloween-extra-card strong { font-weight: 600; }
+.halloween-extra-quantity { display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-top: 0.25rem; }
+.halloween-extra-quantity button { width: 36px; height: 36px; border: 1px solid #cdb7cc; border-radius: 50%; background: #fff; color: var(--halloween-ink); cursor: pointer; font: inherit; font-weight: 700; }
+.halloween-extra-quantity button:disabled { opacity: 0.45; cursor: not-allowed; }
+.halloween-extra-quantity output { min-width: 1.5ch; text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+.halloween-extra-quantity button:focus-visible { outline: 3px solid #a063ad; outline-offset: 2px; }
 
 @media (max-width: 700px) { .halloween-extra-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 360px) { .halloween-extra-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) {
+  .halloween-extra-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .halloween-extra-quantity button { width: 44px; height: 44px; }
+}
 
 .halloween-studio .halloween-workspace .halloween-preview {
   position: sticky;
@@ -583,4 +584,60 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     max-width: 540px;
   }
+  .halloween-workspace .halloween-keycap-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .halloween-workspace .halloween-card-art {
+    width: min(65%, 88px);
+  }
+}
+
+.halloween-studio {
+  padding-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.halloween-heading {
+  margin: clamp(2rem, 4vw, 3rem) auto clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.halloween-heading h1 {
+  margin-bottom: 0.65rem;
+  font-size: clamp(2.4rem, 4.5vw, 3.5rem);
+  line-height: 1.08;
+}
+
+.halloween-heading > p:last-child {
+  max-width: 52ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.halloween-layout { gap: clamp(1.25rem, 2.5vw, 2rem); }
+.halloween-studio .halloween-workspace .halloween-preview,
+.halloween-studio .halloween-workspace .halloween-options {
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+}
+.halloween-studio .halloween-workspace .halloween-options { gap: 0.8rem; }
+.halloween-workspace .halloween-step { padding: clamp(0.85rem, 1.5vw, 1rem); }
+.halloween-studio .halloween-workspace .halloween-options legend {
+  margin-bottom: 0.4rem;
+  font-size: clamp(1.2rem, 1.7vw, 1.4rem);
+}
+.halloween-workspace .halloween-step-label { margin-bottom: 0.25rem; }
+.halloween-studio .halloween-workspace .halloween-options .studio-note { margin-block: 0.3rem 0.75rem; }
+.halloween-workspace .halloween-layout-choices { margin-block: 0.65rem 0; }
+.halloween-workspace .halloween-keycap-grid { margin-top: 0.75rem; row-gap: 0.9rem; }
+.halloween-workspace .halloween-keycap-card { padding-block: 0.35rem 0.5rem; }
+.halloween-workspace .halloween-keycap-card small { margin-top: 0.25rem; }
+.halloween-extras > p:not(.eyebrow) { max-width: 58ch; }
+.halloween-purchase { gap: clamp(1rem, 3vw, 2rem); padding: clamp(1.25rem, 2.5vw, 1.75rem); }
+.halloween-purchase h2 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+
+@media (max-width: 600px) {
+  .halloween-heading { margin-block: 1.75rem 1.5rem; }
+  .halloween-heading h1 { font-size: clamp(2.15rem, 9vw, 2.7rem); }
+  .halloween-heading > p:last-child { font-size: 0.9rem; }
+  .halloween-studio .halloween-workspace .halloween-preview,
+  .halloween-studio .halloween-workspace .halloween-options { padding: 1rem; }
+  .halloween-studio .halloween-workspace .halloween-options legend { font-size: 1.25rem; }
 }

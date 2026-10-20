@@ -104,7 +104,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       quantity: 1,
       configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })) },
     })
-    setMessage(`Added ${configuration.characters.map(({ character }) => character).join('')} to your cart · ${money(quote.totalMinor)} for one creation. You can keep designing; your cart has its own copy.`)
+    setMessage('')
   }
   const updateCharacter = (index: number, value: string) => {
     const nextCharacter = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 1)
@@ -134,7 +134,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     </div>
     <p role="status">{message}</p>
   </main>
-  return <main className="keycap-studio" data-colour={colour}>
+  return <main className="keycap-studio keycap-design-studio" data-colour={colour}>
     <Link to={editIdentity === null ? '/#custom' : '/cart'} className="back-link">{editIdentity === null ? '← Back to the shop' : '← Cancel and return to cart'}</Link>
     <header className="studio-heading"><p className="eyebrow">THE BEANFORGE KEYCAP STUDIO</p><h1>{editIdentity === null ? 'Build your own.' : 'Refine your creation.'}</h1><p>{editIdentity === null ? 'Your name. Your lucky number. Your little daily reminder.' : 'Changes apply to every copy in this cart row when you save. Matching designs combine quantities.'}</p></header>
     <div className="studio-layout">
@@ -249,7 +249,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
         </fieldset>
       </section>
-      <section className="studio-purchase" aria-label="Your creation price">
+      <section className="studio-purchase creation-summary" aria-label="Your creation price">
         <div>
           <p className="eyebrow">YOUR CREATION</p>
           <h2 aria-label={`Your design: ${configuration.characters.map(({ character }) => character || 'blank').join(', ')}`} style={{ overflowWrap: 'anywhere' }}>{configuration.characters.map(({ character }) => character || '□').join(' ')}</h2>
@@ -268,7 +268,6 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           <button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>{!quote.complete ? (emptyBoards.length > 0 ? 'Complete your design to continue' : 'Price unavailable') : editIdentity === null ? 'Add my creation to cart' : 'Save changes to cart'}</button>
           <p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available yet.</p>
           <p role="status" className="studio-action-message">{message}</p>
-          {message && <Link to="/cart" className="back-link">View cart →</Link>}
         </div>
       </section>
       {editIdentity !== null && <p className="studio-session-note">Unsaved cart edits reset when you leave or refresh. Your separate studio draft is not changed.</p>}

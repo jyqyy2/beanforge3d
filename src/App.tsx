@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider, Routes, Route, Link } from 'react-router-dom'
+import CartConfirmation from './components/CartConfirmation'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import CheckoutResultPage from './pages/CheckoutResultPage'
@@ -97,6 +98,7 @@ function AppLayout() {
 return (
   <>
     <Header />
+    <CartConfirmation />
 
     <Routes>
     <Route path="/studio" element={<StudioHubPage />} />

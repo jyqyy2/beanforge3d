@@ -34,7 +34,6 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
 
   /*14a*/
   const [quantity, setQuantity] = useState(1)
-  const [addedToCartMessage, setAddedToCartMessage] = useState('')
 
   if (!product) {
     return (
@@ -143,7 +142,6 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
                     aria-pressed={selectedColour === colour}
                     onClick={() => {
                       setSelectedColour(colour)
-                      setAddedToCartMessage('')
                     }}
                     >
                     {colour}
@@ -217,17 +215,10 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
                 }
 
                 addToCart(cartItem)
-                setAddedToCartMessage(`${quantity} × ${product.name} in ${selectedColour} added to your cart.`)
               }}
             >
               Add to cart
           </button>
-
-            <div className="cart-confirmation" role="status" aria-live="polite" aria-atomic="true">
-              {addedToCartMessage && (
-                <p>{addedToCartMessage} <Link to="/cart">View cart →</Link></p>
-              )}
-            </div>
 
           </div>
 

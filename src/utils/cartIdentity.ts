@@ -1,6 +1,7 @@
 import type { CartItem } from '../types/cart'
 import type { KeycapConfiguration } from '../types/keycap'
 import { getCharacterColours, getProductBySlug } from '../data/catalogue'
+import { halloweenKeycaps } from '../types/halloween'
 
 export function isKeycapConfiguration(value: unknown, allowIncomplete = false): value is KeycapConfiguration {
   if (!value || typeof value !== 'object') return false
@@ -19,7 +20,8 @@ export function isKeycapConfiguration(value: unknown, allowIncomplete = false): 
 
 export function cartItemIdentity(item: CartItem): string {
   return JSON.stringify(item.halloweenConfiguration
-    ? [item.productSlug, item.halloweenConfiguration.layout, item.halloweenConfiguration.boardColour, item.halloweenConfiguration.slots, item.halloweenConfiguration.extras ?? []]
+    ? [item.productSlug, item.halloweenConfiguration.layout, item.halloweenConfiguration.boardColour, item.halloweenConfiguration.slots,
+      halloweenKeycaps.map(id => (item.halloweenConfiguration?.extras ?? []).filter(extra => extra === id).length)]
     : item.configuration
     ? [item.productSlug, item.configuration.schemaVersion, item.configuration.boardColour,
       item.configuration.characters.map(({ character, colour, characterColour }) =>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { CartItem } from '../types/cart'
 import { CartContext } from './cartContextValue'
@@ -19,6 +19,8 @@ export function CartProvider({
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCart.items)
 
   const [storageFailed, setStorageFailed] = useState(false)
+  const [recentlyAdded, setRecentlyAdded] = useState<CartItem | null>(null)
+  const addTrigger = useRef<HTMLElement | null>(null)
   useEffect(() => {
     const failed = !saveCart(cartItems)
     const timer = window.setTimeout(() => setStorageFailed(failed), 0)
@@ -33,6 +35,7 @@ export function CartProvider({
     if (item.standDesign !== undefined && (item.productSlug !== 'qr-nfc-stand' || !isStandDesign(item.standDesign))) return
     if (item.productSlug === 'custom-keycaps' && (!isKeycapConfiguration(item.configuration) || item.colour !== item.configuration.boardColour)) return
     if (item.configuration && item.productSlug !== 'custom-keycaps') return
+    addTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const identity = cartItemIdentity(item)
     setCartItems((currentItems) => {
       const existingItem = currentItems.find(
@@ -60,7 +63,13 @@ export function CartProvider({
           : currentItem
       )
     })
+    setRecentlyAdded(item)
   }
+
+  const dismissCartConfirmation = useCallback(() => {
+    setRecentlyAdded(null)
+    if (addTrigger.current?.isConnected) addTrigger.current.focus()
+  }, [])
 
   function removeFromCart(itemIndex: number) {
     setCartItems((currentItems) =>
@@ -99,6 +108,8 @@ export function CartProvider({
       value={{
         cartItems,
         storageFailed,
+        recentlyAdded,
+        dismissCartConfirmation,
         addToCart,
         updateCartDesign,
         removeFromCart,
