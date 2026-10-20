@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import clickerConfig from '../assets/halloween-clicker-config.png'
 import pumpkinImage from '../assets/halloween-pumpkin.png'
 import ghostImage from '../assets/halloween-ghost.png'
 import skullImage from '../assets/halloween-skull.png'
@@ -121,7 +120,8 @@ function HalloweenStudioPage() {
           </div>}
         </section>
 
-        <section className="halloween-preview keycap-preview" aria-label="Halloween clicker live preview">
+        <div className="halloween-workspace">
+          <section className="halloween-preview keycap-preview" aria-label="Halloween clicker live preview">
           <p className="eyebrow">YOUR LIVE PREVIEW</p>
           <div className={`halloween-board ${layout.className} board-${draft.boardColour.toLowerCase()}`}>
             <span className="halloween-board-handle" aria-hidden="true" />
@@ -138,16 +138,15 @@ function HalloweenStudioPage() {
             <span><span className="studio-swatch" data-colour={draft.boardColour} />{draft.boardColour}</span>
           </div>
           <p className="halloween-preview-note">{selectedNames.length ? selectedNames.join(' · ') : 'Select a board, then choose a keycap below.'}</p>
-        </section>
+          </section>
 
-        <section className="studio-options halloween-options" aria-label="Build your Halloween clicker">
+          <section className="studio-options halloween-options" aria-label="Build your Halloween clicker">
           <fieldset>
             <legend>How many boards</legend>
             <p className="studio-note">Choose the shape of your clicker.</p>
             <div className="halloween-layout-choices">
               {layouts.map(option => <button type="button" key={option.id} aria-pressed={draft.layout === option.id} onClick={() => updateLayout(option.id)}><strong>{option.label}</strong><span>{option.slots} {option.slots === 1 ? 'board' : 'boards'}</span></button>)}
             </div>
-            <img className="halloween-config-image" src={clickerConfig} alt="Halloween clicker board layout examples" loading="lazy" />
           </fieldset>
 
           <fieldset>
@@ -159,7 +158,7 @@ function HalloweenStudioPage() {
           </fieldset>
 
           <fieldset className="halloween-keycap-picker">
-            <legend>Build your bundle</legend>
+            <legend>Build your fidget clicker!</legend>
             <p className="studio-note">Choose a board above, then click a Halloween keycap to fill that slot.</p>
             <div className="halloween-keycap-grid">
               {keycaps.map(keycap => <button type="button" className={`halloween-keycap-card card-${keycap.colour} ${selectedKeycaps.includes(keycap.id) ? 'is-selected' : ''}`} key={keycap.id} onClick={() => chooseKeycap(keycap.id)}>
@@ -170,7 +169,8 @@ function HalloweenStudioPage() {
               </button>)}
             </div>
           </fieldset>
-        </section>
+          </section>
+        </div>
       </div>
     </main>
   )
