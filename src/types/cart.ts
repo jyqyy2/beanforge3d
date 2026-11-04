@@ -10,6 +10,7 @@ export type CartItem = {
   name: string
   price: number
   colour: string
+  personalisation?: string
   quantity: number
   image?: string
   standDesign?: StandDesign

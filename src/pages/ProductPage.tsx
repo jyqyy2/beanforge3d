@@ -8,6 +8,7 @@ import type { CartItem } from '../types/cart'
 import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
 import StandStudioPage from './StandStudioPage'
+import { normalisePersonalisation } from '../utils/personalisation'
 
 function ProductPage() {
   const { slug } = useParams()
@@ -34,12 +35,13 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
 
   /*14a*/
   const [quantity, setQuantity] = useState(1)
+  const [personalisation, setPersonalisation] = useState('')
 
   if (!product) {
     return (
       <main className="product-page">
         <div className="product-page-inner">
-          <Link to="/" className="back-link">
+          <Link to="/shop" className="back-link">
             ← Back to shop
           </Link>
 
@@ -53,11 +55,16 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
     )
   }
 
+  const isPlate = product.slug === 'custom-carplate-keychain'
+  const isName = product.slug === 'custom-name-keychain'
+  const customText = isPlate || isName ? normalisePersonalisation(product.slug, personalisation) : null
+  const pricePending = isName && customText !== null && customText.length > 1
+
   return (
     <main className="product-page">
       <div className="product-page-inner">
 
-        <Link to="/" className="back-link">
+        <Link to="/shop" className="back-link">
           ← Back to shop
         </Link>
 
@@ -68,14 +75,6 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
                 <ResponsiveImage
                     sizes="(max-width: 600px) 86vw, (max-width: 850px) 560px, 500px"
                     fetchPriority="high"
-                /* #59 Step 8 
-                    Bean Keycap
-                        ↓
-                        selectedColour = Pink
-                        ↓
-                        alt = "Bean Keycap in Pink"
-                */
-               
                /*If this colour has its own image, use it. Otherwise, use the normal product image.*/
                     src={product.colourImages?.[selectedColour] ?? product.image}
                     alt={`${product.name} in ${selectedColour}`}
@@ -92,12 +91,26 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
             <h1>{product.name}</h1>
 
             <p className="product-price">
-              S${product.price.toFixed(2)}
+              {product.priceDisplay === 'from' ? 'From ' : ''}S${product.price.toFixed(2)}
             </p>
 
             <p className="product-description">
               {product.description}
             </p>
+
+            {(isPlate || isName) && <div className="product-option personalisation-option">
+              <label htmlFor="personalisation">{isPlate ? 'Your plate text' : 'Your name (1–10 letters)'}</label>
+              <input id="personalisation" type="text" value={personalisation}
+                maxLength={isPlate ? 16 : 10}
+                placeholder={isPlate ? 'e.g. SMX 6769 L' : 'Enter your name'}
+                onChange={event => setPersonalisation(event.target.value.toUpperCase())}
+                aria-describedby="personalisation-hint" />
+              <p id="personalisation-hint">{isPlate
+                ? 'Up to 16 letters, numbers and spaces. Product photos show an example plate, not your finished design.'
+                : 'Letters only. The S$6.90 starting price is for one letter; longer-name prices are not yet available.'}</p>
+              {customText && <p className="personalisation-preview">Your text: <strong>{customText}</strong></p>}
+              {pricePending && <p role="status">Pricing for {customText.length} letters is coming soon. You can preview your name, but cannot add it to cart yet.</p>}
+            </div>}
 
             <div className="product-option">
                 <label htmlFor="colour">
@@ -204,12 +217,14 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
             <button
               type="button"
               className="add-to-cart-button"
+              disabled={(isPlate || isName) && (!customText || pricePending)}
               onClick={() => {
                 const cartItem: CartItem = {
                   productSlug: product.slug,
                   name: product.name,
                   price: product.price,
                   colour: selectedColour,
+                  ...((isPlate || isName) && customText ? { personalisation: customText } : {}),
                   quantity,
                   image: product.colourImages?.[selectedColour] ?? product.image,
                 }

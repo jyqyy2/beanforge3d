@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useBlocker, useNavigate, useSearchParams } from 'react-router-dom'
-import { getCharacterColours, getCustomKeycapPricing, getProductBySlug } from '../data/catalogue'
+import { getCharacterColours, getCustomKeycapPricing, getKeycapBoardColours } from '../data/catalogue'
 import KeycapPreview from '../components/KeycapPreview'
 import type { KeycapConfiguration } from '../types/keycap'
 import { calculateKeycapPrice } from '../utils/keycapPricing'
@@ -27,7 +27,7 @@ export default function KeycapStudioPage() {
 function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity: string | null; savedConfiguration?: KeycapConfiguration }) {
   const { addToCart, updateCartDesign, storageFailed } = useCart()
   const navigate = useNavigate()
-  const colours = getProductBySlug('bean-keycap')?.colours ?? []
+  const colours = getKeycapBoardColours()
   const pricing = getCustomKeycapPricing()
   const [draft] = useState(() => editIdentity === null ? readKeycapDraft() : null)
   const [count, setCount] = useState(savedConfiguration?.characters.length ?? draft?.count ?? 1)

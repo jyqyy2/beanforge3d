@@ -1,17 +1,19 @@
 # Catalogue schema checkpoint
 
-This directory contains a local migration, not a connected or deployed database.
-React still reads `catalogue.ts → products.ts`. No seed, storage bucket, SDK,
-environment file, project link, customer account or checkout is created here.
+This directory contains local migrations, not a connected or deployed database.
+React still reads `catalogue.ts → products.ts`. The V1 catalogue seed and private
+orders schema are in `migrations/20261104000100_v1_products.sql` and
+`migrations/20261104000200_orders.sql`. Nothing has been deployed or linked.
+See `functions/commerce-checkout/README.md` for checkout and webhook setup.
 
-## The five notebooks
+## The five catalogue tables
 
 | Table | What it remembers |
 |---|---|
 | categories | Groups such as Keycaps; an active empty SKÅDIS category is allowed |
-| products | Bean Keycap's shared name, description and URL slug |
+| products | Shared product name, description and URL slug |
 | colours | Shared labels such as Pink; case-insensitive names prevent duplicates |
-| product_variants | Bean Keycap / Pink, with its own price in cents and display order |
+| product_variants | Car plate / Red, with its own price in cents and display order |
 | product_images | Ordered base-product or variant images, using verified storage paths later |
 
 The migration is `migrations/20260913000100_catalogue.sql`. It creates five

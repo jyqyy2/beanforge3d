@@ -6,14 +6,15 @@ import CheckoutResultPage from './pages/CheckoutResultPage'
 import KeycapStudioPage from './pages/KeycapStudioPage'
 import StudioHubPage from './pages/StudioHubPage'
 import HalloweenStudioPage from './pages/HalloweenStudioPage'
+import ShopPage from './pages/ShopPage'
 import landingHero from './assets/halloweenimg.png'
 import categoryKeycaps from './assets/landing-category-keycaps.png'
 import categorySkadis from './assets/landing-category-skadis.png'
 import categoryQr from './assets/landing-category-qr.png'
 import categoryCustom from './assets/landing-category-custom.png'
-import productKeycap from './assets/landing-product-keycap.png'
 import productCustom from './assets/landing-product-custom.png'
 import productQr from './assets/landing-product-qr.png'
+import carPlateRed from './assets/carplate-red.png'
 import studioImage from './assets/landing-studio.png'
 import studioImage2 from './assets/hero.png'
 import customBanner from './assets/landing-custom-banner.png'
@@ -31,10 +32,10 @@ const featuredPresentation: Record<string, {
   pricePrefix: string
   image: string
 }> = {
-  'bean-keycap': {
-    description: 'For keyboards that need a little bean.',
-    label: 'KEYCAPS',
-    image: productKeycap,
+  'custom-carplate-keychain': {
+    description: 'Your plate. Your colour. Made personal.',
+    label: 'CUSTOM',
+    image: carPlateRed,
     imageClass: 'product-image-bean',
     pricePrefix: '',
   },
@@ -50,9 +51,37 @@ const featuredPresentation: Record<string, {
     label: 'QR / NFC',
     image: productQr,
     imageClass: 'product-image-stand',
-    pricePrefix: 'From ',
+    pricePrefix: '',
   },
 }
+
+const categoryGroups: {
+  id: string
+  eyebrow: string
+  title: string
+  categories: { name: string; description: string; to?: string; image: string | null }[]
+}[] = [
+  {
+    id: 'make-it-yours',
+    eyebrow: 'EXPLORE THE COLLECTION',
+    title: 'Make it yours',
+    categories: [
+      { name: 'Keycap Studio', description: 'Choose your letters, colours and layout.', to: '/studio', image: studioImage },
+      { name: 'Custom Nametags', description: 'Names and words made just for you.', to: '/product/custom-name-keychain', image: categoryCustom },
+      { name: 'Custom Carplate Keychain', description: 'Personalised plates made your way.', to: '/product/custom-carplate-keychain', image: carPlateRed },
+    ],
+  },
+  {
+    id: 'shop-the-collection',
+    eyebrow: 'READY TO DISCOVER',
+    title: 'Little favourites',
+    categories: [
+      { name: 'QR / NFC', description: 'Character stands for counters and businesses.', to: '/product/qr-nfc-stand', image: categoryQr },
+      { name: 'Keycaps', description: 'Small details for keyboards with personality.', to: '/studio/keycaps', image: categoryKeycaps },
+      { name: 'SKADIS Accessories', description: 'Modular pieces for a tidier setup.', image: categorySkadis },
+    ],
+  },
+]
 
 function Header() {
   const { cartItems } = useCart()
@@ -69,16 +98,14 @@ function Header() {
       </Link>
 
       <nav className="nav">
-        <a href="/#shop">Shop</a>
-        <Link to="/studio">Keycap Studio</Link>
-        <a href="/#custom">Custom</a>
+        <Link to="/shop">Shop</Link>
+        <Link to="/studio">Customise</Link>
         <a href="/#corporate">Corporate</a>
         <a href="/#about">About</a>
       </nav>
 
       <div className="header-actions">
-        <button aria-label="Search">⌕</button>
-        <button aria-label="Wishlist">♡</button>
+        <Link to="/shop#product-search" className="header-action-link" aria-label="Search products">⌕</Link>
         <Link
           to="/cart"
           className="header-action-link cart-link"
@@ -104,8 +131,9 @@ return (
     <Route path="/studio" element={<StudioHubPage />} />
     <Route path="/studio/halloween" element={<HalloweenStudioPage />} />
     <Route path="/studio/keycaps" element={<KeycapStudioPage />} />
+    <Route path="/shop" element={<ShopPage />} />
 
-    {/* Bean Keycap product page */}
+    {/* Product details */}
     <Route
       path="/product/:slug"
       element={<ProductPage />}
@@ -131,25 +159,19 @@ return (
                 </p>
 
                 <h1>
-                  Small things.
+                  Little things.
                   <br />
-                  Made for you.
+                  Big joy.
                 </h1>
 
                 <p className="hero-text">
-                  3D printed goods, custom gifts and useful little
-                  creations designed to make everyday things a little more
-                  fun.
+                  Design keycaps in your colours, find playful pieces for your desk,
+                  or make a gift that feels like you. Little things, made with care.
                 </p>
 
                 <div className="hero-actions">
-                  <a className="button button-dark" href="#shop">
-                    Shop now
-                  </a>
-
-                  <Link className="button button-light" to="/studio">
-                    Explore keycap studio
-                  </Link>
+                  <Link className="button button-dark" to="/studio">Make your own →</Link>
+                  <Link className="button button-light" to="/shop">Explore the shop</Link>
                 </div>
               </div>
 
@@ -160,43 +182,43 @@ return (
                   height={251}
                   sizes="(max-width: 520px) 90vw, (max-width: 850px) 70vw, 460px"
                   fetchPriority="high"
-                  alt="Cream, pink and charcoal keycaps with playful character designs"
+                  alt="Halloween fidget clickers with pumpkin, ghost, skull, spider and cat keycaps"
                 />
                 <span className="hero-handwritten" aria-hidden="true">Small details,<br />big joy ♡</span>
               </div>
             </section>
 
             <section className="categories" id="shop" aria-labelledby="categories-title">
-              <div className="section-heading">
-                <p className="eyebrow">EXPLORE THE COLLECTION</p>
-                <h2 id="categories-title">Shop by category</h2>
-                <p className="category-introduction">Little things for your desk, keyboard, business and everyday spaces.</p>
-              </div>
-              <div className="category-grid">
-                {[
-                  { name: 'Keycap Studio', description: 'Design your own letters, colours and combination.', to: '/studio', image: studioImage, badge: 'CREATE' },
-                  { name: 'QR / NFC', description: 'Character stands made for counters and businesses.', to: '/product/qr-nfc-stand', image: categoryQr, badge: 'SCAN' },
-                  { name: 'Keycaps', description: 'Small details for keyboards with personality.', to: '/product/bean-keycap', image: categoryKeycaps, badge: 'KEY' },
-                  { name: 'Custom Nametags', description: 'Names, words and little pieces made for you.', to: '/product/custom-name-keychain', image: categoryCustom, badge: 'PERSONALISE' },
-                  { name: 'Custom Carplate Keychain', description: 'Personalised plates made your way.', image: null, badge: 'PERSONALISE' },
-                  { name: 'SKADIS Accessories', description: 'Modular accessories for a tidier setup.', image: categorySkadis, badge: 'ORGANISE' },
-                ].map((category, index) => {
-                  const content = <>
-                    <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
-                    <div className="category-visual">
-                      <span className="category-badge">{category.badge}</span>
-                      {category.image
-                        ? <img src={category.image} alt="" width="259" height="180" loading="lazy" />
-                        : <span className="category-placeholder">Something personal.<br />In the making.</span>}
+              {categoryGroups.map((group) => (
+                <div className="category-group" id={group.id} key={group.id}>
+                  <div className="category-group-heading">
+                    <div>
+                      <p className="eyebrow">{group.eyebrow}</p>
+                      <h2 id={group.id === 'make-it-yours' ? 'categories-title' : undefined}>{group.title}</h2>
                     </div>
-                    <h3>{category.name}</h3>
-                    <p>{category.description}</p>
-                  </>
-                  return category.to
-                    ? <Link key={category.name} to={category.to} className="category-card">{content}</Link>
-                    : <article key={category.name} className="category-card category-coming-soon">{content}</article>
-                })}
-              </div>
+                    <Link className="category-group-link" to={group.id === 'make-it-yours' ? '/studio' : '/shop'}>
+                      {group.id === 'make-it-yours' ? 'Open the studio' : 'See products'} →
+                    </Link>
+                  </div>
+                  <div className="category-grid">
+                    {group.categories.map((category) => {
+                      const content = <>
+                        <div className="category-visual">
+                          {!category.to && <span className="category-badge">Coming soon</span>}
+                          {category.image
+                            ? <img src={category.image} alt="" width="259" height="180" loading="lazy" />
+                            : <span className="category-placeholder">Something personal.<br />In the making.</span>}
+                        </div>
+                        <h4>{category.name}</h4>
+                        <p>{category.description}</p>
+                      </>
+                      return category.to
+                        ? <Link key={category.name} to={category.to} className="category-card">{content}</Link>
+                        : <article key={category.name} className="category-card category-coming-soon">{content}</article>
+                    })}
+                  </div>
+                </div>
+              ))}
             </section>
 
             <section className="landing-studio" aria-labelledby="landing-studio-title">
@@ -213,7 +235,7 @@ return (
               <div className="section-heading">
                 <p className="eyebrow">THE BEANFORGE SHOP</p>
                 <h2>Featured products</h2>
-                <a className="featured-browse" href="#shop">View all products →</a>
+                <Link className="featured-browse" to="/shop">View all products →</Link>
               </div>
 
               <div className="product-grid">
@@ -225,13 +247,6 @@ return (
                   return (
                     <article className="product-card" key={product.slug} id={product.slug === 'qr-nfc-stand' ? 'qr-nfc' : undefined}>
                       <div className={`product-image ${presentation.imageClass}`}>
-                        <button
-                          className="product-wishlist"
-                          aria-label={`Add ${product.name} to wishlist`}
-                        >
-                          ♡
-                        </button>
-
                         {presentation.image && (
                           <ResponsiveImage
                             src={presentation.image}
@@ -331,9 +346,8 @@ return (
             </div>
 
             <div className="footer-links">
-              <a href="#shop">Shop</a>
-              <Link to="/studio">Keycap Studio</Link>
-              <a href="#custom">Custom</a>
+              <Link to="/shop">Shop</Link>
+              <Link to="/studio">Customise</Link>
               <a href="#corporate">Corporate</a>
               <a href="#about">About</a>
             </div>

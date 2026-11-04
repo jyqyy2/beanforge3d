@@ -7,6 +7,7 @@ import { updateKeycapCart } from '../utils/updateKeycapCart'
 import type { KeycapConfiguration } from '../types/keycap'
 import { isStandDesign } from '../types/stand'
 import { isHalloweenConfiguration } from '../types/halloween'
+import { normalisePersonalisation } from '../utils/personalisation'
 
 import { loadCart, saveCart } from '../utils/cartStorage'
 
@@ -29,6 +30,10 @@ export function CartProvider({
 
   function addToCart(item: CartItem) {
     if (!Number.isSafeInteger(item.quantity) || item.quantity < 1) return
+    if (item.productSlug === 'custom-carplate-keychain' || item.productSlug === 'custom-name-keychain') {
+      if (!item.personalisation || normalisePersonalisation(item.productSlug, item.personalisation) !== item.personalisation ||
+        (item.productSlug === 'custom-name-keychain' && item.personalisation.length !== 1)) return
+    } else if (item.personalisation !== undefined) return
     if (item.productSlug === 'halloween-clicker'
       ? item.price !== 0 || !isHalloweenConfiguration(item.halloweenConfiguration) || item.colour !== item.halloweenConfiguration.boardColour
       : item.halloweenConfiguration !== undefined) return

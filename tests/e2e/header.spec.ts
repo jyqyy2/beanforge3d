@@ -2,11 +2,12 @@ import { test, expect } from '@playwright/test'
 
 const paths = [
   '/',
+  '/shop',
   '/studio',
   '/studio/keycaps',
   '/studio/halloween',
   '/cart',
-  '/product/bean-keycap',
+  '/product/custom-carplate-keychain',
   '/product/qr-nfc-stand',
 ]
 
@@ -19,7 +20,7 @@ for (const width of [1280, 820, 390, 320]) {
       await page.goto(path)
       const header = page.locator('.header')
       const links = header.locator('.nav a')
-      await expect(links).toHaveText(['Shop', 'Keycap Studio', 'Custom', 'Corporate', 'About'])
+      await expect(links).toHaveText(['Shop', 'Customise', 'Corporate', 'About'])
       for (const link of await links.all()) await expect(link).toBeVisible()
       const metrics = await page.evaluate(() => {
         const header = document.querySelector('.header')!

@@ -36,7 +36,7 @@ export default function StandStudioPage({ product }: { product: Product }) {
   const previewImage = (name: string) => name === 'Bee' ? beePreview : chickPreview
 
   return <main className="keycap-studio stand-studio">
-    <Link to="/#shop" className="back-link">← Back to the shop</Link>
+    <Link to="/shop" className="back-link">← Back to the shop</Link>
     <header className="studio-heading">
       <p className="eyebrow">THE BEANFORGE QR / NFC STUDIO</p>
       <h1>Build your stand.</h1>

@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 test('product, stand and studios use one cart confirmation', async ({ page }) => {
-  await page.goto('/product/bean-keycap')
+  await page.goto('/product/custom-carplate-keychain')
+  await page.getByRole('textbox', { name: 'Your plate text' }).fill('SMX 6769 L')
   await page.getByRole('button', { name: 'Add to cart', exact: true }).click()
   const popup = page.getByRole('dialog', { name: '✓ Item added to your cart' })
   await expect(popup.getByRole('link', { name: 'View cart (1)' })).toBeVisible()

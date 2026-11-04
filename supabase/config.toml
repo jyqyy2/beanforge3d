@@ -1,2 +1,5 @@
 [functions.commerce-checkout]
 verify_jwt = false
+
+[functions.commerce-webhook]
+verify_jwt = false

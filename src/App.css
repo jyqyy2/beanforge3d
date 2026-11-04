@@ -906,6 +906,22 @@ button {
   font-weight: 700;
 }
 
+.personalisation-option input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.personalisation-option p { margin: 0.65rem 0 0; line-height: 1.5; color: #625d54; font-size: 0.9rem; }
+.personalisation-preview strong { color: var(--ink); letter-spacing: 0.08em; overflow-wrap: anywhere; }
+.add-to-cart-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
 .product-detail .colour-button {
   min-height: 44px;
   padding: 8px 16px;

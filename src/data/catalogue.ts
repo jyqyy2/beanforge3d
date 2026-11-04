@@ -17,6 +17,10 @@ export function getCharacterColours(): string[] {
   return ['Cream', 'Pink', 'Blue', 'Black']
 }
 
+export function getKeycapBoardColours(): string[] {
+  return ['Cream', 'Pink', 'Black']
+}
+
 export function getProducts(): Product[] {
   return [...products]
 }

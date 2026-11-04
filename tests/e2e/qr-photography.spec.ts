@@ -18,7 +18,7 @@ test('stand choices, colours, quantities, merging and saved cart remain accurate
     await page.getByRole('button', { name: 'Add my stand to cart' }).click()
   }
   await page.getByRole('button', { name: 'Increase quantity', exact: true }).click()
-  await expect(page.locator('.studio-total dd')).toHaveText('S$30.00')
+  await expect(page.locator('.studio-total dd')).toHaveText('S$31.80')
   await page.getByRole('button', { name: 'Add my stand to cart' }).click()
   await page.getByRole('dialog', { name: '✓ Item added to your cart' }).getByRole('link', { name: /View cart/ }).click()
   await page.reload()
@@ -27,7 +27,7 @@ test('stand choices, colours, quantities, merging and saved cart remain accurate
     const row = page.locator('.cart-item').filter({ hasText: `Stand: ${design}` })
     await expect(row).toContainText('QR / NFC Stand')
     await expect(row).toContainText('Colour: Black')
-    await expect(row).toContainText('S$15.00 each')
+    await expect(row).toContainText('Price pending')
     await expect(row.locator('.cart-quantity-controls strong')).toHaveText(quantity)
     await expect(row.locator('img')).toHaveAttribute('src', new RegExp(`qr-${design.toLowerCase()}`))
   }
@@ -89,7 +89,7 @@ test('stand page navigation and quantity controls remain accessible', async ({ p
   await expect(page.getByRole('button', { name: 'Decrease quantity', exact: true })).toBeDisabled()
   await page.getByRole('button', { name: 'Increase quantity', exact: true }).click()
   await page.getByRole('button', { name: 'Decrease quantity', exact: true }).click()
-  await expect(page.locator('.studio-total dd')).toHaveText('S$15.00')
+  await expect(page.locator('.studio-total dd')).toHaveText('S$15.90')
   expect(errors).toEqual([])
 })
 

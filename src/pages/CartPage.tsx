@@ -64,7 +64,7 @@ function CartPage() {
   return (
     <main className="cart-page">
       <div className="cart-page-inner">
-        <Link to="/" className="back-link">
+        <Link to="/shop" className="back-link">
           ← Back to shop
         </Link>
 
@@ -81,7 +81,7 @@ function CartPage() {
             <p>
               Add a small thing you love, then it will appear here.
             </p>
-            <Link to="/#shop" className="button button-dark">
+            <Link to="/shop" className="button button-dark">
               Browse products
             </Link>
           </section>
@@ -105,6 +105,7 @@ function CartPage() {
                   <div className="cart-item-info">
                     <h2><Link to={item.halloweenConfiguration ? '/studio/halloween' : item.configuration ? `/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}` : `/product/${item.productSlug}`}>{item.name}</Link></h2>
                     <p>{item.configuration ? 'Board colour' : 'Colour'}: {item.colour}</p>
+                    {item.personalisation && <p>{item.productSlug === 'custom-carplate-keychain' ? 'Plate text' : 'Name'}: {item.personalisation}</p>}
                     {item.standDesign && <p>Stand: {item.standDesign}</p>}
                     {item.halloweenConfiguration && <p>Layout: {item.halloweenConfiguration.layout} · Keycaps: {item.halloweenConfiguration.slots.join(' · ')}</p>}
                     {item.halloweenConfiguration?.extras?.length ? <p>Extra keycaps: {halloweenKeycaps.filter(id => item.halloweenConfiguration?.extras?.includes(id)).map(id => `${id} × ${item.halloweenConfiguration?.extras?.filter(extra => extra === id).length}`).join(' · ')}</p> : null}
@@ -208,7 +209,7 @@ function CartPage() {
               {quoteError && <p role="alert">{quoteError}</p>}
               {serverQuote?.shipping.status === 'requires_carrier_quote' &&
                 <p role="status">Malaysia checkout will be available after carrier rates are connected.</p>}
-              <Link to="/#shop" className="back-link">Continue shopping →</Link>
+              <Link to="/shop" className="back-link">Continue shopping →</Link>
             </aside>
           </div>
         )}

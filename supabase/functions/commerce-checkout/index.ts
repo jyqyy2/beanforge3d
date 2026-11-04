@@ -1,5 +1,6 @@
 import { quoteCommerce } from '../_shared/commerce.ts'
 import type { Catalogue, CommerceQuote, PricedProduct } from '../_shared/commerce.ts'
+import { attachOrderSession, createPendingOrder, failPendingOrder, findOrderBySession } from '../_shared/orders.ts'
 
 const siteUrl = Deno.env.get('SITE_URL')?.replace(/\/$/, '')
 const supabaseUrl = Deno.env.get('SUPABASE_URL')
@@ -23,7 +24,7 @@ async function catalogueRows(path: string): Promise<unknown[]> {
 }
 
 async function loadCatalogue(): Promise<Catalogue> {
-  const products = await catalogueRows('products?select=id,slug,name&slug=in.(bean-keycap,qr-nfc-stand)')
+  const products = await catalogueRows('products?select=id,slug,name&slug=in.(custom-carplate-keychain,custom-name-keychain,qr-nfc-stand)')
   const ids = products.flatMap(product => {
     if (!product || typeof product !== 'object' || !('id' in product) || typeof product.id !== 'string') return []
     return [product.id]
@@ -72,16 +73,19 @@ function stripeLineDescription(line: CommerceQuote['lines'][number]): string {
     const characters = line.configuration.characters.map(entry => `${entry.character}:${entry.colour}/${entry.characterColour ?? ''}`).join(' ')
     return `Board ${line.configuration.boardColour}; ${characters}`.slice(0, 450)
   }
-  return [line.colour, line.standDesign].filter(Boolean).join(' · ')
+  return [line.colour, line.standDesign, line.personalisation].filter(Boolean).join(' · ')
 }
 
 async function createCheckout(quote: CommerceQuote): Promise<Response> {
   if (!siteUrl || !stripeSecretKey?.startsWith('sk_test_') || quote.shipping.status !== 'quoted') {
     return json({ error: 'Checkout unavailable' }, 503)
   }
+  const orderId = await createPendingOrder(quote)
   const form = new URLSearchParams({
     mode: 'payment',
     'metadata[checkout_source]': 'beanforge3d',
+    'metadata[order_id]': orderId,
+    client_reference_id: orderId,
     success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/cart?checkout=cancelled`,
     'shipping_address_collection[allowed_countries][0]': 'SG',
@@ -100,18 +104,31 @@ async function createCheckout(quote: CommerceQuote): Promise<Response> {
     form.set(`line_items[${index}][price_data][product_data][name]`, 'Singapore delivery')
     form.set(`line_items[${index}][quantity]`, '1')
   }
-  const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${stripeSecretKey}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: form,
-  })
-  if (!response.ok) return json({ error: 'Payment provider unavailable' }, 502)
-  const session: unknown = await response.json()
-  if (!session || typeof session !== 'object' || !('url' in session) ||
-    typeof session.url !== 'string' || !session.url.startsWith('https://checkout.stripe.com/')) {
-    return json({ error: 'Payment provider unavailable' }, 502)
+  let sessionId: string | null = null
+  try {
+    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${stripeSecretKey}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form,
+    })
+    if (!response.ok) throw new Error('Payment provider unavailable')
+    const session: unknown = await response.json()
+    if (!session || typeof session !== 'object' || !('id' in session) ||
+      typeof session.id !== 'string' || !/^cs_test_[A-Za-z0-9_]{10,}$/.test(session.id) ||
+      !('url' in session) || typeof session.url !== 'string' ||
+      !session.url.startsWith('https://checkout.stripe.com/')) throw new Error('Payment provider unavailable')
+    sessionId = session.id
+    await attachOrderSession(orderId, sessionId)
+    return json({ url: session.url, quote })
+  } catch {
+    if (sessionId) {
+      await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}/expire`, {
+        method: 'POST', headers: { Authorization: `Bearer ${stripeSecretKey}` },
+      }).catch(() => undefined)
+    }
+    await failPendingOrder(orderId).catch(() => undefined)
+    return json({ error: 'Checkout unavailable' }, 503)
   }
-  return json({ url: session.url, quote })
 }
 
 async function sessionStatus(sessionId: unknown): Promise<Response> {
@@ -128,7 +145,9 @@ async function sessionStatus(sessionId: unknown): Promise<Response> {
     !('checkout_source' in session.metadata) || session.metadata.checkout_source !== 'beanforge3d') {
     return json({ error: 'Session unavailable' }, 502)
   }
-  return json({ paid: session.payment_status === 'paid',
+  const order = await findOrderBySession(sessionId)
+  if (!order) return json({ error: 'Session unavailable' }, 502)
+  return json({ paid: session.payment_status === 'paid', orderRecorded: order.status === 'paid',
     amountTotalMinor: session.amount_total, currency: session.currency })
 }
 
@@ -149,7 +168,7 @@ Deno.serve(async request => {
       return json({ error: 'Invalid request' }, 400)
     }
     if (payload.action === 'session') {
-      return sessionStatus('sessionId' in payload ? payload.sessionId : undefined)
+      return await sessionStatus('sessionId' in payload ? payload.sessionId : undefined)
     }
     if (!('intent' in payload)) return json({ error: 'Invalid request' }, 400)
     const catalogue = await loadCatalogue()

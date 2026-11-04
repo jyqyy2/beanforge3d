@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test'
 test('cart checkout stays unavailable without a server configuration', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('beanforge-cart', JSON.stringify([{
-      productSlug: 'bean-keycap', name: 'Bean Keycap', price: 18,
-      colour: 'Cream', quantity: 1,
+      productSlug: 'custom-carplate-keychain', name: 'Custom Car Plate Keychain', price: 4.90,
+      colour: 'Red', personalisation: 'SMX 6769 L', quantity: 1,
     }]))
   })
   await page.goto('/cart')

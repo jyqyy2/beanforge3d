@@ -1,0 +1,47 @@
+.shop-page { min-height: 100vh; background: var(--cream); }
+.shop-page-inner { max-width: 1320px; margin: auto; padding: clamp(2.5rem, 5vw, 4.5rem) 6% 6rem; }
+.shop-intro { max-width: 48rem; margin-bottom: clamp(3rem, 6vw, 5rem); }
+.shop-page .eyebrow { margin: 0 0 0.65rem; color: #a94f30; font-size: 0.7rem; font-weight: 750; letter-spacing: 0.14em; }
+.shop-intro h1 { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2.8rem, 5vw, 4.7rem); font-weight: 400; letter-spacing: -0.045em; line-height: 1.08; }
+.shop-intro > p:last-child { max-width: 55ch; margin: 1.2rem 0 0; color: #625d53; font-size: 1rem; line-height: 1.65; }
+.shop-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; }
+.shop-toolbar h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.4rem); letter-spacing: -0.04em; line-height: 1.15; }
+.shop-search { display: grid; gap: 0.4rem; width: min(100%, 19rem); }
+.shop-search label { font-size: 0.85rem; font-weight: 650; }
+.shop-search input { width: 100%; min-height: 46px; padding: 0.7rem 0.9rem; border: 1px solid #c9baa9; border-radius: 12px; background: var(--paper); color: var(--ink); font: inherit; }
+.shop-search input::placeholder { color: #716a61; }
+.shop-filters { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.5rem 0 1rem; }
+.shop-filter { min-height: 44px; padding: 0.55rem 1rem; border: 1px solid #cbb7a5; border-radius: 999px; background: transparent; color: #5f4d42; font: inherit; font-size: 0.85rem; font-weight: 650; cursor: pointer; }
+.shop-filter:hover { border-color: #a94f30; }
+.shop-filter.is-selected { border-color: #a94f30; background: #a94f30; color: white; }
+.shop-result-count { margin: 0 0 1rem; color: #625d53; font-size: 0.85rem; }
+.shop-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.5rem); }
+.shop-product { min-width: 0; display: flex; flex-direction: column; border-radius: 24px; background: var(--paper); box-shadow: 0 8px 24px #7548270d; overflow: hidden; }
+.shop-product:hover .shop-product-image img { transform: scale(1.035); }
+.shop-product-image { aspect-ratio: 1.2; overflow: hidden; background: #f1e8dc; }
+.shop-product-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 200ms ease; }
+.shop-product-details { display: flex; flex: 1; flex-direction: column; padding: 1.25rem; }
+.shop-product-category { color: #91472e; font-size: 0.68rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; }
+.shop-product h3 { margin: 0.5rem 0; font-size: 1.25rem; letter-spacing: -0.03em; }
+.shop-product p { margin: 0 0 1.5rem; color: #625d53; font-size: 0.9rem; line-height: 1.55; }
+.shop-product-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; margin-top: auto; font-size: 0.9rem; }
+.shop-product-bottom span { color: #91472e; font-weight: 700; }
+.shop-empty { padding: 3rem 1.5rem; border: 1px dashed #cbb7a5; border-radius: 20px; text-align: center; }
+.shop-empty h3 { margin: 0 0 0.5rem; }
+.shop-empty p { color: #625d53; }
+.shop-empty button { min-height: 44px; padding: 0.6rem 1rem; border: 1px solid #a94f30; border-radius: 999px; background: transparent; color: #91472e; font: inherit; font-weight: 700; cursor: pointer; }
+.shop-studio-callout { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: clamp(3rem, 6vw, 5rem); padding: clamp(1.5rem, 3vw, 2.5rem); border-radius: 24px; background: #eee3d7; }
+.shop-studio-callout h2 { margin: 0 0 0.5rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 400; }
+.shop-studio-callout p:last-child { max-width: 48ch; margin: 0; color: #625d53; line-height: 1.55; }
+.shop-studio-callout a { flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; padding: 0.7rem 1.2rem; border-radius: 999px; background: #a94f30; color: white; font-weight: 700; }
+.shop-page :focus-visible { outline: 2px solid #5a3a7a; outline-offset: 3px; }
+@media (max-width: 850px) { .shop-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .shop-page-inner { padding-inline: 5%; }
+  .shop-toolbar, .shop-studio-callout { align-items: stretch; flex-direction: column; }
+  .shop-search { width: 100%; }
+  .shop-product-grid { grid-template-columns: 1fr; }
+  .shop-product-image { aspect-ratio: 1.45; }
+  .shop-studio-callout a { align-self: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .shop-product-image img { transition: none; } }

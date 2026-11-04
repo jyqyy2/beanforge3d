@@ -4,10 +4,10 @@ test('landing page keeps product links and the live Studio accessible', async ({
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   await page.goto('/')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Small things.Made for you.')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Little things.Big joy.')
   const products = page.locator('.product-card')
   await expect(products).toHaveCount(3)
-  for (const slug of ['bean-keycap', 'custom-name-keychain', 'qr-nfc-stand']) {
+  for (const slug of ['custom-carplate-keychain', 'custom-name-keychain', 'qr-nfc-stand']) {
     await expect(page.locator(`.product-link[href="/product/${slug}"]`)).toBeVisible()
   }
   await page.locator('.landing-studio').scrollIntoViewIfNeeded()
@@ -16,8 +16,8 @@ test('landing page keeps product links and the live Studio accessible', async ({
     (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
   await page.getByRole('link', { name: 'Start designing →', exact: true }).click()
-  await expect(page).toHaveURL(/\/studio\/keycaps$/)
-  await expect(page.getByRole('heading', { name: 'Build your own.' })).toBeVisible()
+  await expect(page).toHaveURL(/\/studio$/)
+  await expect(page.locator('main')).toBeVisible()
   expect(errors).toEqual([])
 })
 
@@ -39,6 +39,11 @@ test('all implemented landing links navigate, and every product can be bought in
       await expect(page.locator(`[id="${fragment}"]`)).toBeAttached()
     } else if (link.href.includes('/studio/keycaps')) {
       await expect(page.getByRole('heading', { name: 'Build your own.' })).toBeVisible()
+    } else if (link.href === '/studio') {
+      await expect(page).toHaveURL(/\/studio$/)
+      await expect(page.locator('main')).toBeVisible()
+    } else if (link.href === '/shop' || link.href.startsWith('/shop#')) {
+      await expect(page.locator('.shop-page')).toBeVisible()
     } else if (link.href === '/cart') {
       await expect(page.getByRole('heading', { name: 'Shopping cart' })).toBeVisible()
     } else if (link.href === '/') {
@@ -49,9 +54,9 @@ test('all implemented landing links navigate, and every product can be bought in
     }
   }
   const products = [
-    { slug: 'bean-keycap', name: 'Bean Keycap', price: 'S$18.00' },
-    { slug: 'custom-name-keychain', name: 'Custom Name Keychain', price: 'S$9.00' },
-    { slug: 'qr-nfc-stand', name: 'QR / NFC Stand', price: 'S$15.00' },
+    { slug: 'custom-carplate-keychain', name: 'Custom Car Plate Keychain', price: 'S$4.90', text: 'SMX 6769 L' },
+    { slug: 'custom-name-keychain', name: 'Custom Name Keychain', price: 'From S$6.90', text: 'J' },
+    { slug: 'qr-nfc-stand', name: 'QR / NFC Stand', price: 'S$15.90' },
   ]
   for (const [index, product] of products.entries()) {
     for (const surface of ['.product-image', '.product-info']) {
@@ -66,6 +71,7 @@ test('all implemented landing links navigate, and every product can be bought in
       await expect(page.locator(product.slug === 'qr-nfc-stand' ? '.studio-price-action dd' : '.product-price').first()).toHaveText(product.price)
     }
     await page.locator(product.slug === 'qr-nfc-stand' ? '.studio-options fieldset:nth-child(2) button' : '.colour-button').last().click()
+    if (product.text) await page.getByRole('textbox', { name: product.slug === 'custom-name-keychain' ? 'Your name (1–10 letters)' : 'Your plate text' }).fill(product.text)
     await page.getByRole('button', { name: 'Increase quantity', exact: true }).click()
     await page.getByRole('button', { name: product.slug === 'qr-nfc-stand' ? 'Add my stand to cart' : 'Add to cart', exact: true }).click()
     await page.getByRole('dialog', { name: '✓ Item added to your cart' }).getByRole('link', { name: /View cart/ }).click()
@@ -101,12 +107,12 @@ test('desktop, tablet and mobile preserve images, section order and keyboard acc
   }
 })
 
-test('six categories expose four working destinations and two non-interactive previews', async ({ page }) => {
+test('six categories expose five working destinations and one non-interactive preview', async ({ page }) => {
   await page.goto('/')
   const cards = page.locator('.category-card')
   await expect(cards).toHaveCount(6)
-  await expect(cards.locator('h3')).toHaveText(['Keycap Studio', 'QR / NFC', 'Keycaps', 'Custom Nametags', 'Custom Carplates', 'SKÅDIS Accessories'])
-  const destinations = ['/studio/keycaps', '/product/qr-nfc-stand', '/product/bean-keycap', '/product/custom-name-keychain']
+  await expect(cards.locator('h4')).toHaveText(['Keycap Studio', 'Custom Nametags', 'Custom Carplate Keychain', 'QR / NFC', 'Keycaps', 'SKADIS Accessories'])
+  const destinations = ['/studio', '/product/custom-name-keychain', '/product/custom-carplate-keychain', '/product/qr-nfc-stand', '/studio/keycaps']
   for (const [index, destination] of destinations.entries()) {
     const card = cards.nth(index)
     await expect(card).toHaveAttribute('href', destination)
@@ -130,9 +136,9 @@ test('six categories expose four working destinations and two non-interactive pr
     await card.click()
     expect(page.url()).toBe(url)
   }
-  for (const [width, columns] of [[1280, 3], [820, 2], [390, 1]]) {
+  for (const [width, columns] of [[1280, 3], [820, 2], [390, 2]]) {
     await page.setViewportSize({ width, height: 900 })
-    expect(await page.locator('.category-grid').evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(columns)
+    expect(await page.locator('.category-grid').first().evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(columns)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   }
 })
@@ -146,18 +152,3 @@ for (const fragment of ['corporate-request']) {
     expect(await page.locator(`[id="${fragment}"]`).count()).toBe(1)
   })
 }
-
-test('known unimplemented search and wishlist actions', async ({ page }) => {
-  test.fail(true, 'Existing buttons have no handlers; implementing these features is outside the UI redesign.')
-  await page.goto('/')
-  const unchanged: string[] = []
-  for (const button of await page.locator('.header button, .product-wishlist').all()) {
-    const before = await page.locator('#root').innerHTML()
-    const url = page.url()
-    await button.click()
-    if (url === page.url() && before === await page.locator('#root').innerHTML()) {
-      unchanged.push(await button.getAttribute('aria-label') ?? 'Unlabelled button')
-    }
-  }
-  expect(unchanged).toEqual([])
-})

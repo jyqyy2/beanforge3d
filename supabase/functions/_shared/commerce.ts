@@ -3,6 +3,7 @@ export type PurchaseLine = {
   quantity: number
   colour?: string
   standDesign?: string
+  personalisation?: string
   configuration?: {
     schemaVersion: number
     boardColour: string
@@ -47,7 +48,7 @@ export type CommerceQuote = {
   payableTotalMinor: number | null
 }
 
-const v1Slugs = new Set(['bean-keycap', 'qr-nfc-stand', 'custom-keycaps'])
+const v1Slugs = new Set(['custom-carplate-keychain', 'custom-name-keychain', 'qr-nfc-stand', 'custom-keycaps'])
 const standDesigns = new Set(['Bee', 'Chick'])
 const defaultCharacterColours = ['Cream', 'Pink', 'Blue', 'Black']
 
@@ -63,7 +64,7 @@ function quoteStudio(line: PurchaseLine, catalogue: Catalogue): { name: string; 
   const pricing = catalogue.studioPricing
   const configuration = line.configuration
   if (!pricing || !configuration || configuration.schemaVersion !== 3 ||
-    line.colour !== configuration.boardColour || line.standDesign !== undefined ||
+    line.colour !== configuration.boardColour || line.standDesign !== undefined || line.personalisation !== undefined ||
     !pricing.boardColours.includes(configuration.boardColour) ||
     !Array.isArray(configuration.characters) || configuration.characters.length < 1 ||
     configuration.characters.length > 8) return null
@@ -98,6 +99,12 @@ export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQu
     } else {
       if (line.configuration !== undefined ||
         (line.productSlug === 'qr-nfc-stand' ? !standDesigns.has(line.standDesign ?? '') : line.standDesign !== undefined)) return null
+      if (line.productSlug === 'custom-carplate-keychain') {
+        if (typeof line.personalisation !== 'string' || !/^[A-Z0-9 ]{1,16}$/.test(line.personalisation) ||
+          line.personalisation !== line.personalisation.trim() || line.personalisation.includes('  ')) return null
+      } else if (line.productSlug === 'custom-name-keychain') {
+        if (typeof line.personalisation !== 'string' || !/^[A-Z]$/.test(line.personalisation)) return null
+      } else if (line.personalisation !== undefined) return null
       const product = catalogue.products.find(item => item.slug === line.productSlug)
       const variant = product?.variants.find(item => item.colour === line.colour)
       if (product && variant && variant.currency === 'SGD' && safeAmount(variant.priceMinor)) {
@@ -110,6 +117,7 @@ export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQu
     quoted.push({
       productSlug: line.productSlug, quantity: line.quantity, colour: line.colour,
       ...(line.standDesign ? { standDesign: line.standDesign } : {}),
+      ...(line.personalisation ? { personalisation: line.personalisation } : {}),
       ...(line.configuration ? { configuration: line.configuration } : {}),
       ...priced, lineAmountMinor,
     })

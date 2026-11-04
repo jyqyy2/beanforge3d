@@ -1,6 +1,6 @@
 import type { CartItem } from '../types/cart'
 import type { KeycapConfiguration } from '../types/keycap'
-import { getCharacterColours, getProductBySlug } from '../data/catalogue'
+import { getCharacterColours, getKeycapBoardColours } from '../data/catalogue'
 import { halloweenKeycaps } from '../types/halloween'
 
 export function isKeycapConfiguration(value: unknown, allowIncomplete = false): value is KeycapConfiguration {
@@ -8,7 +8,7 @@ export function isKeycapConfiguration(value: unknown, allowIncomplete = false): 
   const config = value as Partial<KeycapConfiguration>
   return config.schemaVersion === 3 &&
     typeof config.boardColour === 'string' &&
-    (getProductBySlug('bean-keycap')?.colours ?? []).includes(config.boardColour) &&
+    getKeycapBoardColours().includes(config.boardColour) &&
     Array.isArray(config.characters) && config.characters.length >= 1 && config.characters.length <= 8 &&
     config.characters.every((item) => item && typeof item === 'object' &&
       typeof item.character === 'string' &&
@@ -29,5 +29,6 @@ export function cartItemIdentity(item: CartItem): string {
           ? [character, colour] : [character, colour, characterColour])]
     : item.productSlug === 'qr-nfc-stand' && item.standDesign !== undefined
       ? [item.productSlug, item.colour, item.standDesign]
+      : item.personalisation ? [item.productSlug, item.colour, item.personalisation]
       : [item.productSlug, item.colour])
 }
