@@ -28,16 +28,21 @@ globalThis.fetch = async (input, options = {}) => {
     { id: 'plate-id', slug: 'custom-carplate-keychain', name: 'Custom Car Plate Keychain' },
     { id: 'name-id', slug: 'custom-name-keychain', name: 'Custom Name Keychain' },
     { id: 'stand-id', slug: 'qr-nfc-stand', name: 'QR / NFC Stand' },
+    { id: 'studio-id', slug: 'custom-keycaps', name: 'Keycap Studio' },
+    { id: 'halloween-id', slug: 'halloween-clicker', name: 'Halloween Fidget Clicker' },
   ])
   if (url.includes('/rest/v1/product_variants?')) return Response.json([
     { product_id: 'plate-id', colour_id: 'red-id', price_minor: 490, currency: 'SGD' },
     { product_id: 'name-id', colour_id: 'cream-id', price_minor: 690, currency: 'SGD' },
     { product_id: 'stand-id', colour_id: 'black-id', price_minor: 1590, currency: 'SGD' },
+    { product_id: 'studio-id', colour_id: 'cream-id', price_minor: 490, currency: 'SGD' },
+    { product_id: 'halloween-id', colour_id: 'purple-id', price_minor: 790, currency: 'SGD' },
   ])
   if (url.includes('/rest/v1/colours?')) return Response.json([
     { id: 'red-id', name: 'Red' },
     { id: 'cream-id', name: 'Cream' },
     { id: 'black-id', name: 'Black' },
+    { id: 'purple-id', name: 'Purple' },
   ])
   if (url.includes('/rest/v1/orders')) {
     if (failNextOrder) { failNextOrder = false; return Response.json({ error: 'offline' }, { status: 503 }) }

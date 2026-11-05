@@ -76,7 +76,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function quoteStudio(line: PurchaseLine, catalogue: Catalogue): { name: string; unitAmountMinor: number } | null {
   const pricing = catalogue.studioPricing
   const configuration = line.configuration
+  const product = catalogue.products.find(item => item.slug === line.productSlug)
+  const variant = product?.variants.find(item => item.colour === line.colour && item.currency === 'SGD' && item.priceMinor === 490)
   if (!pricing || !configuration || configuration.schemaVersion !== 3 ||
+    !variant ||
     line.colour !== configuration.boardColour || line.standDesign !== undefined || line.personalisation !== undefined || line.halloweenConfiguration !== undefined ||
     !pricing.boardColours.includes(configuration.boardColour) ||
     !Array.isArray(configuration.characters) || configuration.characters.length < 1 ||
@@ -107,9 +110,12 @@ function quoteStudio(line: PurchaseLine, catalogue: Catalogue): { name: string; 
   return Number.isSafeInteger(amount) ? { name: 'Custom Keycaps', unitAmountMinor: amount } : null
 }
 
-function quoteHalloween(line: PurchaseLine): { name: string; unitAmountMinor: number } | null {
+function quoteHalloween(line: PurchaseLine, catalogue: Catalogue): { name: string; unitAmountMinor: number } | null {
   const configuration = line.halloweenConfiguration
+  const product = catalogue.products.find(item => item.slug === line.productSlug)
+  const variant = product?.variants.find(item => item.colour === line.colour && item.currency === 'SGD' && item.priceMinor === 790)
   if (!configuration || configuration.version !== 1 || line.configuration !== undefined ||
+    !variant ||
     line.personalisation !== undefined || line.standDesign !== undefined ||
     line.colour !== configuration.boardColour || !halloweenColours.has(configuration.boardColour) ||
     !Object.prototype.hasOwnProperty.call(halloweenSlotCounts, configuration.layout) ||
@@ -133,7 +139,7 @@ export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQu
     if (line.productSlug === 'custom-keycaps') {
       priced = quoteStudio(line, catalogue)
     } else if (line.productSlug === 'halloween-clicker') {
-      priced = quoteHalloween(line)
+      priced = quoteHalloween(line, catalogue)
     } else {
       if (line.configuration !== undefined || line.halloweenConfiguration !== undefined ||
         (line.productSlug === 'qr-nfc-stand' ? !standDesigns.has(line.standDesign ?? '') : line.standDesign !== undefined)) return null

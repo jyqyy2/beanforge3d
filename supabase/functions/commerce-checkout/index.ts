@@ -24,7 +24,7 @@ async function catalogueRows(path: string): Promise<unknown[]> {
 }
 
 async function loadCatalogue(): Promise<Catalogue> {
-  const products = await catalogueRows('products?select=id,slug,name&slug=in.(custom-carplate-keychain,custom-name-keychain,qr-nfc-stand)')
+  const products = await catalogueRows('products?select=id,slug,name&slug=in.(custom-carplate-keychain,custom-name-keychain,qr-nfc-stand,custom-keycaps,halloween-clicker)')
   const ids = products.flatMap(product => {
     if (!product || typeof product !== 'object' || !('id' in product) || typeof product.id !== 'string') return []
     return [product.id]

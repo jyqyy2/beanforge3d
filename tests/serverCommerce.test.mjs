@@ -11,6 +11,8 @@ const catalogue = {
     { slug: 'custom-carplate-keychain', name: 'Custom Car Plate Keychain', variants: [{ colour: 'Red', priceMinor: 490, currency: 'SGD' }] },
     { slug: 'custom-name-keychain', name: 'Custom Name Keychain', variants: [{ colour: 'Cream', priceMinor: 690, currency: 'SGD' }] },
     { slug: 'qr-nfc-stand', name: 'QR / NFC Stand', variants: [{ colour: 'Black', priceMinor: 1590, currency: 'SGD' }] },
+    { slug: 'custom-keycaps', name: 'Keycap Studio', variants: [{ colour: 'Cream', priceMinor: 490, currency: 'SGD' }] },
+    { slug: 'halloween-clicker', name: 'Halloween Fidget Clicker', variants: [{ colour: 'Cream', priceMinor: 790, currency: 'SGD' }] },
   ],
   studioPricing: {
     boardPricesMinor: { 1: 1000, 2: 1800 },
@@ -50,6 +52,8 @@ test('server quotes approved name lengths, Halloween layouts and extra keycaps',
   assert.equal(quoteCommerce(intent([{ productSlug: 'custom-name-keychain', colour: 'Cream', quantity: 1, personalisation: 'JO' }]), catalogue).lines[0].unitAmountMinor, 790)
   const halloweenConfiguration = { version: 1, layout: '4x1', boardColour: 'Cream', slots: ['ghost', 'ghost', 'ghost', 'ghost'], extras: ['pumpkin'] }
   assert.equal(quoteCommerce(intent([{ productSlug: 'halloween-clicker', colour: 'Cream', quantity: 1, halloweenConfiguration }]), catalogue).lines[0].unitAmountMinor, 1440)
+  assert.equal(quoteCommerce(intent([{ productSlug: 'halloween-clicker', colour: 'Purple', quantity: 1, halloweenConfiguration: { ...halloweenConfiguration, boardColour: 'Purple' } }]), catalogue), null)
+  assert.equal(quoteCommerce(intent([{ productSlug: 'halloween-clicker', colour: 'Cream', quantity: 1, halloweenConfiguration }]), { products: [] }), null)
 })
 
 test('Singapore threshold and Malaysia pending carrier quote', () => {

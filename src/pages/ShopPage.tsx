@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { getProducts } from '../data/catalogue'
+import { productPath, useStorefront } from '../data/storefrontContext'
 import './ShopPage.css'
 
-const collections = [
-  { label: 'All products', value: 'all' },
-  { label: 'Personalised gifts', value: 'Custom' },
-  { label: 'Desk & business', value: 'QR / NFC' },
-] as const
-
 function ShopPage() {
+  const { products: catalogue, loading, error } = useStorefront()
+  const collections = [{ label: 'All products', value: 'all' }, ...[...new Set(catalogue.map(product => product.category))].map(value => ({ label: value, value }))]
   const location = useLocation()
   const [collection, setCollection] = useState<string>('all')
   const [query, setQuery] = useState('')
@@ -18,7 +14,7 @@ function ShopPage() {
   }, [location.hash, location.key])
   const search = query.trim().toLocaleLowerCase()
   const searchTerms = search.endsWith('s') && search.length > 3 ? [search, search.slice(0, -1)] : [search]
-  const products = getProducts().filter(product =>
+  const products = catalogue.filter(product =>
     (collection === 'all' || product.category === collection) &&
     (!search || searchTerms.some(term => `${product.name} ${product.category} ${product.description}`.toLocaleLowerCase().includes(term)))
   )
@@ -52,10 +48,10 @@ function ShopPage() {
             onClick={() => setCollection(option.value)}
           >{option.label}</button>)}
         </div>
-        <p className="shop-result-count" role="status">{products.length} {products.length === 1 ? 'product' : 'products'}</p>
+        <p className="shop-result-count" role="status">{loading ? 'Loading products…' : error ?? products.length + (products.length === 1 ? ' product' : ' products')}</p>
 
-        {products.length ? <div className="shop-product-grid">
-          {products.map(product => <Link className="shop-product" to={`/product/${product.slug}`} key={product.slug}>
+        {!loading && !error && (products.length ? <div className="shop-product-grid">
+          {products.map(product => <Link className="shop-product" to={productPath(product.slug)} key={product.slug}>
             <div className="shop-product-image">
               {product.image && <img src={product.image} alt="" loading="lazy" />}
             </div>
@@ -65,7 +61,7 @@ function ShopPage() {
               <p>{product.description}</p>
               <div className="shop-product-bottom">
                 <strong>{product.priceDisplay === 'from' ? 'From ' : ''}S${product.price.toFixed(2)}</strong>
-                <span>View options →</span>
+                <span>{product.category === 'Studio' ? 'Open studio →' : 'View options →'}</span>
               </div>
             </div>
           </Link>)}
@@ -73,7 +69,7 @@ function ShopPage() {
           <h3>No matches yet.</h3>
           <p>Try a different search or browse all products.</p>
           <button type="button" onClick={() => { setQuery(''); setCollection('all') }}>Show all products</button>
-        </div>}
+        </div>)}
       </section>
 
       <aside className="shop-studio-callout">

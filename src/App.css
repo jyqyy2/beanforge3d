@@ -1113,9 +1113,9 @@ So instead, put font-size after font: inherit:*/
 .cart-page .cart-quantity-controls button { border-color: #cfbdab; }
 .cart-page .cart-quantity-controls button:not(:disabled):hover { background: var(--cream); border-color: #a94f30; }
 .cart-page .cart-summary { border-top: 3px solid #a94f30; }
-.cart-page .cart-summary h2 { font-size: 1.8rem; }
-.cart-page .cart-summary-note { margin-bottom: 1.25rem; color: #625d53; }
-.cart-page .checkout-button { border-radius: 999px; font-weight: 600; }
+.cart-page .cart-summary h2 { font-size: clamp(1.4rem, 2vw, 1.6rem); }
+.cart-page .checkout-button { border-radius: 999px; font-size: 0.95rem; font-weight: 600; }
+.cart-page .cart-summary > .back-link { display: inline-block; margin-top: 1.25rem; }
 .cart-page .keycap-preview-compact { border-color: #cfbdab; background: radial-gradient(ellipse at 50% 30%, var(--paper), #eee2d0); }
 .cart-page .empty-cart {
   text-align: center;
@@ -1350,14 +1350,6 @@ So instead, put font-size after font: inherit:*/
   border: 1px solid var(--line);
   border-radius: 0.75rem;
   font: inherit;
-}
-
-.cart-summary-note {
-  margin: 1rem 0 0;
-
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
 }
 
 @media (max-width: 1000px) {

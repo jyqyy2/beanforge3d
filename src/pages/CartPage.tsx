@@ -202,11 +202,9 @@ function CartPage() {
                 disabled={!serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy || storageFailed}
                 onClick={() => void handleCheckout()}
               >
-                {checkoutBusy ? 'Opening secure checkout…' : 'Pay securely with Stripe'}
+                {checkoutBusy ? 'Opening secure checkout…' : 'Check out'}
               </button>
 
-              <p className="cart-summary-note">Stripe test checkout. No live payments are accepted.</p>
-              {!checkoutConfigured && <p role="status">Checkout has not been configured yet.</p>}
               {quoteError && <p role="alert">{quoteError}</p>}
               {serverQuote?.shipping.status === 'requires_carrier_quote' &&
                 <p role="status">Malaysia checkout will be available after carrier rates are connected.</p>}

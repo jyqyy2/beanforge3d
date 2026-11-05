@@ -21,7 +21,8 @@ import customBanner from './assets/landing-custom-banner.png'
 import corporateBanner from './assets/landing-corporate-banner.png'
 import ResponsiveImage from './components/ResponsiveImage'
 import { useCart } from './context/useCart'
-import { getProducts } from './data/catalogue'
+import { StorefrontProvider } from './data/storefront'
+import { useStorefront } from './data/storefrontContext'
 import './App.css'
 import './Homepage.css'
 
@@ -122,6 +123,7 @@ function Header() {
 }
 
 function AppLayout() {
+const { products: storefrontProducts, loading: catalogueLoading, error: catalogueError } = useStorefront()
 return (
   <>
     <Header />
@@ -129,8 +131,8 @@ return (
 
     <Routes>
     <Route path="/studio" element={<StudioHubPage />} />
-    <Route path="/studio/halloween" element={<HalloweenStudioPage />} />
-    <Route path="/studio/keycaps" element={<KeycapStudioPage />} />
+    <Route path="/studio/halloween" element={catalogueLoading ? <main role="status">Loading studio…</main> : storefrontProducts.some(product => product.slug === 'halloween-clicker') ? <HalloweenStudioPage /> : <main role="status">{catalogueError ?? 'This studio is currently unavailable.'}</main>} />
+    <Route path="/studio/keycaps" element={catalogueLoading ? <main role="status">Loading studio…</main> : storefrontProducts.some(product => product.slug === 'custom-keycaps') ? <KeycapStudioPage /> : <main role="status">{catalogueError ?? 'This studio is currently unavailable.'}</main>} />
     <Route path="/shop" element={<ShopPage />} />
 
     {/* Product details */}
@@ -201,7 +203,9 @@ return (
                     </Link>
                   </div>
                   <div className="category-grid">
-                    {group.categories.map((category) => {
+                    {group.categories.filter(category => !category.to ||
+                      (category.to === '/studio' ? storefrontProducts.some(product => product.slug === 'custom-keycaps' || product.slug === 'halloween-clicker') :
+                        storefrontProducts.some(product => category.to === '/product/' + product.slug || category.to === '/studio/keycaps' && product.slug === 'custom-keycaps'))).map((category) => {
                       const content = <>
                         <div className="category-visual">
                           {!category.to && <span className="category-badge">Coming soon</span>}
@@ -240,7 +244,9 @@ return (
 
               <div className="product-grid">
 
-                {getProducts().map((product) => {
+                {catalogueLoading && <p role="status">Loading featured products…</p>}
+                {catalogueError && <p role="status">Featured products are temporarily unavailable.</p>}
+                {storefrontProducts.map((product) => {
                   const presentation = featuredPresentation[product.slug]
                   if (!presentation) return null
 
@@ -369,5 +375,5 @@ return (
 const router = createBrowserRouter([{ path: '*', element: <AppLayout /> }])
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return <StorefrontProvider><RouterProvider router={router} /></StorefrontProvider>
 }

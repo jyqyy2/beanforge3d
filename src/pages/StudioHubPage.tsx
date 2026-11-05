@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import halloweenImage from '../assets/halloweenimg.png'
 import studioImage from '../assets/landing-studio.png'
 import heroImage from '../assets/hero.png'
+import { useStorefront } from '../data/storefrontContext'
 import './StudioHubPage.css'
 
 type StudioProduct = {
@@ -48,6 +49,8 @@ const studioProducts: StudioProduct[] = [
 ]
 
 function StudioHubPage() {
+  const { products, loading, error } = useStorefront()
+  const available = new Set(products.map(product => product.slug))
   return (
     <main className="studio-hub">
       <section className="studio-hub-hero" aria-labelledby="studio-hub-title">
@@ -75,7 +78,10 @@ function StudioHubPage() {
         </div>
 
         <div className="studio-product-grid">
+          {loading && <p role="status">Loading studio products…</p>}
+          {error && <p role="status">Studio products are temporarily unavailable.</p>}
           {studioProducts.map((product, index) => {
+            if (product.href && !available.has(product.href === '/studio/keycaps' ? 'custom-keycaps' : 'halloween-clicker')) return null
             const content = (
               <>
                 <div className="studio-product-image">

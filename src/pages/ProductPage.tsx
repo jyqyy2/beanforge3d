@@ -3,7 +3,8 @@ React a tiny memory called state
 Can use that information later for the image, cart, customization, etc*/
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getProductBySlug } from '../data/catalogue'
+import { useStorefront } from '../data/storefrontContext'
+import type { Product } from '../data/products'
 import type { CartItem } from '../types/cart'
 import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
@@ -13,15 +14,16 @@ import { nameKeychainPriceMinor } from '../utils/namePricing'
 
 function ProductPage() {
   const { slug } = useParams()
-  const product = getProductBySlug(slug)
+  const { products, loading, error } = useStorefront()
+  if (loading || error) return <main className="product-page"><div className="product-page-inner" role="status">{error ?? 'Loading product…'}</div></main>
+  const product = products.find(item => item.slug === slug && item.category !== 'Studio')
   if (product?.slug === 'qr-nfc-stand' && product.standDesigns?.length) return <StandStudioPage product={product} />
-  return <ProductDetails key={slug} slug={slug} />
+  return <ProductDetails key={slug} product={product} />
 }
 
-function ProductDetails({ slug }: { slug: string | undefined }) {
+function ProductDetails({ product }: { product: Product | undefined }) {
   const { addToCart } = useCart()
 
-  const product = getProductBySlug(slug)
   /*selectedColour = what colour React remembers
     setSelectedColour = the button/function we use to change that memory
     useState(...) = React's little memory system
