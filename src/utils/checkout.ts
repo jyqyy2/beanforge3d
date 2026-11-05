@@ -56,7 +56,7 @@ export async function startCheckout(items: CartItem[]): Promise<{ url: string; q
   return { url: result.url, quote: result.quote }
 }
 
-export async function verifyCheckoutSession(sessionId: string): Promise<{ paid: boolean; orderRecorded: boolean; amountTotalMinor: number; currency: string }> {
+export async function verifyCheckoutSession(sessionId: string): Promise<{ paid: boolean; orderRecorded: boolean; amountTotalMinor: number; currency: string; livemode: boolean }> {
   if (!checkoutConfigured) throw new Error('Checkout is not configured.')
   const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/functions/v1/commerce-checkout`, {
     method: 'POST',

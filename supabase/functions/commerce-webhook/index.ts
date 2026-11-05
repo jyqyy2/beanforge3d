@@ -1,6 +1,8 @@
 import { findOrderBySession, recordPaidOrder } from '../_shared/orders.ts'
+import { matchesStripeMode, stripeMode, validSessionId } from '../_shared/stripeMode.ts'
 
 const signingSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')
+const mode = stripeMode(Deno.env.get('STRIPE_ENVIRONMENT'))
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } })
@@ -14,7 +16,7 @@ function constantTimeEqual(left: string, right: string): boolean {
 }
 
 async function validSignature(raw: string, header: string | null): Promise<boolean> {
-  if (!signingSecret?.startsWith('whsec_') || !header) return false
+  if (!mode || !signingSecret?.startsWith('whsec_') || !header) return false
   const parts = header.split(',').map(part => part.trim().split('='))
   const timestamp = parts.find(part => part[0] === 't')?.[1]
   const signatures = parts.filter(part => part[0] === 'v1').map(part => part[1])
@@ -57,10 +59,11 @@ Deno.serve(async request => {
   }
   try {
     const event = record(JSON.parse(raw))
+    if (!matchesStripeMode(mode, event?.livemode)) return json({ error: 'Invalid mode' }, 422)
     if (event?.type !== 'checkout.session.completed' && event?.type !== 'checkout.session.async_payment_succeeded') return json({ received: true })
     const session = record(record(event.data)?.object)
     if (!session || session.payment_status !== 'paid' || session.currency !== 'sgd' ||
-      typeof session.id !== 'string' || !/^cs_test_[A-Za-z0-9_]{10,}$/.test(session.id) ||
+      !validSessionId(mode, session.id) || !matchesStripeMode(mode, session.livemode) ||
       !Number.isSafeInteger(session.amount_total) ||
       record(session.metadata)?.checkout_source !== 'beanforge3d') return json({ error: 'Invalid session' }, 422)
     const order = await findOrderBySession(session.id)

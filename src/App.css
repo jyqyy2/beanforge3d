@@ -1287,6 +1287,10 @@ So instead, put font-size after font: inherit:*/
   letter-spacing: -0.03em;
 }
 
+.cart-shipping-progress { margin: 0 0 1.5rem; }
+.cart-shipping-progress p { margin: 0 0 0.5rem; font-size: 0.9rem; line-height: 1.5; }
+.cart-shipping-progress progress { display: block; width: 100%; height: 0.5rem; accent-color: #91472e; }
+
 .cart-summary-row {
   display: flex;
   align-items: center;

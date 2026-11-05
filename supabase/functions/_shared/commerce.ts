@@ -174,7 +174,7 @@ export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQu
     return { currency: 'SGD', lines: quoted, merchandiseSubtotalMinor,
       shipping: { status: 'requires_carrier_quote', country: 'MY' }, payableTotalMinor: null }
   }
-  const amountMinor = merchandiseSubtotalMinor < 2000 ? 500 : 0
+  const amountMinor = merchandiseSubtotalMinor < 4000 ? 390 : 0
   return { currency: 'SGD', lines: quoted, merchandiseSubtotalMinor,
     shipping: { status: 'quoted', country: 'SG', amountMinor },
     payableTotalMinor: merchandiseSubtotalMinor + amountMinor }

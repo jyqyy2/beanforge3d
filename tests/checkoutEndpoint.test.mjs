@@ -66,11 +66,11 @@ globalThis.fetch = async (input, options = {}) => {
     return Response.json([...orders.values()].filter(order => order.stripe_session_id === requestedSession))
   }
   if (url === 'https://api.stripe.com/v1/checkout/sessions') {
-    return Response.json({ id: `cs_test_${String(++sessionCount).padStart(10, '0')}`, url: 'https://checkout.stripe.com/c/pay/test-session' })
+    return Response.json({ id: `cs_test_${String(++sessionCount).padStart(10, '0')}`, livemode: false, url: 'https://checkout.stripe.com/c/pay/test-session' })
   }
   if (url.endsWith('/expire')) return Response.json({ status: 'expired' })
   if (url.startsWith('https://api.stripe.com/v1/checkout/sessions/cs_test_')) {
-    return Response.json({ payment_status: 'paid', currency: 'sgd', amount_total: 990,
+    return Response.json({ payment_status: 'paid', currency: 'sgd', amount_total: 880, livemode: false,
       metadata: url.endsWith('unrelated') ? {} : { checkout_source: 'beanforge3d' } })
   }
   throw new Error('Unexpected HTTP request')
@@ -95,13 +95,13 @@ test('server reads RLS catalogue, ignores browser amounts and creates Stripe tes
   const response = await request('checkout', intent)
   assert.equal(response.status, 200)
   const body = await response.json()
-  assert.equal(body.quote.payableTotalMinor, 990)
+  assert.equal(body.quote.payableTotalMinor, 880)
   assert.equal(body.url.startsWith('https://checkout.stripe.com/'), true)
   const stripe = calls.find(call => call.url.startsWith('https://api.stripe.com/'))
   assert.ok(stripe)
   const form = new URLSearchParams(stripe.options.body)
   assert.equal(form.get('line_items[0][price_data][unit_amount]'), '490')
-  assert.equal(form.get('line_items[1][price_data][unit_amount]'), '500')
+  assert.equal(form.get('line_items[1][price_data][unit_amount]'), '390')
   assert.equal(form.get('shipping_address_collection[allowed_countries][0]'), 'SG')
   assert.equal(form.get('metadata[checkout_source]'), 'beanforge3d')
   assert.equal(form.get('client_reference_id'), form.get('metadata[order_id]'))

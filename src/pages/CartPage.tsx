@@ -25,6 +25,8 @@ function CartPage() {
   const [checkoutBusy, setCheckoutBusy] = useState(false)
   const serverQuote = quoteState?.items === cartItems && quoteState.country === country ? quoteState.quote : null
   const estimate = quoteMerchandise(cartItems)
+  const subtotalMinor = serverQuote?.merchandiseSubtotalMinor ?? estimate?.merchandiseSubtotalMinor
+  const remainingForFreeShipping = subtotalMinor === undefined ? null : Math.max(0, 4000 - subtotalMinor)
 
   useEffect(() => {
     if (!checkoutConfigured || cartItems.length === 0) return
@@ -171,6 +173,10 @@ function CartPage() {
 
             <aside className="cart-summary">
               <h2>Order summary</h2>
+              {country === 'SG' && remainingForFreeShipping !== null && <div className="cart-shipping-progress">
+                <p>{remainingForFreeShipping === 0 ? 'Your order qualifies for free Singapore delivery.' : 'S$' + (remainingForFreeShipping / 100).toFixed(2) + ' away from free Singapore delivery'}</p>
+                <progress value={Math.min(subtotalMinor ?? 0, 4000)} max={4000} aria-label="Progress toward free Singapore delivery" />
+              </div>}
               <label htmlFor="shipping-country">Deliver to</label>
               <select id="shipping-country" value={country} onChange={event => {
                 setCountry(event.target.value as 'SG' | 'MY')

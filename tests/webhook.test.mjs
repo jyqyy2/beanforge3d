@@ -30,10 +30,10 @@ globalThis.fetch = async (input, options = {}) => {
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' })
 try { await server.ssrLoadModule('/supabase/functions/commerce-webhook/index.ts') } finally { await server.close() }
 
-const session = () => ({ id: sessionId, client_reference_id: orderId, payment_status: 'paid',
+const session = () => ({ id: sessionId, client_reference_id: orderId, payment_status: 'paid', livemode: false,
   currency: 'sgd', amount_total: 990, metadata: { checkout_source: 'beanforge3d', order_id: orderId },
   customer_details: { email: 'buyer@example.test', name: 'Jo', address: { line1: 'Example St', country: 'SG' } } })
-const event = (object = session(), type = 'checkout.session.completed') => JSON.stringify({ type, data: { object } })
+const event = (object = session(), type = 'checkout.session.completed') => JSON.stringify({ type, livemode: false, data: { object } })
 
 async function signedRequest(raw, timestamp = Math.floor(Date.now() / 1000), signatureOverride) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
@@ -53,6 +53,8 @@ test('webhook rejects unsigned, tampered and replayed events without writing', a
 })
 
 test('webhook ignores nonpayment and refuses mismatched amounts or order ids', async () => {
+  assert.equal((await signedRequest(JSON.stringify({ type: 'checkout.session.completed', livemode: true, data: { object: session() } }))).status, 422)
+  assert.equal((await signedRequest(event({ ...session(), livemode: true }))).status, 422)
   assert.equal((await signedRequest(event({ ...session(), payment_status: 'unpaid' }))).status, 422)
   assert.equal((await signedRequest(event({ ...session(), amount_total: 1 }))).status, 422)
   assert.equal((await signedRequest(event({ ...session(), client_reference_id: crypto.randomUUID() }))).status, 422)

@@ -1,0 +1,39 @@
+.checkout-result {
+  display: grid;
+  align-items: center;
+  padding-block: clamp(3rem, 8vw, 7rem);
+}
+
+.checkout-result-inner {
+  width: min(100%, 680px);
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper);
+  box-shadow: 0 12px 36px #3530270a;
+}
+
+.checkout-result h1 {
+  max-width: 14ch;
+  margin: 0 0 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.2rem, 5vw, 3.7rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+.checkout-result [role='status'] {
+  max-width: 54ch;
+  margin: 0;
+  color: #625d53;
+  line-height: 1.65;
+}
+
+.checkout-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-top: 2rem;
+}

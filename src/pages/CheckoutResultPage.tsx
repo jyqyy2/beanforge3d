@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { verifyCheckoutSession } from '../utils/checkout'
+import './CheckoutResultPage.css'
 
 function CheckoutResultPage() {
   const [params] = useSearchParams()
   const sessionId = params.get('session_id')
   const [status, setStatus] = useState<'checking' | 'recorded' | 'processing' | 'unpaid' | 'unavailable'>('checking')
+  const [liveMode, setLiveMode] = useState<boolean | null>(null)
 
   useEffect(() => {
     if (!sessionId) return
@@ -15,6 +17,7 @@ function CheckoutResultPage() {
     const check = () => {
       void verifyCheckoutSession(sessionId).then(result => {
         if (!active) return
+        setLiveMode(result.livemode)
         if (!result.paid || result.currency !== 'sgd') { setStatus('unpaid'); return }
         if (result.orderRecorded) { setStatus('recorded'); return }
         setStatus('processing')
@@ -25,20 +28,23 @@ function CheckoutResultPage() {
     return () => { active = false; window.clearTimeout(timer) }
   }, [sessionId])
 
-  return <main className="cart-page">
-    <div className="cart-page-inner">
-      <p className="eyebrow">STRIPE TEST CHECKOUT</p>
-      <h1>{status === 'recorded' ? 'Test order recorded' : status === 'processing' ? 'Recording your test order' : status === 'checking' && sessionId ? 'Checking payment status' : status === 'unpaid' ? 'Payment not confirmed' : 'Payment status unavailable'}</h1>
+  return <main className="cart-page checkout-result">
+    <div className="cart-page-inner checkout-result-inner">
+      <p className="eyebrow">{liveMode === false ? 'TEST ORDER STATUS' : 'ORDER STATUS'}</p>
+      <h1>{status === 'recorded' ? 'Your order is confirmed.' : status === 'processing' ? 'Payment received. Saving your order.' : status === 'checking' && sessionId ? 'Checking your payment.' : status === 'unpaid' ? 'Payment not confirmed.' : 'We cannot verify this payment yet.'}</h1>
       <p role="status">{!sessionId || status === 'unavailable'
-        ? 'We could not verify this test payment. Check Stripe before trying again.'
+        ? 'Please do not pay again until you have checked your payment status. Contact us if you need help.'
         : status === 'recorded'
-          ? 'Stripe confirms this test payment and your order details are saved. Your cart remains in this browser.'
+          ? (liveMode ? 'Payment and order details are recorded. Your cart remains in this browser.' : 'Your test payment and order details are recorded. Your cart remains in this browser.')
           : status === 'processing'
-            ? 'Stripe confirms this test payment. We are waiting for your order record; do not pay again.'
+            ? 'Your payment is confirmed. We are waiting for the order record; please do not pay again.'
           : status === 'unpaid'
-            ? 'Stripe has not confirmed a payment for this session.'
-            : 'Checking with Stripe…'}</p>
-      <Link className="button button-dark" to="/">Back to shop</Link>
+            ? 'No payment has been confirmed for this checkout session. Your cart is still available.'
+            : 'This may take a moment. Please keep this page open.'}</p>
+      <div className="checkout-result-actions">
+        <Link className="button button-dark" to="/shop">Continue shopping</Link>
+        <Link className="back-link" to="/cart">View cart</Link>
+      </div>
     </div>
   </main>
 }

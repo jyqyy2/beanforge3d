@@ -31,8 +31,8 @@ test('server prices merchandise and shipping without accepting browser amounts',
   }, catalogue)
   assert.equal(result.merchandiseSubtotalMinor, 980)
   assert.deepEqual(result.lines.map(line => line.unitAmountMinor), [490, 490])
-  assert.equal(result.shipping.amountMinor, 500)
-  assert.equal(result.payableTotalMinor, 1480)
+  assert.equal(result.shipping.amountMinor, 390)
+  assert.equal(result.payableTotalMinor, 1370)
 })
 
 test('personalisation is required, carried into the quote and cannot invent longer-name prices', () => {
@@ -58,8 +58,8 @@ test('server quotes approved name lengths, Halloween layouts and extra keycaps',
 
 test('Singapore threshold and Malaysia pending carrier quote', () => {
   const lowCatalogue = { products: [{ slug: 'custom-carplate-keychain', name: 'Custom Car Plate Keychain', variants: [{ colour: 'Red', priceMinor: 1999, currency: 'SGD' }] }] }
-  assert.equal(quoteCommerce(intent([plate()]), lowCatalogue).shipping.amountMinor, 500)
-  lowCatalogue.products[0].variants[0].priceMinor = 2000
+  assert.equal(quoteCommerce(intent([plate()]), lowCatalogue).shipping.amountMinor, 390)
+  lowCatalogue.products[0].variants[0].priceMinor = 4000
   assert.equal(quoteCommerce(intent([plate()]), lowCatalogue).shipping.amountMinor, 0)
   const malaysia = quoteCommerce(intent([plate()], 'MY'), catalogue)
   assert.deepEqual(malaysia.shipping, { status: 'requires_carrier_quote', country: 'MY' })

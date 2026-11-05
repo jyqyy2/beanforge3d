@@ -11,7 +11,7 @@ import type { HalloweenConfiguration } from '../types/halloween'
 
 export const v1CommerceConfig = {
   currency: 'SGD' as const,
-  singapore: { country: 'SG' as const, freeShippingThresholdMinor: 2000, flatShippingMinor: 500 },
+  singapore: { country: 'SG' as const, freeShippingThresholdMinor: 4000, flatShippingMinor: 390 },
   malaysia: { country: 'MY' as const },
   allowedCountries: ['SG', 'MY'] as const,
   maxQuantity: 100,

@@ -1,11 +1,13 @@
 import { quoteCommerce } from '../_shared/commerce.ts'
 import type { Catalogue, CommerceQuote, PricedProduct } from '../_shared/commerce.ts'
 import { attachOrderSession, createPendingOrder, failPendingOrder, findOrderBySession } from '../_shared/orders.ts'
+import { matchesStripeMode, stripeMode, validSessionId, validStripeKey } from '../_shared/stripeMode.ts'
 
 const siteUrl = Deno.env.get('SITE_URL')?.replace(/\/$/, '')
 const supabaseUrl = Deno.env.get('SUPABASE_URL')
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
+const mode = stripeMode(Deno.env.get('STRIPE_ENVIRONMENT'))
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json',
@@ -76,7 +78,9 @@ function stripeLineDescription(line: CommerceQuote['lines'][number]): string {
 }
 
 async function createCheckout(quote: CommerceQuote): Promise<Response> {
-  if (!siteUrl || !stripeSecretKey?.startsWith('sk_test_') || quote.shipping.status !== 'quoted') {
+  if (!siteUrl || (mode === 'live' ? !siteUrl.startsWith('https://') :
+    !siteUrl.startsWith('https://') && siteUrl !== 'http://localhost:5173') ||
+    !validStripeKey(mode, stripeSecretKey) || quote.shipping.status !== 'quoted') {
     return json({ error: 'Checkout unavailable' }, 503)
   }
   const orderId = await createPendingOrder(quote)
@@ -113,7 +117,7 @@ async function createCheckout(quote: CommerceQuote): Promise<Response> {
     if (!response.ok) throw new Error('Payment provider unavailable')
     const session: unknown = await response.json()
     if (!session || typeof session !== 'object' || !('id' in session) ||
-      typeof session.id !== 'string' || !/^cs_test_[A-Za-z0-9_]{10,}$/.test(session.id) ||
+      !validSessionId(mode, session.id) || !('livemode' in session) || !matchesStripeMode(mode, session.livemode) ||
       !('url' in session) || typeof session.url !== 'string' ||
       !session.url.startsWith('https://checkout.stripe.com/')) throw new Error('Payment provider unavailable')
     sessionId = session.id
@@ -131,8 +135,7 @@ async function createCheckout(quote: CommerceQuote): Promise<Response> {
 }
 
 async function sessionStatus(sessionId: unknown): Promise<Response> {
-  if (typeof sessionId !== 'string' || !/^cs_test_[A-Za-z0-9_]{10,}$/.test(sessionId) ||
-    !stripeSecretKey?.startsWith('sk_test_')) return json({ error: 'Invalid session' }, 400)
+  if (!validSessionId(mode, sessionId) || !validStripeKey(mode, stripeSecretKey)) return json({ error: 'Invalid session' }, 400)
   const response = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
     headers: { Authorization: `Bearer ${stripeSecretKey}` },
   })
@@ -140,6 +143,7 @@ async function sessionStatus(sessionId: unknown): Promise<Response> {
   const session: unknown = await response.json()
   if (!session || typeof session !== 'object' || !('payment_status' in session) ||
     !('currency' in session) || !('amount_total' in session) ||
+    !('livemode' in session) || !matchesStripeMode(mode, session.livemode) ||
     !('metadata' in session) || !session.metadata || typeof session.metadata !== 'object' ||
     !('checkout_source' in session.metadata) || session.metadata.checkout_source !== 'beanforge3d') {
     return json({ error: 'Session unavailable' }, 502)
@@ -147,7 +151,7 @@ async function sessionStatus(sessionId: unknown): Promise<Response> {
   const order = await findOrderBySession(sessionId)
   if (!order) return json({ error: 'Session unavailable' }, 502)
   return json({ paid: session.payment_status === 'paid', orderRecorded: order.status === 'paid',
-    amountTotalMinor: session.amount_total, currency: session.currency })
+    amountTotalMinor: session.amount_total, currency: session.currency, livemode: session.livemode })
 }
 
 Deno.serve(async request => {

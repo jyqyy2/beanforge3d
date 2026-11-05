@@ -43,9 +43,9 @@ test('does not trust fake subtotal or line totals', () => {
 })
 
 test('applies Singapore threshold before shipping', () => {
-  assert.equal(quoteShipping({ country: 'SG' }, 1999).amountMinor, 500)
-  assert.equal(quoteShipping({ country: 'SG' }, 2000).amountMinor, 0)
-  assert.equal(quoteShipping({ country: 'SG' }, 2500).amountMinor, 0)
+  assert.equal(quoteShipping({ country: 'SG' }, 3999).amountMinor, 390)
+  assert.equal(quoteShipping({ country: 'SG' }, 4000).amountMinor, 0)
+  assert.equal(quoteShipping({ country: 'SG' }, 4500).amountMinor, 0)
 })
 
 test('keeps Malaysia carrier-dependent and rejects other countries', () => {
