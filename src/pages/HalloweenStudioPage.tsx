@@ -9,6 +9,7 @@ import spiderImage from '../assets/halloween-spider.png'
 import catSideImage from '../assets/halloween-cat-side.png'
 import catBackImage from '../assets/halloween-cat-back.png'
 import './HalloweenStudioPage.css'
+import { calculateHalloweenPrice, halloweenExtraKeycapMinor } from '../utils/halloweenPricing'
 
 type LayoutId = '1x1' | '2x1' | '2x2' | '4x1'
 type BoardColour = 'Cream' | 'Pink' | 'Black' | 'Purple' | 'White' | 'Turquoise'
@@ -74,6 +75,8 @@ function HalloweenStudioPage() {
   const selectedKeycaps = useMemo(() => draft.slots.filter((slot): slot is KeycapId => slot !== null), [draft.slots])
   const selectedNames = selectedKeycaps.map(id => keycaps.find(keycap => keycap.id === id)?.name ?? '').filter(Boolean)
   const extras = draft.extras ?? []
+  const price = calculateHalloweenPrice(draft as HalloweenConfiguration)
+  const money = (minor: number) => `S$${(minor / 100).toFixed(2)}`
 
   function updateExtraQuantity(keycap: KeycapId, change: -1 | 1) {
     setDraft(current => {
@@ -120,7 +123,7 @@ function HalloweenStudioPage() {
   function addCreation() {
     if (draft.slots.some(slot => slot === null)) return
     const design = { ...draft, slots: [...draft.slots], extras: [...extras] } as HalloweenConfiguration
-    addToCart({ productSlug: 'halloween-clicker', name: 'Halloween Fidget Clicker', price: 0,
+    addToCart({ productSlug: 'halloween-clicker', name: 'Halloween Fidget Clicker', price: price.totalMinor / 100,
       colour: design.boardColour, quantity: 1, halloweenConfiguration: design })
   }
 
@@ -205,7 +208,7 @@ function HalloweenStudioPage() {
         <section className="halloween-extras" aria-label="Additional keycaps">
           <p className="eyebrow">MAKE IT YOURS</p>
           <h2>Need more keycaps?</h2>
-          <p>Extra keycaps are separate from your clicker board. Choose any of the Halloween designs above; they won’t change your board layout or its selected keycaps.</p>
+          <p>Extra keycaps are {money(halloweenExtraKeycapMinor)} each, separate from your clicker board. They won’t change your layout or its selected keycaps.</p>
           <div className="halloween-extra-choices">
             {keycaps.map(keycap => {
               const quantity = extras.filter(extra => extra === keycap.id).length
@@ -220,7 +223,7 @@ function HalloweenStudioPage() {
               </div>
             })}
           </div>
-          <p className="studio-note">Additional keycap pricing is pending; checkout remains unavailable for this design.</p>
+          <p className="studio-note">Extra keycaps are S$2.50 each and are added to your board price.</p>
         </section>
         <section className="studio-purchase creation-summary halloween-purchase" aria-label="Your Halloween creation">
           <div>
@@ -234,13 +237,12 @@ function HalloweenStudioPage() {
           </div>
           <div className="studio-price-action">
             <dl>
-              <div><dt>Board layout</dt><dd>Price pending</dd></div>
-              <div><dt>Halloween keycaps ({selectedKeycaps.length})</dt><dd>Price pending</dd></div>
-              {extras.length > 0 && <div><dt>Extra keycaps ({extras.length})</dt><dd>Price pending</dd></div>}
-              <div className="studio-total"><dt>Total</dt><dd>Unavailable</dd></div>
+              <div><dt>Board + {layout.slots} included {layout.slots === 1 ? 'keycap' : 'keycaps'}</dt><dd>{money(price.boardMinor)}</dd></div>
+              {extras.length > 0 && <div><dt>Extra keycaps ({extras.length} × {money(halloweenExtraKeycapMinor)})</dt><dd>{money(price.extrasMinor)}</dd></div>}
+              <div className="studio-total"><dt>Total</dt><dd>{money(price.totalMinor)}</dd></div>
             </dl>
             <button type="button" className="studio-add" aria-describedby="halloween-completion halloween-cart-note" disabled={selectedKeycaps.length !== layout.slots || storageFailed} onClick={addCreation}>Add my creation to cart</button>
-            <p id="halloween-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available until pricing is configured.</p>
+            <p id="halloween-cart-note" className="studio-note">Your cart saves a copy of this design. Final checkout prices are verified securely.</p>
             {storageFailed && <p role="alert">Cart storage is unavailable. Please retry before leaving this page.</p>}
           </div>
         </section>

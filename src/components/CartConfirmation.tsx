@@ -25,7 +25,7 @@ export default function CartConfirmation() {
   const openedAt = useRef<string | null>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
-  const checkoutAvailable = checkoutConfigured && !cartItems.some(item => item.halloweenConfiguration)
+  const checkoutAvailable = checkoutConfigured
 
   useEffect(() => {
     if (!recentlyAdded) return
@@ -66,7 +66,7 @@ export default function CartConfirmation() {
       <Link to="/cart" onClick={dismissCartConfirmation}>View cart ({cartCount})</Link>
       {checkoutAvailable ? <Link className="cart-confirmation-checkout" to="/cart" onClick={dismissCartConfirmation}>Review checkout</Link>
         : <button type="button" disabled>Checkout unavailable</button>}
-      {!checkoutAvailable && <p>{cartItems.some(item => item.halloweenConfiguration) ? 'Halloween pricing is pending.' : 'Checkout is not configured yet.'}</p>}
+      {!checkoutAvailable && <p>Checkout is not configured yet.</p>}
       <button type="button" className="cart-confirmation-continue" onClick={dismissCartConfirmation}>Continue shopping</button>
     </div>
   </aside>

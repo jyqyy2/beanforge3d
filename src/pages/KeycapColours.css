@@ -273,6 +273,14 @@
   font-size: clamp(2.4rem, 4.5vw, 3.5rem);
   line-height: 1.08;
 }
+.stand-studio .studio-heading h1 { font-size: clamp(2.4rem, 4.5vw, 3.5rem); line-height: 1.08; }
+.keycap-design-studio .studio-extras { border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.keycap-design-studio .studio-extra-row { display: flex; flex-wrap: wrap; align-items: end; gap: 0.75rem; margin: 0.75rem 0; }
+.keycap-design-studio .studio-extra-row label { display: grid; gap: 0.3rem; font-size: 0.85rem; }
+.keycap-design-studio .studio-extra-row input, .keycap-design-studio .studio-extra-row select { min-height: 44px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); padding: 0.5rem; font: inherit; }
+.keycap-design-studio .studio-extra-row input { width: 4rem; text-align: center; }
+.keycap-design-studio .studio-extras button { min-height: 44px; border: 1px solid var(--line); border-radius: 24px; padding: 0.5rem 0.8rem; background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.keycap-design-studio .studio-extras button:disabled { opacity: 0.5; cursor: not-allowed; }
 .keycap-design-studio .studio-heading > p:last-child {
   max-width: 52ch;
   font-size: 0.95rem;
@@ -345,6 +353,7 @@
 @media (max-width: 600px) {
   .keycap-design-studio .studio-heading { margin-block: 1.75rem 1.5rem; }
   .keycap-design-studio .studio-heading h1 { font-size: clamp(2.15rem, 9vw, 2.7rem); }
+  .stand-studio .studio-heading h1 { font-size: clamp(2.15rem, 9vw, 2.7rem); }
   .keycap-design-studio .studio-heading > p:last-child { font-size: 0.9rem; }
   .keycap-design-studio .keycap-preview,
   .keycap-design-studio .studio-options { padding: 1rem; }

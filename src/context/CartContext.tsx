@@ -31,11 +31,10 @@ export function CartProvider({
   function addToCart(item: CartItem) {
     if (!Number.isSafeInteger(item.quantity) || item.quantity < 1) return
     if (item.productSlug === 'custom-carplate-keychain' || item.productSlug === 'custom-name-keychain') {
-      if (!item.personalisation || normalisePersonalisation(item.productSlug, item.personalisation) !== item.personalisation ||
-        (item.productSlug === 'custom-name-keychain' && item.personalisation.length !== 1)) return
+      if (!item.personalisation || normalisePersonalisation(item.productSlug, item.personalisation) !== item.personalisation) return
     } else if (item.personalisation !== undefined) return
     if (item.productSlug === 'halloween-clicker'
-      ? item.price !== 0 || !isHalloweenConfiguration(item.halloweenConfiguration) || item.colour !== item.halloweenConfiguration.boardColour
+      ? !isHalloweenConfiguration(item.halloweenConfiguration) || item.colour !== item.halloweenConfiguration.boardColour
       : item.halloweenConfiguration !== undefined) return
     if (item.standDesign !== undefined && (item.productSlug !== 'qr-nfc-stand' || !isStandDesign(item.standDesign))) return
     if (item.productSlug === 'custom-keycaps' && (!isKeycapConfiguration(item.configuration) || item.colour !== item.configuration.boardColour)) return

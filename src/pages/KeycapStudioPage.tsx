@@ -33,6 +33,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const [count, setCount] = useState(savedConfiguration?.characters.length ?? draft?.count ?? 1)
   const [colour, setColour] = useState(savedConfiguration?.boardColour ?? draft?.configuration.boardColour ?? colours[0] ?? '')
   const [characters, setCharacters] = useState<KeycapConfiguration['characters']>(() => Array.from({ length: 8 }, (_, index) => ({ ...(savedConfiguration?.characters[index] ?? draft?.configuration.characters[index] ?? { character: '', colour: '' }) })))
+  const [extraCharacters, setExtraCharacters] = useState<NonNullable<KeycapConfiguration['extraCharacters']>>(() => (savedConfiguration?.extraCharacters ?? draft?.configuration.extraCharacters ?? []).map(item => ({ ...item })))
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const characterInputs = useRef<Array<HTMLInputElement | null>>([])
   const lastCharacterIndex = useRef(0)
@@ -47,7 +48,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const [confirmReset, setConfirmReset] = useState(false)
   const resetButton = useRef<HTMLButtonElement>(null)
   const [saveResult, setSaveResult] = useState<{ snapshot: string; saved: boolean } | null>(null)
-  const draftSnapshot = JSON.stringify({ version: 1, count, configuration: { schemaVersion: 3, boardColour: colour, characters } })
+  const draftSnapshot = JSON.stringify({ version: 1, count, configuration: { schemaVersion: 3, boardColour: colour, characters, ...(extraCharacters.length ? { extraCharacters } : {}) } })
   useEffect(() => {
     if (editIdentity !== null) return
     const saved = saveKeycapDraft(JSON.parse(draftSnapshot))
@@ -58,12 +59,13 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
     setCount(1)
     setColour(colours[0] ?? '')
     setCharacters(Array.from({ length: 8 }, () => ({ character: '', colour: '' })))
+    setExtraCharacters([])
     setActiveIndex(null)
     setMessage('')
     setConfirmReset(false)
     resetButton.current?.focus()
   }
-  const configuration: KeycapConfiguration = { schemaVersion: 3, boardColour: colour, characters: characters.slice(0, count) }
+  const configuration: KeycapConfiguration = { schemaVersion: 3, boardColour: colour, characters: characters.slice(0, count), ...(extraCharacters.length ? { extraCharacters } : {}) }
   const savedSuccessfully = useRef(false)
   const dirty = editIdentity !== null && JSON.stringify(configuration) !== JSON.stringify(savedConfiguration)
   const blocker = useBlocker(() => dirty && !savedSuccessfully.current)
@@ -80,14 +82,15 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
   const characterColours = getCharacterColours()
   const selectedIndex = activeIndex !== null && activeIndex < count ? activeIndex : null
   const quote = calculateKeycapPrice(configuration, pricing)
+  const incompleteExtras = extraCharacters.some(item => !/^[A-Z0-9]$/.test(item.character))
   const emptyBoards = configuration.characters.flatMap((item, index) => item.character ? [] : [index + 1])
-  const completionHelp = quote.complete
+  const completionHelp = incompleteExtras ? 'Complete or remove each extra keycap to continue.' : quote.complete
     ? 'Your design is ready.'
     : emptyBoards.length > 0
       ? `Add a character to ${emptyBoards.length === 1 ? 'board' : 'boards'} ${emptyBoards.join(', ')} to continue.`
       : 'Pricing is unavailable. Please try again later.'
   const addCreation = () => {
-    if (!quote.complete || quote.totalMinor === null) return
+    if (!quote.complete || incompleteExtras || quote.totalMinor === null) return
     if (editIdentity !== null) {
       if (updateCartDesign(editIdentity, configuration)) {
         savedSuccessfully.current = true
@@ -102,7 +105,7 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
       price: quote.totalMinor / 100,
       colour: configuration.boardColour,
       quantity: 1,
-      configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })) },
+      configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })), ...(extraCharacters.length ? { extraCharacters: extraCharacters.map(item => ({ ...item })) } : {}) },
     })
     setMessage('')
   }
@@ -248,13 +251,26 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
           )}
           <p className="studio-note">New characters receive a contrasting colour. Your chosen colours and hidden characters are retained when you change the board or count.</p>
         </fieldset>
+        <fieldset className="studio-extras">
+          <legend>Extra letter keycaps</legend>
+          <p className="studio-note">Optional spare keycaps, separate from your board · S$2.00 each. Switches and boards are not included with extras.</p>
+          {extraCharacters.map((item, index) => <div className="studio-extra-row" key={index}>
+            <label>Extra {index + 1}<input type="text" maxLength={1} autoCapitalize="characters" autoComplete="off" spellCheck={false} value={item.character} aria-label={`Extra keycap ${index + 1} character`} onChange={event => {
+              const character = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 1)
+              setExtraCharacters(current => current.map((entry, position) => position === index ? { ...entry, character } : entry))
+            }} /></label>
+            <label>Keycap colour<select aria-label={`Extra keycap ${index + 1} colour`} value={item.colour} onChange={event => setExtraCharacters(current => current.map((entry, position) => position === index ? { ...entry, colour: event.target.value } : entry))}>{characterColours.map(option => <option key={option}>{option}</option>)}</select></label>
+            <button type="button" onClick={() => setExtraCharacters(current => current.filter((_, position) => position !== index))} aria-label={`Remove extra keycap ${index + 1}`}>Remove</button>
+          </div>)}
+          <button type="button" disabled={extraCharacters.length >= 20} onClick={() => setExtraCharacters(current => [...current, { character: '', colour: characterColours[0] }])}>+ Add extra keycap</button>
+        </fieldset>
       </section>
       <section className="studio-purchase creation-summary" aria-label="Your creation price">
         <div>
           <p className="eyebrow">YOUR CREATION</p>
           <h2 aria-label={`Your design: ${configuration.characters.map(({ character }) => character || 'blank').join(', ')}`} style={{ overflowWrap: 'anywhere' }}>{configuration.characters.map(({ character }) => character || '□').join(' ')}</h2>
           <p className="studio-note">{count} {count === 1 ? 'board' : 'boards'} · {colour}</p>
-          <div id="studio-completion" className="studio-completion" data-complete={quote.complete} role="status" aria-atomic="true">
+          <div id="studio-completion" className="studio-completion" data-complete={quote.complete && !incompleteExtras} role="status" aria-atomic="true">
             <strong>{quote.completed} / {count} characters complete</strong>
             <span>{completionHelp}</span>
           </div>
@@ -262,11 +278,12 @@ function KeycapStudioEditor({ editIdentity, savedConfiguration }: { editIdentity
         <div className="studio-price-action">
           <dl>
             <div><dt>Board layout</dt><dd>{quote.boardMinor === null ? 'Unavailable' : money(quote.boardMinor)}</dd></div>
-            <div><dt>Character keycaps ({quote.completed})</dt><dd>{money(quote.charactersMinor)}</dd></div>
+            <div><dt>Included characters ({quote.completed})</dt><dd>Included</dd></div>
+            <div><dt>Extra keycaps ({extraCharacters.length} × S$2.00)</dt><dd>{money(quote.extraCharactersMinor ?? 0)}</dd></div>
             <div className="studio-total"><dt>{quote.complete ? 'Total' : 'Total so far'}</dt><dd>{quote.totalMinor === null ? 'Unavailable' : money(quote.totalMinor)}</dd></div>
           </dl>
-          <button type="button" className="studio-add" disabled={!quote.complete} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>{!quote.complete ? (emptyBoards.length > 0 ? 'Complete your design to continue' : 'Price unavailable') : editIdentity === null ? 'Add my creation to cart' : 'Save changes to cart'}</button>
-          <p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Checkout is not available yet.</p>
+          <button type="button" className="studio-add" disabled={!quote.complete || incompleteExtras} aria-describedby="studio-completion studio-cart-note" onClick={addCreation}>{!quote.complete || incompleteExtras ? (emptyBoards.length > 0 || incompleteExtras ? 'Complete your design to continue' : 'Price unavailable') : editIdentity === null ? 'Add my creation to cart' : 'Save changes to cart'}</button>
+          <p id="studio-cart-note" className="studio-note">Your cart saves a copy of this design. Secure checkout is available when configured.</p>
           <p role="status" className="studio-action-message">{message}</p>
         </div>
       </section>

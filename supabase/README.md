@@ -1,9 +1,12 @@
 # Catalogue schema checkpoint
 
-This directory contains local migrations, not a connected or deployed database.
+This directory contains the versioned catalogue and order migrations.
 React still reads `catalogue.ts → products.ts`. The V1 catalogue seed and private
 orders schema are in `migrations/20261104000100_v1_products.sql` and
-`migrations/20261104000200_orders.sql`. Nothing has been deployed or linked.
+`migrations/20261104000200_orders.sql`. On November 5, 2026 all three migrations
+were applied to the user-designated staging project `eyrjmyhhxqplgnzclrui`;
+the checkout and webhook functions were deployed there. The repo has no
+persistent CLI project link. No production storefront deployment was made.
 See `functions/commerce-checkout/README.md` for checkout and webhook setup.
 
 ## The five catalogue tables
@@ -86,8 +89,8 @@ not implement variable pricing. These are later adapter/publication checks.
 
 ## Applying later, manually and deliberately
 
-No Supabase CLI, psql or Docker was found on the command path during this
-milestone, and the repository has no linked project. Migration execution needs
+The Supabase CLI is available via `npx --yes supabase`; the repository has no
+persistent linked project. Migration execution needs
 a Supabase database with the standard anon, authenticated, service_role and
 postgres roles. It is not a generic role-agnostic PostgreSQL bootstrap script.
 
@@ -105,7 +108,9 @@ postgres roles. It is not a generic role-agnostic PostgreSQL bootstrap script.
 
 The migration is transactional: a failure rolls back its objects. It is a
 versioned one-time migration, not a repeatable CREATE TABLE IF NOT EXISTS script.
-No remote command was executed during this milestone.
+The staging migration history matches all three local versions. Never push
+these migrations to another project without confirming its identity and
+reviewing a fresh dry run.
 
 ## Database verification gate
 
@@ -139,11 +144,11 @@ savepoints so expected errors do not abort the entire test run.
 
 ## Verification status
 
-Local source review covers the relationships, partial uniqueness, five RLS
-policies, grants and acyclic policy dependencies. Frontend lint/build and Git
-whitespace checks are run separately for this checkpoint. Actual SQL parsing,
-migration execution, constraints, triggers and role behaviour require a real
-PostgreSQL/Supabase runtime; static review is not a substitute for those tests.
+Staging migration execution and history were verified. Anonymous API probes
+show the three seeded products, reject direct order reads (401), and reject
+invalid designs (422) and unsigned webhooks (400). Detailed constraint,
+trigger, and role-behaviour checks in the gate above remain to be run; these
+probes do not replace them.
 
 Stop after schema review/application checks. Production seed/image mapping and
 connecting React require separate approval. Suggested Git message:

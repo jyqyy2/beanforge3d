@@ -112,7 +112,7 @@ export default function StandStudioPage({ product }: { product: Product }) {
             addToCart({ productSlug: product.slug, name: product.name, price: product.price, colour, quantity, standDesign: design.name, image: design.image })
             setMessage('')
           }}>Add my stand to cart</button>
-          <p className="studio-note">Your cart saves a copy of this stand. Checkout is not available yet.</p>
+          <p className="studio-note">Your cart saves a copy of this stand. Secure checkout is available when configured.</p>
           <p role="status" className="studio-action-message">{message}</p>
         </div>
       </section>

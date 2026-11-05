@@ -55,15 +55,12 @@ async function loadCatalogue(): Promise<Catalogue> {
         ? [{ colour, priceMinor: variant.price_minor, currency: variant.currency }] : []
     }) }]
   })
-  const pricingText = Deno.env.get('KEYCAP_STUDIO_PRICING_JSON')
-  let studioPricing: Catalogue['studioPricing']
-  if (pricingText) {
-    const parsed: unknown = JSON.parse(pricingText)
-    if (!parsed || typeof parsed !== 'object' || !('boardPricesMinor' in parsed) ||
-      !('characterPricesMinor' in parsed) || !('boardColours' in parsed) ||
-      !('characterColours' in parsed) || !Array.isArray(parsed.boardColours) ||
-      !Array.isArray(parsed.characterColours)) throw new Error('Studio pricing unavailable')
-    studioPricing = parsed as Catalogue['studioPricing']
+  const studioPricing: Catalogue['studioPricing'] = {
+    boardPricesMinor: { 1: 490, 2: 690, 3: 890, 4: 1090, 5: 1290, 6: 1490, 7: 1690, 8: 1790 },
+    characterPricesMinor: Object.fromEntries(Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', character => [character, 0])),
+    boardColours: ['Cream', 'Pink', 'Black'],
+    characterColours: ['Cream', 'Pink', 'Blue', 'Black'],
+    extraCharacterMinor: 200,
   }
   return { products: mapped, studioPricing }
 }
@@ -71,8 +68,10 @@ async function loadCatalogue(): Promise<Catalogue> {
 function stripeLineDescription(line: CommerceQuote['lines'][number]): string {
   if (line.configuration) {
     const characters = line.configuration.characters.map(entry => `${entry.character}:${entry.colour}/${entry.characterColour ?? ''}`).join(' ')
-    return `Board ${line.configuration.boardColour}; ${characters}`.slice(0, 450)
+    const extras = line.configuration.extraCharacters?.map(entry => `${entry.character}:${entry.colour}/${entry.characterColour ?? ''}`).join(' ')
+    return `Board ${line.configuration.boardColour}; ${characters}${extras ? `; extra ${extras}` : ''}`.slice(0, 450)
   }
+  if (line.halloweenConfiguration) return `${line.halloweenConfiguration.layout} ${line.halloweenConfiguration.boardColour}; ${line.halloweenConfiguration.slots.join(' ')}; extra ${(line.halloweenConfiguration.extras ?? []).join(' ')}`.slice(0, 450)
   return [line.colour, line.standDesign, line.personalisation].filter(Boolean).join(' · ')
 }
 

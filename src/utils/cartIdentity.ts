@@ -10,12 +10,13 @@ export function isKeycapConfiguration(value: unknown, allowIncomplete = false): 
     typeof config.boardColour === 'string' &&
     getKeycapBoardColours().includes(config.boardColour) &&
     Array.isArray(config.characters) && config.characters.length >= 1 && config.characters.length <= 8 &&
-    config.characters.every((item) => item && typeof item === 'object' &&
+    [...config.characters, ...(Array.isArray(config.extraCharacters) ? config.extraCharacters : [])].every((item) => item && typeof item === 'object' &&
       typeof item.character === 'string' &&
       (item.characterColour === undefined || getCharacterColours().includes(item.characterColour)) &&
       (allowIncomplete && item.character === ''
         ? item.colour === '' || getCharacterColours().includes(item.colour)
-        : /^[A-Z0-9]$/.test(item.character) && getCharacterColours().includes(item.colour)))
+        : /^[A-Z0-9]$/.test(item.character) && getCharacterColours().includes(item.colour))) &&
+    (config.extraCharacters === undefined || (Array.isArray(config.extraCharacters) && config.extraCharacters.length <= 20))
 }
 
 export function cartItemIdentity(item: CartItem): string {
@@ -26,7 +27,10 @@ export function cartItemIdentity(item: CartItem): string {
     ? [item.productSlug, item.configuration.schemaVersion, item.configuration.boardColour,
       item.configuration.characters.map(({ character, colour, characterColour }) =>
         characterColour === undefined || characterColour === (colour === 'Black' ? 'Cream' : 'Black')
-          ? [character, colour] : [character, colour, characterColour])]
+          ? [character, colour] : [character, colour, characterColour]),
+      ...(item.configuration.extraCharacters?.length ? [item.configuration.extraCharacters.map(({ character, colour, characterColour }) =>
+        characterColour === undefined || characterColour === (colour === 'Black' ? 'Cream' : 'Black')
+          ? [character, colour] : [character, colour, characterColour])] : [])]
     : item.productSlug === 'qr-nfc-stand' && item.standDesign !== undefined
       ? [item.productSlug, item.colour, item.standDesign]
       : item.personalisation ? [item.productSlug, item.colour, item.personalisation]

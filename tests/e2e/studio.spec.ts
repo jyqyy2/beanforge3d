@@ -5,6 +5,38 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/studio/keycaps')
 })
 
+test('extra keycaps retain colour, price, and cart identity across reloads', async ({ page }) => {
+  await page.getByRole('textbox', { name: 'Character 1', exact: true }).fill('A')
+  await page.getByRole('button', { name: '+ Add extra keycap' }).click()
+  await page.getByRole('textbox', { name: 'Extra keycap 1 character' }).fill('Z')
+  await page.getByRole('combobox', { name: 'Extra keycap 1 colour' }).selectOption('Pink')
+  await expect(page.locator('.studio-total')).toContainText('S$6.90')
+  await page.reload()
+  await expect(page.getByRole('textbox', { name: 'Extra keycap 1 character' })).toHaveValue('Z')
+  await expect(page.getByRole('combobox', { name: 'Extra keycap 1 colour' })).toHaveValue('Pink')
+  await page.getByRole('button', { name: 'Add my creation to cart' }).click()
+  await page.goto('/cart')
+  await expect(page.getByRole('article')).toContainText('Extra keycaps: Z (Pink)')
+  await expect(page.getByRole('article')).toContainText('S$6.90')
+  await page.getByRole('link', { name: 'Edit design' }).click()
+  await expect(page.getByRole('textbox', { name: 'Extra keycap 1 character' })).toHaveValue('Z')
+  await page.getByRole('button', { name: 'Remove extra keycap 1' }).click()
+  await page.getByRole('button', { name: 'Save changes to cart' }).click()
+  await expect(page.getByRole('article')).not.toContainText('Extra keycaps:')
+  await expect(page.getByRole('article')).toContainText('S$4.90')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
+test('priced studio, Halloween and cart layouts avoid horizontal overflow', async ({ page }) => {
+  for (const width of [320, 390, 820, 1280]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const route of ['/studio/keycaps', '/studio/halloween', '/cart']) {
+      await page.goto(route)
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${route} at ${width}px`).toBe(true)
+    }
+  }
+})
+
 for (const kind of ['cart', 'draft']) {
   test(`initial ${kind} read failure preserves original data until reload retry`, async ({ page }) => {
     await page.getByRole('textbox', { name: 'Character 1', exact: true }).fill('Z')
@@ -77,7 +109,7 @@ test('counts, empty selection, colours, hidden characters and draft restoration'
   await page.getByRole('button', { name: '8 boards', exact: true }).click()
   await expect(page.getByRole('textbox', { name: 'Character 8', exact: true })).toHaveValue('Z')
   await expect(page.getByRole('region', { name: 'Keycap layout preview' })).toContainText('Z (keycap: Blue, character: Pink)')
-  await expect(page.locator('.studio-total')).toContainText('S$69.00')
+  await expect(page.locator('.studio-total')).toContainText('S$17.90')
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 })
 
@@ -95,7 +127,7 @@ test('cart snapshots merge, reset preserves cart, edits save and discard', async
   await expect(page.getByRole('textbox', { name: 'Character 1', exact: true })).toHaveValue('')
   await page.goto('/cart')
   await expect(page.getByRole('article')).toHaveCount(1)
-  await expect(page.getByRole('article')).toContainText('S$26.00')
+  await expect(page.getByRole('article')).toContainText('S$4.90')
   await page.getByRole('link', { name: 'Edit design', exact: true }).click()
   await page.getByRole('textbox', { name: 'Character 1', exact: true }).fill('B')
   await page.getByRole('link', { name: '← Cancel and return to cart' }).click()

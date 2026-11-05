@@ -23,14 +23,15 @@ for (let count = 1; count <= 8; count++) {
   test(`${count} active characters have the expected board and character price`, () => {
     const config = configuration('ABCDEFGH'.slice(0, count))
     assert.equal(isKeycapConfiguration(config), true)
-    assert.deepEqual(calculateKeycapPrice(config, pricing), { boardMinor: 1000 + (count - 1) * 800, charactersMinor: count * 300, totalMinor: 1000 + (count - 1) * 800 + count * 300, completed: count, complete: true })
+    const boardMinor = [490, 690, 890, 1090, 1290, 1490, 1690, 1790][count - 1]
+    assert.deepEqual(calculateKeycapPrice(config, pricing), { boardMinor, charactersMinor: 0, extraCharactersMinor: 0, totalMinor: boardMinor, completed: count, complete: true })
   })
 }
 
 test('all A–Z and 0–9 characters are valid and priced', () => {
   for (const character of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') {
     assert.equal(isKeycapConfiguration(configuration(character)), true)
-    assert.equal(calculateKeycapPrice(configuration(character), pricing).totalMinor, 1300)
+    assert.equal(calculateKeycapPrice(configuration(character), pricing).totalMinor, 490)
   }
 })
 
@@ -51,14 +52,14 @@ test('invalid counts and unsafe prices do not produce a complete quote', () => {
     assert.equal(calculateKeycapPrice(configuration(), { ...pricing, boardPricesMinor: { 1: price } }).complete, false)
     assert.equal(calculateKeycapPrice(configuration(), { ...pricing, characterPricesMinor: { A: price } }).complete, false)
   }
-  assert.equal(calculateKeycapPrice(configuration(), { ...pricing, boardPricesMinor: { 1: Number.MAX_SAFE_INTEGER } }).totalMinor, null)
+  assert.equal(calculateKeycapPrice(configuration(), { ...pricing, boardPricesMinor: { 1: Number.MAX_SAFE_INTEGER } }).totalMinor, Number.MAX_SAFE_INTEGER)
 })
 
 test('three colour layers never affect pricing and invalid colours are rejected', () => {
   for (const boardColour of ['Cream', 'Pink', 'Black']) for (const colour of ['Cream', 'Pink', 'Blue', 'Black']) for (const characterColour of [undefined, 'Cream', 'Pink', 'Blue', 'Black']) {
     const config = { ...configuration(), boardColour, characters: [{ character: 'A', colour, characterColour }] }
     assert.equal(isKeycapConfiguration(config), true)
-    assert.equal(calculateKeycapPrice(config, pricing).totalMinor, 1300)
+    assert.equal(calculateKeycapPrice(config, pricing).totalMinor, 490)
   }
   assert.equal(isKeycapConfiguration({ ...configuration(), boardColour: 'Unknown' }), false)
   for (const field of ['colour', 'characterColour']) {
@@ -87,7 +88,7 @@ test('cart edits snapshot the configuration, reprice it, and preserve quantity',
   const original = cartItem(configuration(), 2)
   const config = configuration('B2')
   const result = updateKeycapCart([original], cartItemIdentity(original), config)
-  assert.equal(result[0].price, 24)
+  assert.equal(result[0].price, 6.9)
   assert.equal(result[0].quantity, 2)
   assert.equal(result[0].name, 'Custom keycaps · B2')
   config.characters[0].character = 'Z'
@@ -113,9 +114,19 @@ test('draft roundtrip retains hidden characters and colours while active pricing
   const restored = parseKeycapDraft(JSON.stringify({ version: 1, count: 1, configuration: config }))
   assert.deepEqual(restored.configuration, config)
   assert.equal(restored.count, 1)
-  assert.equal(calculateKeycapPrice({ ...config, characters: restored.configuration.characters.slice(0, restored.count) }, pricing).totalMinor, 1300)
+  assert.equal(calculateKeycapPrice({ ...config, characters: restored.configuration.characters.slice(0, restored.count) }, pricing).totalMinor, 490)
   assert.deepEqual(restored.configuration.characters[7], config.characters[7])
-  assert.equal(calculateKeycapPrice(restored.configuration, pricing).totalMinor, 9000)
+  assert.equal(calculateKeycapPrice(restored.configuration, pricing).totalMinor, 1790)
+})
+
+test('extra keycaps are priced, validated, identified, and retained in drafts', () => {
+  const config = { ...configuration('AB'), extraCharacters: [{ character: 'C', colour: 'Pink' }, { character: '2', colour: 'Black' }] }
+  assert.equal(isKeycapConfiguration(config), true)
+  assert.equal(calculateKeycapPrice(config, pricing).totalMinor, 1090)
+  assert.notEqual(cartItemIdentity(cartItem(config)), cartItemIdentity(cartItem(configuration('AB'))))
+  const draft = { version: 1, count: 2, configuration: { ...config, characters: [...config.characters, ...Array.from({ length: 6 }, () => ({ character: '', colour: '' }))] } }
+  assert.deepEqual(parseKeycapDraft(JSON.stringify(draft)), draft)
+  assert.equal(isKeycapConfiguration({ ...config, extraCharacters: [{ character: '', colour: 'Pink' }] }), false)
 })
 
 test('malformed drafts fail safely', () => {

@@ -4,6 +4,10 @@ import { calculateKeycapPrice } from './keycapPricing'
 import type { KeycapConfiguration } from '../types/keycap'
 import type { StandDesign } from '../types/stand'
 import { normalisePersonalisation } from './personalisation'
+import { nameKeychainPriceMinor } from './namePricing'
+import { isHalloweenConfiguration } from '../types/halloween'
+import { calculateHalloweenPrice } from './halloweenPricing'
+import type { HalloweenConfiguration } from '../types/halloween'
 
 export const v1CommerceConfig = {
   currency: 'SGD' as const,
@@ -20,6 +24,7 @@ export type V1CartLineRequest = {
   personalisation?: string
   standDesign?: StandDesign
   configuration?: KeycapConfiguration
+  halloweenConfiguration?: HalloweenConfiguration
 }
 
 export type ShippingRequest = { country: 'SG' | 'MY' }
@@ -37,6 +42,7 @@ export type MerchandiseQuote = {
   personalisation?: string
   standDesign?: StandDesign
   configuration?: KeycapConfiguration
+  halloweenConfiguration?: HalloweenConfiguration
 }
 
 export type CartQuote = { currency: 'SGD'; lines: MerchandiseQuote[]; merchandiseSubtotalMinor: number }
@@ -53,6 +59,14 @@ function quoteLine(line: V1CartLineRequest): MerchandiseQuote | null {
     if (!price.complete || price.totalMinor === null) return null
     return { productSlug: line.productSlug, quantity: line.quantity, unitAmountMinor: price.totalMinor, lineAmountMinor: price.totalMinor * line.quantity, colour: line.colour, configuration: structuredClone(line.configuration) }
   }
+  if (line.productSlug === 'halloween-clicker') {
+    if (!isHalloweenConfiguration(line.halloweenConfiguration) || line.colour !== line.halloweenConfiguration.boardColour ||
+      line.configuration !== undefined || line.personalisation !== undefined || line.standDesign !== undefined) return null
+    const price = calculateHalloweenPrice(line.halloweenConfiguration)
+    return { productSlug: line.productSlug, quantity: line.quantity, unitAmountMinor: price.totalMinor,
+      lineAmountMinor: price.totalMinor * line.quantity, colour: line.colour,
+      halloweenConfiguration: structuredClone(line.halloweenConfiguration) }
+  }
   const product = getProductBySlug(line.productSlug)
   if (!product || !['custom-carplate-keychain', 'custom-name-keychain', 'qr-nfc-stand'].includes(product.slug)) return null
   if (!line.colour || !product.colours.includes(line.colour)) return null
@@ -60,9 +74,10 @@ function quoteLine(line: V1CartLineRequest): MerchandiseQuote | null {
   if (product.slug !== 'qr-nfc-stand' && line.standDesign !== undefined) return null
   if (product.slug === 'custom-carplate-keychain' || product.slug === 'custom-name-keychain') {
     if (!line.personalisation || normalisePersonalisation(product.slug, line.personalisation) !== line.personalisation ||
-      (product.slug === 'custom-name-keychain' && line.personalisation.length !== 1)) return null
+      (product.slug === 'custom-name-keychain' && nameKeychainPriceMinor(line.personalisation.length) === null)) return null
   } else if (line.personalisation !== undefined) return null
-  const unitAmountMinor = Math.round(product.price * 100)
+  const unitAmountMinor = product.slug === 'custom-name-keychain'
+    ? nameKeychainPriceMinor(line.personalisation!.length)! : Math.round(product.price * 100)
   return { productSlug: product.slug, quantity: line.quantity, unitAmountMinor, lineAmountMinor: unitAmountMinor * line.quantity, colour: line.colour, ...(line.standDesign ? { standDesign: line.standDesign } : {}), ...(line.personalisation ? { personalisation: line.personalisation } : {}) }
 }
 

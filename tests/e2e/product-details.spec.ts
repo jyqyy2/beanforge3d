@@ -26,15 +26,17 @@ test('plate colours change photography and distinct plate texts stay distinct in
   await expect(page.locator('.cart-item')).toHaveCount(2)
 })
 
-test('name keychain shows honest starting price and blocks unpriced longer names', async ({ page }) => {
+test('name keychain prices one to ten letters and saves the chosen name', async ({ page }) => {
   await page.goto('/product/custom-name-keychain')
   await expect(page.locator('.product-price')).toHaveText('From S$6.90')
   const add = page.getByRole('button', { name: 'Add to cart' })
   await expect(add).toBeDisabled()
   await page.getByRole('textbox', { name: 'Your name (1–10 letters)' }).fill('Joanne')
   await expect(page.getByText('Your text: JOANNE')).toBeVisible()
-  await expect(add).toBeDisabled()
-  await expect(page.getByText(/Pricing for 6 letters is coming soon/)).toBeVisible()
+  await expect(add).toBeEnabled()
+  await expect(page.locator('.product-price')).toHaveText('S$11.90')
+  await page.getByRole('textbox', { name: 'Your name (1–10 letters)' }).fill('ABCDEFGHIJ')
+  await expect(page.locator('.product-price')).toHaveText('S$15.90')
   await page.getByRole('textbox', { name: 'Your name (1–10 letters)' }).fill('J')
   await expect(add).toBeEnabled()
   await add.click()

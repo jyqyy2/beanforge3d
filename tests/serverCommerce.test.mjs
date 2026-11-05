@@ -41,9 +41,15 @@ test('personalisation is required, carried into the quote and cannot invent long
   assert.deepEqual(result.lines.map(line => line.personalisation), ['SMX 6769 L', 'J'])
   for (const invalid of [
     { ...plateLine, personalisation: undefined }, { ...plateLine, personalisation: 'SMX  6769 L' },
-    { ...plateLine, personalisation: 'X<script>' }, { ...name, personalisation: 'JO' },
+    { ...plateLine, personalisation: 'X<script>' }, { ...name, personalisation: 'ABCDEFGHIJK' },
     { ...plate(), productSlug: 'bean-keycap' },
   ]) assert.equal(quoteCommerce(intent([invalid]), catalogue), null)
+})
+
+test('server quotes approved name lengths, Halloween layouts and extra keycaps', () => {
+  assert.equal(quoteCommerce(intent([{ productSlug: 'custom-name-keychain', colour: 'Cream', quantity: 1, personalisation: 'JO' }]), catalogue).lines[0].unitAmountMinor, 790)
+  const halloweenConfiguration = { version: 1, layout: '4x1', boardColour: 'Cream', slots: ['ghost', 'ghost', 'ghost', 'ghost'], extras: ['pumpkin'] }
+  assert.equal(quoteCommerce(intent([{ productSlug: 'halloween-clicker', colour: 'Cream', quantity: 1, halloweenConfiguration }]), catalogue).lines[0].unitAmountMinor, 1440)
 })
 
 test('Singapore threshold and Malaysia pending carrier quote', () => {

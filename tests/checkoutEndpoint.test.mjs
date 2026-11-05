@@ -26,12 +26,18 @@ globalThis.fetch = async (input, options = {}) => {
   calls.push({ url, options })
   if (url.includes('/rest/v1/products?')) return Response.json([
     { id: 'plate-id', slug: 'custom-carplate-keychain', name: 'Custom Car Plate Keychain' },
+    { id: 'name-id', slug: 'custom-name-keychain', name: 'Custom Name Keychain' },
+    { id: 'stand-id', slug: 'qr-nfc-stand', name: 'QR / NFC Stand' },
   ])
   if (url.includes('/rest/v1/product_variants?')) return Response.json([
     { product_id: 'plate-id', colour_id: 'red-id', price_minor: 490, currency: 'SGD' },
+    { product_id: 'name-id', colour_id: 'cream-id', price_minor: 690, currency: 'SGD' },
+    { product_id: 'stand-id', colour_id: 'black-id', price_minor: 1590, currency: 'SGD' },
   ])
   if (url.includes('/rest/v1/colours?')) return Response.json([
     { id: 'red-id', name: 'Red' },
+    { id: 'cream-id', name: 'Cream' },
+    { id: 'black-id', name: 'Black' },
   ])
   if (url.includes('/rest/v1/orders')) {
     if (failNextOrder) { failNextOrder = false; return Response.json({ error: 'offline' }, { status: 503 }) }
@@ -109,6 +115,35 @@ test('personalised plate text reaches the Stripe line description', async () => 
   const form = new URLSearchParams(calls.find(call => call.url.startsWith('https://api.stripe.com/')).options.body)
   assert.equal(form.get('line_items[0][price_data][unit_amount]'), '490')
   assert.equal(form.get('line_items[0][price_data][product_data][description]'), 'Red · SMX 6769 L')
+})
+
+test('approved name, stand, Studio, Halloween and add-on prices reach Stripe and saved order', async () => {
+  calls.length = 0
+  const lines = [
+    { productSlug: 'custom-carplate-keychain', colour: 'Red', personalisation: 'ABC 123', quantity: 1 },
+    { productSlug: 'custom-name-keychain', colour: 'Cream', personalisation: 'ABCDEFGHIJ', quantity: 1 },
+    { productSlug: 'qr-nfc-stand', colour: 'Black', standDesign: 'Bee', quantity: 1 },
+    { productSlug: 'custom-keycaps', colour: 'Cream', quantity: 1, configuration: {
+      schemaVersion: 3, boardColour: 'Cream', characters: [{ character: 'A', colour: 'Black' }, { character: 'B', colour: 'Pink' }],
+      extraCharacters: [{ character: 'Z', colour: 'Blue' }],
+    } },
+    { productSlug: 'halloween-clicker', colour: 'Purple', quantity: 1, halloweenConfiguration: {
+      version: 1, layout: '2x1', boardColour: 'Purple', slots: ['ghost', 'pumpkin'], extras: ['cat-back', 'skull'],
+    } },
+  ]
+  const response = await request('checkout', { country: 'SG', lines })
+  assert.equal(response.status, 200)
+  const { quote } = await response.json()
+  assert.deepEqual(quote.lines.map(line => line.unitAmountMinor), [490, 1590, 1590, 890, 1490])
+  assert.equal(quote.payableTotalMinor, 6050)
+  const form = new URLSearchParams(calls.find(call => call.url === 'https://api.stripe.com/v1/checkout/sessions').options.body)
+  assert.deepEqual(lines.map((_, index) => Number(form.get(`line_items[${index}][price_data][unit_amount]`))), [490, 1590, 1590, 890, 1490])
+  assert.match(form.get('line_items[3][price_data][product_data][description]'), /extra Z:Blue/)
+  assert.match(form.get('line_items[4][price_data][product_data][description]'), /cat-back skull/)
+  const order = orders.get(form.get('client_reference_id'))
+  assert.equal(order.quote.lines[1].personalisation, 'ABCDEFGHIJ')
+  assert.deepEqual(order.quote.lines[3].configuration.extraCharacters, lines[3].configuration.extraCharacters)
+  assert.deepEqual(order.quote.lines[4].halloweenConfiguration.extras, lines[4].halloweenConfiguration.extras)
 })
 
 test('database failure prevents creation of a payable Stripe session', async () => {

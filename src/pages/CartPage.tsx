@@ -9,6 +9,7 @@ import { halloweenKeycaps } from '../types/halloween'
 import { checkoutConfigured, requestQuote, startCheckout } from '../utils/checkout'
 import type { ServerQuote } from '../utils/checkout'
 import type { CartItem } from '../types/cart'
+import { quoteMerchandise } from '../utils/commerceQuote'
 
 function CartPage() {
   const location = useLocation()
@@ -23,10 +24,10 @@ function CartPage() {
   const [quoteError, setQuoteError] = useState('')
   const [checkoutBusy, setCheckoutBusy] = useState(false)
   const serverQuote = quoteState?.items === cartItems && quoteState.country === country ? quoteState.quote : null
-  const hasUnpricedDesign = cartItems.some(item => item.halloweenConfiguration !== undefined)
+  const estimate = quoteMerchandise(cartItems)
 
   useEffect(() => {
-    if (!checkoutConfigured || cartItems.length === 0 || hasUnpricedDesign) return
+    if (!checkoutConfigured || cartItems.length === 0) return
     const controller = new AbortController()
     void requestQuote(cartItems, country, controller.signal).then(quote => {
       if (controller.signal.aborted) return
@@ -38,10 +39,10 @@ function CartPage() {
       setQuoteError(error instanceof Error ? error.message : 'Quote unavailable.')
     })
     return () => controller.abort()
-  }, [cartItems, country, hasUnpricedDesign])
+  }, [cartItems, country])
 
   async function handleCheckout() {
-    if (!serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy || hasUnpricedDesign) return
+    if (!serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy) return
     setCheckoutBusy(true)
     try {
       const checkout = await startCheckout(cartItems)
@@ -112,9 +113,10 @@ function CartPage() {
                     {item.halloweenConfiguration && <HalloweenCartPreview configuration={item.halloweenConfiguration} />}
                     {item.configuration && <>
                       <KeycapPreview configuration={item.configuration} compact />
+                      {item.configuration.extraCharacters?.length ? <p>Extra keycaps: {item.configuration.extraCharacters.map(extra => `${extra.character} (${extra.colour})`).join(' · ')}</p> : null}
                       <Link className="back-link" to={`/studio/keycaps?edit=${encodeURIComponent(cartItemIdentity(item))}`}>Edit design</Link>
                     </>}
-                    <p>{item.halloweenConfiguration ? 'Price pending · checkout unavailable for this design' : serverQuote?.lines[index] ? `S$${(serverQuote.lines[index].unitAmountMinor / 100).toFixed(2)} each` : 'Price pending'}</p>
+                    <p>{serverQuote?.lines[index] ? `S$${(serverQuote.lines[index].unitAmountMinor / 100).toFixed(2)} each` : estimate?.lines[index] ? `Estimated S$${(estimate.lines[index].unitAmountMinor / 100).toFixed(2)} each` : 'Price unavailable'}</p>
 
                     <div className="cart-quantity-controls">
                       <span>Quantity</span>
@@ -178,8 +180,8 @@ function CartPage() {
               </select>
 
               <div className="cart-summary-row">
-                <span>Subtotal</span>
-                <strong>{serverQuote ? `S$${(serverQuote.merchandiseSubtotalMinor / 100).toFixed(2)}` : '—'}</strong>
+                <span>{serverQuote ? 'Subtotal' : 'Estimated subtotal'}</span>
+                <strong>{serverQuote ? `S$${(serverQuote.merchandiseSubtotalMinor / 100).toFixed(2)}` : estimate ? `S$${(estimate.merchandiseSubtotalMinor / 100).toFixed(2)}` : '—'}</strong>
               </div>
               <div className="cart-summary-row">
                 <span>Shipping</span>
@@ -197,14 +199,13 @@ function CartPage() {
               <button
                 type="button"
                 className="checkout-button"
-                disabled={hasUnpricedDesign || !serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy || storageFailed}
+                disabled={!serverQuote || serverQuote.shipping.status !== 'quoted' || checkoutBusy || storageFailed}
                 onClick={() => void handleCheckout()}
               >
                 {checkoutBusy ? 'Opening secure checkout…' : 'Pay securely with Stripe'}
               </button>
 
               <p className="cart-summary-note">Stripe test checkout. No live payments are accepted.</p>
-              {hasUnpricedDesign && <p role="status">Halloween designs are saved in this browser. Remove them to check out other items; Halloween pricing and order storage are not configured yet.</p>}
               {!checkoutConfigured && <p role="status">Checkout has not been configured yet.</p>}
               {quoteError && <p role="alert">{quoteError}</p>}
               {serverQuote?.shipping.status === 'requires_carrier_quote' &&

@@ -14,7 +14,8 @@ export function updateKeycapCart(items: CartItem[], identity: string, configurat
     name: `Custom keycaps · ${configuration.characters.map(({ character }) => character).join('')}`,
     price: quote.totalMinor / 100,
     colour: configuration.boardColour,
-    configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })) },
+    configuration: { ...configuration, characters: configuration.characters.map((item) => ({ ...item })),
+      ...(configuration.extraCharacters?.length ? { extraCharacters: configuration.extraCharacters.map(item => ({ ...item })) } : {}) },
   }
   const duplicate = items.find((item) => item !== original && cartItemIdentity(item) === cartItemIdentity(updated))
   if (duplicate && !Number.isSafeInteger(duplicate.quantity + original.quantity)) return null

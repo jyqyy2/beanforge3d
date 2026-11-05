@@ -50,7 +50,7 @@ export const products: Product[] = [
     priceDisplay: 'from',
     image: nameTag,
     description:
-      'Your name. Your colour. Your way. Personalise a keychain with 1 to 10 letters. Pricing for longer names is coming soon.',
+      'Your name. Your colour. Your way. Personalise a keychain with 1 to 10 letters. S$6.90 for the first letter, then S$1.00 per additional letter.',
     colours: ['Cream', 'Pink', 'Blue', 'Black'],
   },
 

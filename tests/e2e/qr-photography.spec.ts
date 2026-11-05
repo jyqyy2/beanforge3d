@@ -27,7 +27,7 @@ test('stand choices, colours, quantities, merging and saved cart remain accurate
     const row = page.locator('.cart-item').filter({ hasText: `Stand: ${design}` })
     await expect(row).toContainText('QR / NFC Stand')
     await expect(row).toContainText('Colour: Black')
-    await expect(row).toContainText('Price pending')
+    await expect(row).toContainText('Estimated S$15.90 each')
     await expect(row.locator('.cart-quantity-controls strong')).toHaveText(quantity)
     await expect(row.locator('img')).toHaveAttribute('src', new RegExp(`qr-${design.toLowerCase()}`))
   }

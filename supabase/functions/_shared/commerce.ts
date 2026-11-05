@@ -8,6 +8,14 @@ export type PurchaseLine = {
     schemaVersion: number
     boardColour: string
     characters: { character: string; colour: string; characterColour?: string }[]
+    extraCharacters?: { character: string; colour: string; characterColour?: string }[]
+  }
+  halloweenConfiguration?: {
+    version: number
+    layout: string
+    boardColour: string
+    slots: string[]
+    extras?: string[]
   }
 }
 
@@ -30,6 +38,7 @@ export type Catalogue = {
     characterPricesMinor: Record<string, number>
     boardColours: string[]
     characterColours: string[]
+    extraCharacterMinor: number
   }
 }
 
@@ -48,9 +57,13 @@ export type CommerceQuote = {
   payableTotalMinor: number | null
 }
 
-const v1Slugs = new Set(['custom-carplate-keychain', 'custom-name-keychain', 'qr-nfc-stand', 'custom-keycaps'])
+const v1Slugs = new Set(['custom-carplate-keychain', 'custom-name-keychain', 'qr-nfc-stand', 'custom-keycaps', 'halloween-clicker'])
 const standDesigns = new Set(['Bee', 'Chick'])
 const defaultCharacterColours = ['Cream', 'Pink', 'Blue', 'Black']
+const halloweenBoardPricesMinor: Record<string, number> = { '1x1': 790, '2x1': 990, '2x2': 1190, '4x1': 1190 }
+const halloweenSlotCounts: Record<string, number> = { '1x1': 1, '2x1': 2, '2x2': 4, '4x1': 4 }
+const halloweenColours = new Set(['Cream', 'Pink', 'Black', 'Purple', 'White', 'Turquoise'])
+const halloweenKeycaps = new Set(['pumpkin', 'ghost', 'skull', 'spider', 'cat-side', 'cat-back'])
 
 function safeAmount(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
@@ -64,7 +77,7 @@ function quoteStudio(line: PurchaseLine, catalogue: Catalogue): { name: string; 
   const pricing = catalogue.studioPricing
   const configuration = line.configuration
   if (!pricing || !configuration || configuration.schemaVersion !== 3 ||
-    line.colour !== configuration.boardColour || line.standDesign !== undefined || line.personalisation !== undefined ||
+    line.colour !== configuration.boardColour || line.standDesign !== undefined || line.personalisation !== undefined || line.halloweenConfiguration !== undefined ||
     !pricing.boardColours.includes(configuration.boardColour) ||
     !Array.isArray(configuration.characters) || configuration.characters.length < 1 ||
     configuration.characters.length > 8) return null
@@ -81,7 +94,30 @@ function quoteStudio(line: PurchaseLine, catalogue: Catalogue): { name: string; 
     if (!safeAmount(characterPrice)) return null
     amount += characterPrice
   }
+  if (configuration.extraCharacters !== undefined) {
+    if (!Array.isArray(configuration.extraCharacters) || configuration.extraCharacters.length > 20 ||
+      !safeAmount(pricing.extraCharacterMinor)) return null
+    for (const entry of configuration.extraCharacters) {
+      if (!isRecord(entry) || typeof entry.character !== 'string' || !/^[A-Z0-9]$/.test(entry.character) ||
+        !pricing.characterColours.includes(entry.colour as string) ||
+        (entry.characterColour !== undefined && !pricing.characterColours.includes(entry.characterColour as string))) return null
+      amount += pricing.extraCharacterMinor
+    }
+  }
   return Number.isSafeInteger(amount) ? { name: 'Custom Keycaps', unitAmountMinor: amount } : null
+}
+
+function quoteHalloween(line: PurchaseLine): { name: string; unitAmountMinor: number } | null {
+  const configuration = line.halloweenConfiguration
+  if (!configuration || configuration.version !== 1 || line.configuration !== undefined ||
+    line.personalisation !== undefined || line.standDesign !== undefined ||
+    line.colour !== configuration.boardColour || !halloweenColours.has(configuration.boardColour) ||
+    !Object.prototype.hasOwnProperty.call(halloweenSlotCounts, configuration.layout) ||
+    !Array.isArray(configuration.slots) || configuration.slots.length !== halloweenSlotCounts[configuration.layout] ||
+    !configuration.slots.every(slot => halloweenKeycaps.has(slot)) ||
+    (configuration.extras !== undefined && (!Array.isArray(configuration.extras) ||
+      configuration.extras.length > 20 || !configuration.extras.every(extra => halloweenKeycaps.has(extra))))) return null
+  return { name: 'Halloween Fidget Clicker', unitAmountMinor: halloweenBoardPricesMinor[configuration.layout] + (configuration.extras?.length ?? 0) * 250 }
 }
 
 export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQuote | null {
@@ -96,19 +132,22 @@ export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQu
     let priced: { name: string; unitAmountMinor: number } | null = null
     if (line.productSlug === 'custom-keycaps') {
       priced = quoteStudio(line, catalogue)
+    } else if (line.productSlug === 'halloween-clicker') {
+      priced = quoteHalloween(line)
     } else {
-      if (line.configuration !== undefined ||
+      if (line.configuration !== undefined || line.halloweenConfiguration !== undefined ||
         (line.productSlug === 'qr-nfc-stand' ? !standDesigns.has(line.standDesign ?? '') : line.standDesign !== undefined)) return null
       if (line.productSlug === 'custom-carplate-keychain') {
         if (typeof line.personalisation !== 'string' || !/^[A-Z0-9 ]{1,16}$/.test(line.personalisation) ||
           line.personalisation !== line.personalisation.trim() || line.personalisation.includes('  ')) return null
       } else if (line.productSlug === 'custom-name-keychain') {
-        if (typeof line.personalisation !== 'string' || !/^[A-Z]$/.test(line.personalisation)) return null
+        if (typeof line.personalisation !== 'string' || !/^[A-Z]{1,10}$/.test(line.personalisation)) return null
       } else if (line.personalisation !== undefined) return null
       const product = catalogue.products.find(item => item.slug === line.productSlug)
       const variant = product?.variants.find(item => item.colour === line.colour)
       if (product && variant && variant.currency === 'SGD' && safeAmount(variant.priceMinor)) {
-        priced = { name: product.name, unitAmountMinor: variant.priceMinor }
+        priced = { name: product.name, unitAmountMinor: variant.priceMinor +
+          (line.productSlug === 'custom-name-keychain' ? (line.personalisation!.length - 1) * 100 : 0) }
       }
     }
     if (!priced) return null
@@ -119,6 +158,7 @@ export function quoteCommerce(intent: unknown, catalogue: Catalogue): CommerceQu
       ...(line.standDesign ? { standDesign: line.standDesign } : {}),
       ...(line.personalisation ? { personalisation: line.personalisation } : {}),
       ...(line.configuration ? { configuration: line.configuration } : {}),
+      ...(line.halloweenConfiguration ? { halloweenConfiguration: line.halloweenConfiguration } : {}),
       ...priced, lineAmountMinor,
     })
   }

@@ -9,6 +9,7 @@ import { useCart } from '../context/useCart'
 import ResponsiveImage from '../components/ResponsiveImage'
 import StandStudioPage from './StandStudioPage'
 import { normalisePersonalisation } from '../utils/personalisation'
+import { nameKeychainPriceMinor } from '../utils/namePricing'
 
 function ProductPage() {
   const { slug } = useParams()
@@ -58,7 +59,8 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
   const isPlate = product.slug === 'custom-carplate-keychain'
   const isName = product.slug === 'custom-name-keychain'
   const customText = isPlate || isName ? normalisePersonalisation(product.slug, personalisation) : null
-  const pricePending = isName && customText !== null && customText.length > 1
+  const namePriceMinor = isName && customText ? nameKeychainPriceMinor(customText.length) : null
+  const unitPrice = namePriceMinor === null ? product.price : namePriceMinor / 100
 
   return (
     <main className="product-page">
@@ -91,7 +93,7 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
             <h1>{product.name}</h1>
 
             <p className="product-price">
-              {product.priceDisplay === 'from' ? 'From ' : ''}S${product.price.toFixed(2)}
+              {product.priceDisplay === 'from' && !customText ? 'From ' : ''}S${unitPrice.toFixed(2)}
             </p>
 
             <p className="product-description">
@@ -107,9 +109,9 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
                 aria-describedby="personalisation-hint" />
               <p id="personalisation-hint">{isPlate
                 ? 'Up to 16 letters, numbers and spaces. Product photos show an example plate, not your finished design.'
-                : 'Letters only. The S$6.90 starting price is for one letter; longer-name prices are not yet available.'}</p>
+                : 'Letters only. S$6.90 for one letter, then S$1.00 for each additional letter (up to 10).'}</p>
               {customText && <p className="personalisation-preview">Your text: <strong>{customText}</strong></p>}
-              {pricePending && <p role="status">Pricing for {customText.length} letters is coming soon. You can preview your name, but cannot add it to cart yet.</p>}
+              {namePriceMinor !== null && <p role="status">{customText?.length} {customText?.length === 1 ? 'letter' : 'letters'} · S${unitPrice.toFixed(2)} each</p>}
             </div>}
 
             <div className="product-option">
@@ -217,12 +219,12 @@ function ProductDetails({ slug }: { slug: string | undefined }) {
             <button
               type="button"
               className="add-to-cart-button"
-              disabled={(isPlate || isName) && (!customText || pricePending)}
+              disabled={(isPlate || isName) && !customText}
               onClick={() => {
                 const cartItem: CartItem = {
                   productSlug: product.slug,
                   name: product.name,
-                  price: product.price,
+                  price: unitPrice,
                   colour: selectedColour,
                   ...((isPlate || isName) && customText ? { personalisation: customText } : {}),
                   quantity,
